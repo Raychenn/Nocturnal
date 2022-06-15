@@ -9,11 +9,11 @@ import UIKit
 
 private enum Color: String {
 
-    case deepPurple = "#673ab7"
+    case primaryBlue = "#665EE0"
 
-    case indigo = "#3f51b5"
+    case deepBlue = "#464099"
 
-    case orange = "#ff9800"
+    case lightBlue = "#E0DFF9"
 
     case red = "#f44336"
 
@@ -23,11 +23,11 @@ private enum Color: String {
 
 extension UIColor {
 
-    static let deepPurple = Color(.deepPurple)
+    static let primaryBlue = Color(.primaryBlue)
 
-    static let indigo = Color(.indigo)
+    static let deepBlue = Color(.deepBlue)
 
-    static let orange = Color(.orange)
+    static let lightBlue = Color(.lightBlue)
 
     static let red = Color(.red)
 

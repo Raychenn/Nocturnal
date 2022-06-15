@@ -19,6 +19,7 @@ class MainTabBarController: UITabBarController {
 
         configureViewControllers()
         configureTabBarStyle()
+        configureNavigationBarUI()
     }
     
     // MARK: - helpers
@@ -28,6 +29,7 @@ class MainTabBarController: UITabBarController {
         appearance.configureWithDefaultBackground()
         appearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterialDark)
         tabBar.scrollEdgeAppearance = appearance
+        tabBar.standardAppearance = appearance
     }
     
     func configureViewControllers(){
@@ -61,6 +63,14 @@ class MainTabBarController: UITabBarController {
         nav.tabBarItem.selectedImage = selectedImage
         nav.navigationBar.tintColor = .black
         return nav
+    }
+    
+    func configureNavigationBarUI() {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithDefaultBackground()
+        
+        UINavigationBar.appearance().scrollEdgeAppearance = appearance
+        UINavigationBar.appearance().standardAppearance = appearance
     }
 }
 

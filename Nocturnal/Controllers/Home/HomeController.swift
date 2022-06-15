@@ -42,13 +42,14 @@ class HomeController: UIViewController {
     // MARK: - Selectors
     
     @objc func didTapShowEventButton() {
-        print("tappp")
+        let addEventVC = AddEventController()
+        navigationController?.pushViewController(addEventVC, animated: true)
     }
     
     // MARK: - Helpers
     
     private func configureCollectionViewLayout() -> UICollectionViewCompositionalLayout {
-        return UICollectionViewCompositionalLayout { sectionNumber, env in
+        return UICollectionViewCompositionalLayout { sectionNumber, environment in
             let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
             let item = NSCollectionLayoutItem(layoutSize: itemSize)
             
@@ -95,7 +96,6 @@ extension HomeController: UICollectionViewDataSource {
         eventCell.backgroundColor = .black
         return eventCell
     }
-    
     
 }
 

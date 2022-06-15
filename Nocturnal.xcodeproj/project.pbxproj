@@ -30,6 +30,15 @@
 		ED0B424B285888D6000680C2 /* UIView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0B424A285888D6000680C2 /* UIView+Ext.swift */; };
 		ED0B424D2858895A000680C2 /* UIViewController+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0B424C2858895A000680C2 /* UIViewController+Ext.swift */; };
 		ED0B424F28588A61000680C2 /* UITextField+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0B424E28588A61000680C2 /* UITextField+Ext.swift */; };
+		ED0B425228597CCC000680C2 /* AddEventController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0B425128597CCC000680C2 /* AddEventController.swift */; };
+		ED0B425828598718000680C2 /* UploadEventInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0B425728598718000680C2 /* UploadEventInfoCell.swift */; };
+		ED194CB12859DF0700C9E5D3 /* MusicSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB02859DF0700C9E5D3 /* MusicSample.swift */; };
+		EDC336172859DC4100A6A95A /* betterdays.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336112859DC3F00A6A95A /* betterdays.mp3 */; };
+		EDC336182859DC4100A6A95A /* creativeminds.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336122859DC4000A6A95A /* creativeminds.mp3 */; };
+		EDC336192859DC4100A6A95A /* dreams.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336132859DC4000A6A95A /* dreams.mp3 */; };
+		EDC3361A2859DC4100A6A95A /* relaxing.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336142859DC4000A6A95A /* relaxing.mp3 */; };
+		EDC3361B2859DC4100A6A95A /* allthat.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336152859DC4100A6A95A /* allthat.mp3 */; };
+		EDC3361C2859DC4100A6A95A /* slowmotion.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336162859DC4100A6A95A /* slowmotion.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,6 +69,15 @@
 		ED0B424A285888D6000680C2 /* UIView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Ext.swift"; sourceTree = "<group>"; };
 		ED0B424C2858895A000680C2 /* UIViewController+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Ext.swift"; sourceTree = "<group>"; };
 		ED0B424E28588A61000680C2 /* UITextField+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextField+Ext.swift"; sourceTree = "<group>"; };
+		ED0B425128597CCC000680C2 /* AddEventController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventController.swift; sourceTree = "<group>"; };
+		ED0B425728598718000680C2 /* UploadEventInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadEventInfoCell.swift; sourceTree = "<group>"; };
+		ED194CB02859DF0700C9E5D3 /* MusicSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicSample.swift; sourceTree = "<group>"; };
+		EDC336112859DC3F00A6A95A /* betterdays.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = betterdays.mp3; sourceTree = "<group>"; };
+		EDC336122859DC4000A6A95A /* creativeminds.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = creativeminds.mp3; sourceTree = "<group>"; };
+		EDC336132859DC4000A6A95A /* dreams.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = dreams.mp3; sourceTree = "<group>"; };
+		EDC336142859DC4000A6A95A /* relaxing.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = relaxing.mp3; sourceTree = "<group>"; };
+		EDC336152859DC4100A6A95A /* allthat.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = allthat.mp3; sourceTree = "<group>"; };
+		EDC336162859DC4100A6A95A /* slowmotion.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = slowmotion.mp3; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,6 +163,7 @@
 			isa = PBXGroup;
 			children = (
 				ED0B4247285887FC000680C2 /* CustomViews */,
+				ED0B4254285986DC000680C2 /* Home */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -169,6 +188,8 @@
 		ED0A4851285877F7004661BB /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				EDC336102859DC2300A6A95A /* Music Samples */,
+				ED194CB02859DF0700C9E5D3 /* MusicSample.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -177,6 +198,7 @@
 			isa = PBXGroup;
 			children = (
 				ED0A485428587A27004661BB /* HomeController.swift */,
+				ED0B425128597CCC000680C2 /* AddEventController.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -227,6 +249,27 @@
 			path = "Third party wrapper";
 			sourceTree = "<group>";
 		};
+		ED0B4254285986DC000680C2 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				ED0B425728598718000680C2 /* UploadEventInfoCell.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		EDC336102859DC2300A6A95A /* Music Samples */ = {
+			isa = PBXGroup;
+			children = (
+				EDC336152859DC4100A6A95A /* allthat.mp3 */,
+				EDC336112859DC3F00A6A95A /* betterdays.mp3 */,
+				EDC336122859DC4000A6A95A /* creativeminds.mp3 */,
+				EDC336132859DC4000A6A95A /* dreams.mp3 */,
+				EDC336142859DC4000A6A95A /* relaxing.mp3 */,
+				EDC336162859DC4100A6A95A /* slowmotion.mp3 */,
+			);
+			path = "Music Samples";
+			sourceTree = "<group>";
+		};
 		EF88E31788BB34D2544719C7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -243,6 +286,7 @@
 			buildConfigurationList = ED0A484A285873DC004661BB /* Build configuration list for PBXNativeTarget "Nocturnal" */;
 			buildPhases = (
 				2333BD50DFBFA05CDBD1F685 /* [CP] Check Pods Manifest.lock */,
+				ED0B425328597E93000680C2 /* Run Swift lint */,
 				ED0A4832285873DB004661BB /* Sources */,
 				ED0A4833285873DB004661BB /* Frameworks */,
 				ED0A4834285873DB004661BB /* Resources */,
@@ -296,8 +340,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED0A4846285873DC004661BB /* LaunchScreen.storyboard in Resources */,
+				EDC3361C2859DC4100A6A95A /* slowmotion.mp3 in Resources */,
+				EDC3361A2859DC4100A6A95A /* relaxing.mp3 in Resources */,
 				ED0A4843285873DC004661BB /* Assets.xcassets in Resources */,
+				EDC3361B2859DC4100A6A95A /* allthat.mp3 in Resources */,
 				ED0A4841285873DB004661BB /* Main.storyboard in Resources */,
+				EDC336172859DC4100A6A95A /* betterdays.mp3 in Resources */,
+				EDC336192859DC4100A6A95A /* dreams.mp3 in Resources */,
+				EDC336182859DC4100A6A95A /* creativeminds.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -343,6 +393,24 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Nocturnal/Pods-Nocturnal-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		ED0B425328597E93000680C2 /* Run Swift lint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run Swift lint";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/SwiftLint/swiftlint\"\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -352,12 +420,14 @@
 			files = (
 				ED0B424B285888D6000680C2 /* UIView+Ext.swift in Sources */,
 				ED0A485328587884004661BB /* MainTabBarController.swift in Sources */,
+				ED0B425228597CCC000680C2 /* AddEventController.swift in Sources */,
 				ED0B424028588697000680C2 /* UITableView+Ext.swift in Sources */,
 				ED0A483E285873DB004661BB /* ViewController.swift in Sources */,
 				ED0B424928588845000680C2 /* UIButton+Ext.swift in Sources */,
 				ED0A485B28587C0C004661BB /* NotificationController.swift in Sources */,
 				ED0A483A285873DB004661BB /* AppDelegate.swift in Sources */,
 				ED0A483C285873DB004661BB /* SceneDelegate.swift in Sources */,
+				ED194CB12859DF0700C9E5D3 /* MusicSample.swift in Sources */,
 				ED0B424D2858895A000680C2 /* UIViewController+Ext.swift in Sources */,
 				ED0A485D28587C28004661BB /* ProfileController.swift in Sources */,
 				ED0B424F28588A61000680C2 /* UITextField+Ext.swift in Sources */,
@@ -365,6 +435,7 @@
 				ED0B423E2858863D000680C2 /* Date+Ext.swift in Sources */,
 				ED0B424628588750000680C2 /* UIFont+Ext.swift in Sources */,
 				ED0A485928587BDE004661BB /* StatsController.swift in Sources */,
+				ED0B425828598718000680C2 /* UploadEventInfoCell.swift in Sources */,
 				ED0B4242285886D7000680C2 /* UIScrollView+Ext.swift in Sources */,
 				ED0B423C28588611000680C2 /* UIColor+Ext.swift in Sources */,
 				ED0A485528587A27004661BB /* HomeController.swift in Sources */,

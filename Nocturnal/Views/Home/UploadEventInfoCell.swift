@@ -13,11 +13,15 @@ struct AddEventUserInputCellModel {
     
     let eventAddress: String
     
+    let eventStyle: String
+    
     let eventFee: String
     
     let eventMusicString: String
     
     let eventTime: Date
+    
+    let eventDescription: String
 }
 
 protocol UploadEventInfoCellDelegate: AnyObject {
@@ -25,6 +29,8 @@ protocol UploadEventInfoCellDelegate: AnyObject {
         _ cell: UploadEventInfoCell,
         data: AddEventUserInputCellModel
     )
+    
+    func uploadEvent(cell: UploadEventInfoCell)
 }
 
 class UploadEventInfoCell: UITableViewCell {
@@ -50,6 +56,15 @@ class UploadEventInfoCell: UITableViewCell {
     }()
     
     private lazy var eventAddressTextField = UITextField().makeAddEventTextField()
+    
+    private let eventStyleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 15, weight: .medium)
+        label.text = "Event Style"
+        return label
+    }()
+    
+    private lazy var eventStyleTextField = UITextField().makeAddEventTextField()
     
     private let eventFeeLabel: UILabel = {
         let label = UILabel()
@@ -97,6 +112,24 @@ class UploadEventInfoCell: UITableViewCell {
         return picker
     }()
     
+    private let eventDescriptionLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 15, weight: .medium)
+        label.text = "Enter Event Description"
+        return label
+    }()
+    
+    private lazy var eventDescriptionTextView: UITextView = {
+       let textView = InputTextView()
+        textView.delegate = self
+        textView.font = .systemFont(ofSize: 18)
+        textView.placeholderText = "Enter Basic Description"
+        textView.layer.borderWidth = 1
+        textView.layer.borderColor = UIColor.lightGray.cgColor
+        textView.setHeight(120)
+        return textView
+    }()
+    
     lazy var doneButton: UIButton = {
         let button = UIButton()
         button.setTitle("Done", for: .normal)
@@ -117,7 +150,7 @@ class UploadEventInfoCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
+        setupTextFieldDelegates()
         setupCellUI()
     }
     
@@ -129,7 +162,7 @@ class UploadEventInfoCell: UITableViewCell {
     
     @objc func didTapDoneButton() {
       
-        passData()
+        delegate?.uploadEvent(cell: self)
     }
     
     @objc func didChangeDate(sender: UIDatePicker) {
@@ -140,13 +173,16 @@ class UploadEventInfoCell: UITableViewCell {
     
     // MARK: - Helpers
     
-    private func setupCellUI() {
-        backgroundColor = UIColor.lightBlue
+    private func setupTextFieldDelegates() {
         eventNameTextField.delegate = self
         eventAddressTextField.delegate = self
+        eventStyleTextField.delegate = self
         eventFeeTextField.delegate = self
         eventMusicTextField.delegate = self
-        
+    }
+    
+    private func setupCellUI() {
+        backgroundColor = UIColor.lightBlue
         layer.cornerRadius = 20
         layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
         
@@ -154,12 +190,17 @@ class UploadEventInfoCell: UITableViewCell {
                                                     eventNameTextField,
                                                     eventAddressLabel,
                                                     eventAddressTextField,
+                                                    eventStyleLabel,
+                                                    eventStyleTextField,
                                                     eventFeeLabel,
                                                     eventFeeTextField,
                                                     eventMusicLabel,
                                                     eventMusicTextField,
                                                     eventDateLabel,
-                                                    datePicker])
+                                                    datePicker,
+                                                    eventDescriptionLabel,
+                                                    eventDescriptionTextView
+                                                   ])
         vStack.axis = .vertical
         vStack.distribution = .fill
         vStack.spacing = 8
@@ -194,7 +235,9 @@ class UploadEventInfoCell: UITableViewCell {
         guard
             let eventName = eventNameTextField.text,
             let eventAddress = eventAddressTextField.text,
+            let eventStyle = eventStyleTextField.text,
             let eventFee = eventFeeTextField.text,
+            let eventDescription = eventDescriptionTextView.text,
             let eventMusic = selectedMusic else
         {
             return
@@ -202,9 +245,11 @@ class UploadEventInfoCell: UITableViewCell {
         
         let data = AddEventUserInputCellModel(eventName: eventName,
                                               eventAddress: eventAddress,
+                                              eventStyle: eventStyle,
                                               eventFee: eventFee,
                                               eventMusicString: eventMusic,
-                                              eventTime: selectedDate)
+                                              eventTime: selectedDate,
+                                              eventDescription: eventDescription)
         
         delegate?.didChangeUserData(self, data: data)
     }
@@ -226,15 +271,25 @@ extension UploadEventInfoCell: UITextFieldDelegate {
             eventAddressTextField.becomeFirstResponder()
         } else if textField == eventAddressTextField {
             textField.resignFirstResponder()
+            eventStyleTextField.becomeFirstResponder()
+        } else if textField == eventStyleTextField {
+            textField.resignFirstResponder()
             eventFeeTextField.becomeFirstResponder()
         } else if textField == eventFeeTextField {
             textField.resignFirstResponder()
             eventMusicTextField.becomeFirstResponder()
-        } else {
-            textField.resignFirstResponder()
         }
         
         return true
+    }
+}
+
+// MARK: - UITextViewDelegate
+
+extension UploadEventInfoCell: UITextViewDelegate {
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        passData()
     }
 }
 

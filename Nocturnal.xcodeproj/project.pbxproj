@@ -33,6 +33,12 @@
 		ED0B425228597CCC000680C2 /* AddEventController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0B425128597CCC000680C2 /* AddEventController.swift */; };
 		ED0B425828598718000680C2 /* UploadEventInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0B425728598718000680C2 /* UploadEventInfoCell.swift */; };
 		ED194CB12859DF0700C9E5D3 /* MusicSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB02859DF0700C9E5D3 /* MusicSample.swift */; };
+		ED194CB32859E46700C9E5D3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED194CB22859E46700C9E5D3 /* GoogleService-Info.plist */; };
+		ED194CB62859E5D100C9E5D3 /* EventService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB52859E5D100C9E5D3 /* EventService.swift */; };
+		ED194CB82859E62F00C9E5D3 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB72859E62F00C9E5D3 /* Event.swift */; };
+		ED194CBA2859E8F300C9E5D3 /* FirebaseReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB92859E8F300C9E5D3 /* FirebaseReference.swift */; };
+		ED194CBC2859EB7500C9E5D3 /* StorageUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CBB2859EB7500C9E5D3 /* StorageUploader.swift */; };
+		ED194CBE285A007C00C9E5D3 /* InputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CBD285A007C00C9E5D3 /* InputTextView.swift */; };
 		EDC336172859DC4100A6A95A /* betterdays.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336112859DC3F00A6A95A /* betterdays.mp3 */; };
 		EDC336182859DC4100A6A95A /* creativeminds.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336122859DC4000A6A95A /* creativeminds.mp3 */; };
 		EDC336192859DC4100A6A95A /* dreams.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336132859DC4000A6A95A /* dreams.mp3 */; };
@@ -72,6 +78,12 @@
 		ED0B425128597CCC000680C2 /* AddEventController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventController.swift; sourceTree = "<group>"; };
 		ED0B425728598718000680C2 /* UploadEventInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadEventInfoCell.swift; sourceTree = "<group>"; };
 		ED194CB02859DF0700C9E5D3 /* MusicSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicSample.swift; sourceTree = "<group>"; };
+		ED194CB22859E46700C9E5D3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		ED194CB52859E5D100C9E5D3 /* EventService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventService.swift; sourceTree = "<group>"; };
+		ED194CB72859E62F00C9E5D3 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
+		ED194CB92859E8F300C9E5D3 /* FirebaseReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseReference.swift; sourceTree = "<group>"; };
+		ED194CBB2859EB7500C9E5D3 /* StorageUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageUploader.swift; sourceTree = "<group>"; };
+		ED194CBD285A007C00C9E5D3 /* InputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextView.swift; sourceTree = "<group>"; };
 		EDC336112859DC3F00A6A95A /* betterdays.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = betterdays.mp3; sourceTree = "<group>"; };
 		EDC336122859DC4000A6A95A /* creativeminds.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = creativeminds.mp3; sourceTree = "<group>"; };
 		EDC336132859DC4000A6A95A /* dreams.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = dreams.mp3; sourceTree = "<group>"; };
@@ -122,6 +134,7 @@
 		ED0A4838285873DB004661BB /* Nocturnal */ = {
 			isa = PBXGroup;
 			children = (
+				ED194CB42859E51000C9E5D3 /* FirebaseAPI */,
 				ED0B425028588AE1000680C2 /* Third party wrapper */,
 				ED0A4851285877F7004661BB /* Resources */,
 				ED0A4850285877D0004661BB /* Extensions */,
@@ -135,6 +148,7 @@
 				ED0A4842285873DC004661BB /* Assets.xcassets */,
 				ED0A4844285873DC004661BB /* LaunchScreen.storyboard */,
 				ED0A4847285873DC004661BB /* Info.plist */,
+				ED194CB22859E46700C9E5D3 /* GoogleService-Info.plist */,
 			);
 			path = Nocturnal;
 			sourceTree = "<group>";
@@ -155,6 +169,7 @@
 		ED0A484E285877BE004661BB /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				ED194CB72859E62F00C9E5D3 /* Event.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -238,6 +253,7 @@
 		ED0B4247285887FC000680C2 /* CustomViews */ = {
 			isa = PBXGroup;
 			children = (
+				ED194CBD285A007C00C9E5D3 /* InputTextView.swift */,
 			);
 			path = CustomViews;
 			sourceTree = "<group>";
@@ -255,6 +271,16 @@
 				ED0B425728598718000680C2 /* UploadEventInfoCell.swift */,
 			);
 			path = Home;
+			sourceTree = "<group>";
+		};
+		ED194CB42859E51000C9E5D3 /* FirebaseAPI */ = {
+			isa = PBXGroup;
+			children = (
+				ED194CB52859E5D100C9E5D3 /* EventService.swift */,
+				ED194CB92859E8F300C9E5D3 /* FirebaseReference.swift */,
+				ED194CBB2859EB7500C9E5D3 /* StorageUploader.swift */,
+			);
+			path = FirebaseAPI;
 			sourceTree = "<group>";
 		};
 		EDC336102859DC2300A6A95A /* Music Samples */ = {
@@ -346,6 +372,7 @@
 				EDC3361B2859DC4100A6A95A /* allthat.mp3 in Resources */,
 				ED0A4841285873DB004661BB /* Main.storyboard in Resources */,
 				EDC336172859DC4100A6A95A /* betterdays.mp3 in Resources */,
+				ED194CB32859E46700C9E5D3 /* GoogleService-Info.plist in Resources */,
 				EDC336192859DC4100A6A95A /* dreams.mp3 in Resources */,
 				EDC336182859DC4100A6A95A /* creativeminds.mp3 in Resources */,
 			);
@@ -421,7 +448,9 @@
 				ED0B424B285888D6000680C2 /* UIView+Ext.swift in Sources */,
 				ED0A485328587884004661BB /* MainTabBarController.swift in Sources */,
 				ED0B425228597CCC000680C2 /* AddEventController.swift in Sources */,
+				ED194CB62859E5D100C9E5D3 /* EventService.swift in Sources */,
 				ED0B424028588697000680C2 /* UITableView+Ext.swift in Sources */,
+				ED194CBC2859EB7500C9E5D3 /* StorageUploader.swift in Sources */,
 				ED0A483E285873DB004661BB /* ViewController.swift in Sources */,
 				ED0B424928588845000680C2 /* UIButton+Ext.swift in Sources */,
 				ED0A485B28587C0C004661BB /* NotificationController.swift in Sources */,
@@ -431,8 +460,11 @@
 				ED0B424D2858895A000680C2 /* UIViewController+Ext.swift in Sources */,
 				ED0A485D28587C28004661BB /* ProfileController.swift in Sources */,
 				ED0B424F28588A61000680C2 /* UITextField+Ext.swift in Sources */,
+				ED194CBE285A007C00C9E5D3 /* InputTextView.swift in Sources */,
 				ED0B4244285886FC000680C2 /* UIImage+Ext.swift in Sources */,
+				ED194CBA2859E8F300C9E5D3 /* FirebaseReference.swift in Sources */,
 				ED0B423E2858863D000680C2 /* Date+Ext.swift in Sources */,
+				ED194CB82859E62F00C9E5D3 /* Event.swift in Sources */,
 				ED0B424628588750000680C2 /* UIFont+Ext.swift in Sources */,
 				ED0A485928587BDE004661BB /* StatsController.swift in Sources */,
 				ED0B425828598718000680C2 /* UploadEventInfoCell.swift in Sources */,

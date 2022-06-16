@@ -7,6 +7,8 @@ target 'Nocturnal' do
 
   pod 'FirebaseFirestore'
   pod 'FirebaseFirestoreSwift'
+  pod 'FirebaseStorage'
+  pod 'FirebaseAuth'
   pod 'JGProgressHUD'
   pod 'Kingfisher'
   pod 'SwiftLint'

@@ -8,9 +8,11 @@
 import UIKit
 import Photos
 import PhotosUI
+import FirebaseFirestore
+import SwiftUI
 
 class AddEventController: UIViewController {
-
+    
     // MARK: - Properties
     
     private var selectedEventImage: UIImage?
@@ -20,7 +22,7 @@ class AddEventController: UIViewController {
         let table = UITableView()
         table.delegate = self
         table.dataSource = self
-//        table.register(UploadEventImageCell.self, forCellReuseIdentifier: UploadEventImageCell.identifier)
+        //        table.register(UploadEventImageCell.self, forCellReuseIdentifier: UploadEventImageCell.identifier)
         table.register(UploadEventInfoCell.self, forCellReuseIdentifier: UploadEventInfoCell.identifier)
         table.tableFooterView = UIView()
         return table
@@ -40,13 +42,17 @@ class AddEventController: UIViewController {
         return imageView
     }()
     
-
+    var userInputData: AddEventUserInputCellModel?
+    
+    var eventImageURLString: String?
+    
+    var eventMusicURLString: String?
     
     // MARK: - Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setupUI()
     }
     
@@ -88,10 +94,10 @@ class AddEventController: UIViewController {
     private func setupNavigationBar() {
         title = "Add Event"
         navigationController?.navigationBar.prefersLargeTitles = true
-//        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(tappedDone))
+        //        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(tappedDone))
         navigationController?.navigationBar.tintColor = .black
-//        tableView.contentInsetAdjustmentBehavior = .never
-//        tableView.setContentOffset(.init(x: 0, y: -2), animated: false)
+        //        tableView.contentInsetAdjustmentBehavior = .never
+        //        tableView.setContentOffset(.init(x: 0, y: -2), animated: false)
     }
 }
 
@@ -103,13 +109,13 @@ extension AddEventController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
+        
         guard let infoCell = tableView.dequeueReusableCell(withIdentifier: UploadEventInfoCell.identifier) as? UploadEventInfoCell else {
             return UITableViewCell()
         }
         
         infoCell.delegate = self
-//        infoCell.backgroundColor = .red
+        //        infoCell.backgroundColor = .red
         return infoCell
     }
 }
@@ -117,9 +123,13 @@ extension AddEventController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension AddEventController: UITableViewDelegate {
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.row == 0 {
-            return 500
+            return 750
         } else {
             return 100
         }
@@ -141,21 +151,68 @@ extension AddEventController: UIImagePickerControllerDelegate, UINavigationContr
 extension AddEventController: UploadEventInfoCellDelegate {
     
     func didChangeUserData(_ cell: UploadEventInfoCell, data: AddEventUserInputCellModel) {
-        guard !data.eventName.isEmpty,
-              !data.eventAddress.isEmpty,
-              !data.eventFee.isEmpty,
-              !data.eventMusicString.isEmpty,
-              !data.eventTime.description.isEmpty,
-              selectedEventImage != nil
+        self.userInputData = data
+        
+        // update button to be enable
+        cell.doneButton.isEnabled = true
+        
+        // upload data to firebase and pop this VC
+        
+    }
+    
+    func uploadEvent(cell: UploadEventInfoCell) {
+        
+        guard let userInputData = userInputData else { return }
+        
+        guard !userInputData.eventName.isEmpty,
+              !userInputData.eventAddress.isEmpty,
+              !userInputData.eventFee.isEmpty,
+              !userInputData.eventMusicString.isEmpty,
+              !userInputData.eventTime.description.isEmpty,
+              !userInputData.eventDescription.isEmpty,
+              let selectedEventImage = selectedEventImage
         else {
             print("incomplete input data")
             return
         }
         
-        // update button to be enable
-        cell.doneButton.isEnabled = true
-        // upload data to firebase and pop this VC
-        print("selected result \(data)")
+        guard let musicUrl = Bundle.main.url(forResource: userInputData.eventMusicString, withExtension: "mp3") else {
+            print("musicUrl nil")
+            return
+        }
+        guard let musicUrlData = try? Data(contentsOf: musicUrl) else {
+            print("musicUrlData nil")
+            return
+        }
+        
+        StorageUploader.shared.uploadEventImage(with: selectedEventImage) { downloadedImageURL in
+            
+            StorageUploader.shared.uploadEventMusic(with: musicUrlData) { downloadedMusicURL in
+               
+                let fakeHostID = UUID().uuidString
+                let fakeLocation = GeoPoint(latitude: 0.18918, longitude: 0.94185)
+                
+                let newEvent = Event(title: userInputData.eventName,
+                                     hostID: fakeHostID,
+                                     description: userInputData.eventDescription,
+                                     startingDate: Timestamp(date: userInputData.eventTime),
+                                     destinationLocation: fakeLocation,
+                                     fee: Double(userInputData.eventFee) ?? 0,
+                                     style: userInputData.eventStyle,
+                                     eventImageURL: downloadedImageURL,
+                                     eventMusicURL: downloadedMusicURL,
+                                     participants: [])
+
+                EventService.shared.postNewEvent(event: newEvent) { error in
+                    print("start uploading event")
+                    guard error == nil else {
+                        print("Fail to upload event \(String(describing: error))")
+                        return
+                    }
+
+                    print("Scussfully uploaded event")
+                }
+            }
+        }
     }
-    
 }

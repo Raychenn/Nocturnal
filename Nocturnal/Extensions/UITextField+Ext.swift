@@ -27,10 +27,20 @@ extension UITextField {
          field.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [ .foregroundColor: UIColor.lightGray ])
         field.borderStyle = .none
         field.font = UIFont.systemFont(ofSize: 16)
-        field.textColor = .white
+        field.textColor = .black
         field.keyboardAppearance = .dark
         field.isSecureTextEntry = isSecureTextEntry
         
         return field
+    }
+    
+    func makeAddEventTextField() -> UITextField {
+        let textfield = UITextField()
+         textfield.layer.borderWidth = 1.3
+         textfield.layer.borderColor = UIColor.lightGray.cgColor
+         textfield.layer.cornerRadius = 5
+         textfield.setHeight(50)
+         textfield.setLeftPaddingPoints(amount: 8)
+         return textfield
     }
 }

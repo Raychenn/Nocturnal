@@ -11,7 +11,6 @@ class MainTabBarController: UITabBarController {
 
     // MARK: - Properties
     
-    
     // MARK: - Life Cycle
     
     override func viewDidLoad() {
@@ -19,6 +18,7 @@ class MainTabBarController: UITabBarController {
 
         configureViewControllers()
         configureTabBarStyle()
+        configureNavigationBarUI()
     }
     
     // MARK: - helpers
@@ -28,16 +28,14 @@ class MainTabBarController: UITabBarController {
         appearance.configureWithDefaultBackground()
         appearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterialDark)
         tabBar.scrollEdgeAppearance = appearance
+        tabBar.standardAppearance = appearance
     }
     
-    func configureViewControllers(){
+    func configureViewControllers() {
         // conform to delegate
         self.delegate = self
         
         view.backgroundColor = .white
-        //if init a collection view, we need to init it with a layout
-//        let layout = UICollectionViewFlowLayout()
-        
         let home = templateNavigationViewController(unselectedImage: UIImage(systemName: "house")!, selectedImage: UIImage(systemName: "house.fill")!, rootViewController: HomeController())
         
         let explore = templateNavigationViewController(unselectedImage: UIImage(systemName: "magnifyingglass")!, selectedImage: UIImage(systemName: "magnifyingglass")!, rootViewController: ExploreController())
@@ -54,13 +52,21 @@ class MainTabBarController: UITabBarController {
         tabBar.isTranslucent = false
     }
     
-    func templateNavigationViewController(unselectedImage: UIImage, selectedImage: UIImage, rootViewController: UIViewController) -> UINavigationController{
+    func templateNavigationViewController(unselectedImage: UIImage, selectedImage: UIImage, rootViewController: UIViewController) -> UINavigationController {
         
         let nav = UINavigationController(rootViewController: rootViewController)
         nav.tabBarItem.image = unselectedImage
         nav.tabBarItem.selectedImage = selectedImage
         nav.navigationBar.tintColor = .black
         return nav
+    }
+    
+    func configureNavigationBarUI() {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithDefaultBackground()
+        
+        UINavigationBar.appearance().scrollEdgeAppearance = appearance
+        UINavigationBar.appearance().standardAppearance = appearance
     }
 }
 

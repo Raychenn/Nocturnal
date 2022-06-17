@@ -20,7 +20,7 @@ class HomeController: UIViewController {
     }()
     
     private lazy var addEventButton: UIButton = {
-       let button = UIButton()
+        let button = UIButton()
         button.setDimensions(height: 60, width: 60)
         button.setImage(UIImage(systemName: "plus")?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.tintColor = .white
@@ -31,12 +31,34 @@ class HomeController: UIViewController {
     
     let cellHeight: CGFloat = 100
     
+    var events: [Event] = []
+    
     // MARK: - Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setupUI()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // fetch all events from firestore
+        fetchAllEvents()
+    }
+    
+    // MARK: - API
+    
+    private func fetchAllEvents() {
+        EventService.shared.fetchAllEvents { [weak self] result in
+            switch result {
+            case .success(let events):
+                self?.events = events
+                self?.collectionView.reloadData()
+            case .failure(let error):
+                print("error fetching all events \(error)")
+            }
+        }
     }
     
     // MARK: - Selectors
@@ -49,7 +71,7 @@ class HomeController: UIViewController {
     // MARK: - Helpers
     
     private func configureCollectionViewLayout() -> UICollectionViewCompositionalLayout {
-        return UICollectionViewCompositionalLayout { sectionNumber, environment in
+        return UICollectionViewCompositionalLayout { _, _ in
             let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
             let item = NSCollectionLayoutItem(layoutSize: itemSize)
             
@@ -61,7 +83,7 @@ class HomeController: UIViewController {
             let hGorup = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
             let section = NSCollectionLayoutSection(group: hGorup)
             
-    //        section.contentInsetsReference = .none
+            //        section.contentInsetsReference = .none
             return section
         }
     }
@@ -88,19 +110,26 @@ class HomeController: UIViewController {
 extension HomeController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        5
+        
+        return events.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
         let eventCell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
         eventCell.backgroundColor = .black
         return eventCell
     }
-    
 }
 
 // MARK: -
 
 extension HomeController: UICollectionViewDelegate {
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let selectedEvent = events[indexPath.item]
+        let detailVC = EventDetailController(event: selectedEvent)
+        self.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
 }

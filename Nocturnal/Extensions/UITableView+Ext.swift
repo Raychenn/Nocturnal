@@ -15,10 +15,10 @@ extension UITableViewCell {
     
 }
 
-extension UITableViewHeaderFooterView {
-    
-    static var identifier: String {
-        
-        return String(describing: self)
-    }
-}
+//extension UITableViewHeaderFooterView {
+//    
+//    static var identifier: String {
+//        
+//        return String(describing: self)
+//    }
+//}

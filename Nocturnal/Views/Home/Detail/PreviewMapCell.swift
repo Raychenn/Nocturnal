@@ -1,0 +1,43 @@
+//
+//  PreviewMapCell.swift
+//  Nocturnal
+//
+//  Created by Boray Chen on 2022/6/16.
+//
+
+import UIKit
+import MapKit
+
+protocol PreviewMapCellDelegate: AnyObject {
+    func handleShowFullMap(cell: PreviewMapCell)
+}
+
+class PreviewMapCell: UITableViewCell {
+
+    weak var delegate: PreviewMapCellDelegate?
+    
+    private lazy var mapView: MKMapView = {
+       let view = MKMapView()
+        view.isScrollEnabled = false
+        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapSmallMap))
+        view.addGestureRecognizer(tap)
+        return view
+    }()
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        contentView.addSubview(mapView)
+        mapView.fillSuperview()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Selectors
+    
+    @objc func didTapSmallMap() {
+        delegate?.handleShowFullMap(cell: self)
+    }
+}

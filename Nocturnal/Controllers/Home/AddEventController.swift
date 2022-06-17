@@ -10,6 +10,7 @@ import Photos
 import PhotosUI
 import FirebaseFirestore
 import SwiftUI
+import CoreLocation
 
 class AddEventController: UIViewController {
     
@@ -156,8 +157,6 @@ extension AddEventController: UploadEventInfoCellDelegate {
         // update button to be enable
         cell.doneButton.isEnabled = true
         
-        // upload data to firebase and pop this VC
-        
     }
     
     func uploadEvent(cell: UploadEventInfoCell) {
@@ -184,33 +183,49 @@ extension AddEventController: UploadEventInfoCellDelegate {
             print("musicUrlData nil")
             return
         }
-        
-        StorageUploader.shared.uploadEventImage(with: selectedEventImage) { downloadedImageURL in
+        let fakeHostID = UUID().uuidString
+        print("event address \(userInputData.eventAddress)")
+        let geoCoder = CLGeocoder()
+        geoCoder.geocodeAddressString(userInputData.eventAddress) { (placemarks, error) in
+            print("geo coding")
+            if let error = error {
+                print("error converting address \(error)")
+                return
+            }
+            guard let placemarks = placemarks, let location = placemarks[0].location else {
+                // handle no location found
+                print("Present Alert to show no location found")
+                return
+            }
             
-            StorageUploader.shared.uploadEventMusic(with: musicUrlData) { downloadedMusicURL in
-               
-                let fakeHostID = UUID().uuidString
-                let fakeLocation = GeoPoint(latitude: 0.18918, longitude: 0.94185)
+            // get location
+            let fakeLocation = GeoPoint(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
+            print("new GeoPoint \(fakeLocation)")
+            StorageUploader.shared.uploadEventImage(with: selectedEventImage) { downloadedImageURL in
                 
-                let newEvent = Event(title: userInputData.eventName,
-                                     hostID: fakeHostID,
-                                     description: userInputData.eventDescription,
-                                     startingDate: Timestamp(date: userInputData.eventTime),
-                                     destinationLocation: fakeLocation,
-                                     fee: Double(userInputData.eventFee) ?? 0,
-                                     style: userInputData.eventStyle,
-                                     eventImageURL: downloadedImageURL,
-                                     eventMusicURL: downloadedMusicURL,
-                                     participants: [])
-
-                EventService.shared.postNewEvent(event: newEvent) { error in
-                    print("start uploading event")
-                    guard error == nil else {
-                        print("Fail to upload event \(String(describing: error))")
-                        return
+                StorageUploader.shared.uploadEventMusic(with: musicUrlData) { downloadedMusicURL in
+                    
+                    let newEvent = Event(title: userInputData.eventName,
+                                         hostID: fakeHostID,
+                                         description: userInputData.eventDescription,
+                                         startingDate: Timestamp(date: userInputData.eventTime),
+                                         destinationLocation: fakeLocation,
+                                         fee: Double(userInputData.eventFee) ?? 0,
+                                         style: userInputData.eventStyle,
+                                         eventImageURL: downloadedImageURL,
+                                         eventMusicURL: downloadedMusicURL,
+                                         participants: [])
+                    
+                    EventService.shared.postNewEvent(event: newEvent) { [weak self] error in
+                        print("start uploading event")
+                        guard error == nil else {
+                            print("Fail to upload event \(String(describing: error))")
+                            return
+                        }
+                        
+                        print("Scussfully uploaded event")
+                        self?.navigationController?.popViewController(animated: true)
                     }
-
-                    print("Scussfully uploaded event")
                 }
             }
         }

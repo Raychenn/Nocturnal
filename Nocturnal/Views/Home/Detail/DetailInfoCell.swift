@@ -11,9 +11,17 @@ import CoreLocation
 import Contacts
 import MapKit
 
+protocol DetailInfoCellDelegate: AnyObject {
+    func playMusic(cell: DetailInfoCell, musicURL: String)
+}
+
 class DetailInfoCell: UITableViewCell {
     
     // MARK: - Properties
+    weak var delegate: DetailInfoCellDelegate?
+    
+    var event: Event?
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 30, weight: .medium)
@@ -174,7 +182,8 @@ class DetailInfoCell: UITableViewCell {
     }
     
     @objc func didPlayMusicButton() {
-        print("play music")
+        guard let event = event else { return }
+        delegate?.playMusic(cell: self, musicURL: event.eventMusicURL)
     }
     
     @objc func didTapUserProfile() {
@@ -184,6 +193,7 @@ class DetailInfoCell: UITableViewCell {
     // MARK: - Heleprs
 
     func configureCell(with event: Event) {
+        self.event = event
         titleLabel.text = event.title
         let formattedDateString = Date.dateFormatter.string(from: event.startingDate.dateValue())
         dateLabel.text = "\(formattedDateString)"

@@ -14,6 +14,18 @@ protocol PreviewMapCellDelegate: AnyObject {
 
 class PreviewMapCell: UITableViewCell {
 
+    // MARK: - Properties
+    
+    var event: Event? {
+        didSet {
+            guard let event = event else { return }
+            let annotation = MKPointAnnotation()
+            let coordinate = CLLocationCoordinate2D(latitude: event.destinationLocation.latitude, longitude: event.destinationLocation.longitude)
+            annotation.coordinate = CLLocationCoordinate2D(latitude: coordinate.latitude, longitude: coordinate.longitude)
+            mapView.addAnnotation(annotation)
+        }
+    }
+    
     weak var delegate: PreviewMapCellDelegate?
     
     private lazy var mapView: MKMapView = {
@@ -24,6 +36,8 @@ class PreviewMapCell: UITableViewCell {
         return view
     }()
     
+    // MARK: - Life Cycle
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -33,6 +47,12 @@ class PreviewMapCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Helpers
+    
+    func configureCell(with event: Event) {
+        
     }
     
     // MARK: - Selectors

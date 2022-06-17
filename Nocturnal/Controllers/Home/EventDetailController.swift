@@ -6,6 +6,9 @@
 //
 
 import UIKit
+import AVFoundation
+
+var player: AVPlayer?
 
 class EventDetailController: UIViewController {
 
@@ -91,6 +94,19 @@ class EventDetailController: UIViewController {
         backButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingTop: 8, paddingLeft: 8)
     }
     
+    func playSound(url: URL) {
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+            let playerItem = AVPlayerItem(url: url)
+            player = AVPlayer(playerItem: playerItem)
+            guard let player = player else { return }
+            player.play()
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
+    
     // MARK: - Selectors
     @objc func didTapJoinButton() {
         print("send application reqeust notification to host")
@@ -118,9 +134,11 @@ extension EventDetailController: UITableViewDataSource {
         switch indexPath.row {
         case 0:
             infoCell.configureCell(with: event)
+            infoCell.delegate = self
             return infoCell
         case 1:
             mapCell.delegate = self
+            mapCell.event = event
             return mapCell
         case 2:
             descriptionCell.configureCell(with: event)
@@ -159,12 +177,25 @@ extension EventDetailController: PreviewMapCellDelegate {
         navigationController?.pushViewController(fullMapVC, animated: true)
     }
 }
-
+// MARK: - UIScrollViewDelegate
 extension EventDetailController: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard let header = tableView.tableHeaderView as? StretchyTableHeaderView else { return }
         
         header.scrollViewDidScroll(scrollView: scrollView)
+    }
+}
+// MARK: -
+extension EventDetailController: DetailInfoCellDelegate {
+    
+    func playMusic(cell: DetailInfoCell, musicURL: String) {
+            
+//        guard let url = URL(string: musicURL) else { return }
+                
+        let musicPlayerVC = MusicPlayerController(event: event)
+        present(musicPlayerVC, animated: true)
+        
+//        playSound(url: url)
     }
 }

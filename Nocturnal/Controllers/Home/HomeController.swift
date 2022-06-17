@@ -129,7 +129,7 @@ extension HomeController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedEvent = events[indexPath.item]
         let detailVC = EventDetailController(event: selectedEvent)
-        self.hidesBottomBarWhenPushed = true
+        detailVC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(detailVC, animated: true)
     }
 }

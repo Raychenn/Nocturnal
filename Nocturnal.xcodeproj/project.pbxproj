@@ -48,6 +48,7 @@
 		ED847A06285C6EBA00F33C7F /* MediaPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED847A05285C6EBA00F33C7F /* MediaPlayerView.swift */; };
 		ED847A08285C711200F33C7F /* MediaPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED847A07285C711200F33C7F /* MediaPlayerController.swift */; };
 		ED847A0A285C764000F33C7F /* MKMapView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED847A09285C764000F33C7F /* MKMapView+Ext.swift */; };
+		ED847A0D285C7C7D00F33C7F /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED847A0C285C7C7D00F33C7F /* LocationManager.swift */; };
 		EDC336172859DC4100A6A95A /* betterdays.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336112859DC3F00A6A95A /* betterdays.mp3 */; };
 		EDC336182859DC4100A6A95A /* creativeminds.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336122859DC4000A6A95A /* creativeminds.mp3 */; };
 		EDC336192859DC4100A6A95A /* dreams.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336132859DC4000A6A95A /* dreams.mp3 */; };
@@ -105,6 +106,7 @@
 		ED847A05285C6EBA00F33C7F /* MediaPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPlayerView.swift; sourceTree = "<group>"; };
 		ED847A07285C711200F33C7F /* MediaPlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPlayerController.swift; sourceTree = "<group>"; };
 		ED847A09285C764000F33C7F /* MKMapView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MKMapView+Ext.swift"; sourceTree = "<group>"; };
+		ED847A0C285C7C7D00F33C7F /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		EDC336112859DC3F00A6A95A /* betterdays.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = betterdays.mp3; sourceTree = "<group>"; };
 		EDC336122859DC4000A6A95A /* creativeminds.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = creativeminds.mp3; sourceTree = "<group>"; };
 		EDC336132859DC4000A6A95A /* dreams.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = dreams.mp3; sourceTree = "<group>"; };
@@ -158,6 +160,7 @@
 		ED0A4838285873DB004661BB /* Nocturnal */ = {
 			isa = PBXGroup;
 			children = (
+				ED847A0B285C7C4500F33C7F /* Managers */,
 				ED194CB42859E51000C9E5D3 /* FirebaseAPI */,
 				ED0B425028588AE1000680C2 /* Third party wrapper */,
 				ED0A4851285877F7004661BB /* Resources */,
@@ -314,6 +317,14 @@
 				ED194CBB2859EB7500C9E5D3 /* StorageUploader.swift */,
 			);
 			path = FirebaseAPI;
+			sourceTree = "<group>";
+		};
+		ED847A0B285C7C4500F33C7F /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				ED847A0C285C7C7D00F33C7F /* LocationManager.swift */,
+			);
+			path = Managers;
 			sourceTree = "<group>";
 		};
 		EDC336102859DC2300A6A95A /* Music Samples */ = {
@@ -501,6 +512,7 @@
 				ED194CBC2859EB7500C9E5D3 /* StorageUploader.swift in Sources */,
 				ED0A483E285873DB004661BB /* ViewController.swift in Sources */,
 				ED83392C285AD57600236814 /* DetailHeader.swift in Sources */,
+				ED847A0D285C7C7D00F33C7F /* LocationManager.swift in Sources */,
 				ED0B424928588845000680C2 /* UIButton+Ext.swift in Sources */,
 				ED0A485B28587C0C004661BB /* NotificationController.swift in Sources */,
 				ED0A483A285873DB004661BB /* AppDelegate.swift in Sources */,

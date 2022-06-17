@@ -7,6 +7,7 @@
 
 import UIKit
 import AVFoundation
+import CoreLocation
 
 var player: AVPlayer?
 
@@ -172,7 +173,10 @@ extension EventDetailController: UITableViewDelegate {
 extension EventDetailController: PreviewMapCellDelegate {
     
     func handleShowFullMap(cell: PreviewMapCell) {
-        let fullMapVC = FullMapController()
+        
+        let coordinate = CLLocationCoordinate2D(latitude: event.destinationLocation.latitude,
+                                                longitude: event.destinationLocation.longitude)
+        let fullMapVC = FullMapController(coodinate: coordinate)
         
         navigationController?.pushViewController(fullMapVC, animated: true)
     }
@@ -190,12 +194,7 @@ extension EventDetailController: UIScrollViewDelegate {
 extension EventDetailController: DetailInfoCellDelegate {
     
     func playMusic(cell: DetailInfoCell, musicURL: String) {
-            
-//        guard let url = URL(string: musicURL) else { return }
-                
         let musicPlayerVC = MusicPlayerController(event: event)
         present(musicPlayerVC, animated: true)
-        
-//        playSound(url: url)
     }
 }

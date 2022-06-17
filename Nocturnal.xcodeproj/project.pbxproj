@@ -47,6 +47,7 @@
 		ED847A04285B870500F33C7F /* StretchyTableHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED847A03285B870500F33C7F /* StretchyTableHeaderView.swift */; };
 		ED847A06285C6EBA00F33C7F /* MediaPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED847A05285C6EBA00F33C7F /* MediaPlayerView.swift */; };
 		ED847A08285C711200F33C7F /* MediaPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED847A07285C711200F33C7F /* MediaPlayerController.swift */; };
+		ED847A0A285C764000F33C7F /* MKMapView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED847A09285C764000F33C7F /* MKMapView+Ext.swift */; };
 		EDC336172859DC4100A6A95A /* betterdays.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336112859DC3F00A6A95A /* betterdays.mp3 */; };
 		EDC336182859DC4100A6A95A /* creativeminds.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336122859DC4000A6A95A /* creativeminds.mp3 */; };
 		EDC336192859DC4100A6A95A /* dreams.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336132859DC4000A6A95A /* dreams.mp3 */; };
@@ -103,6 +104,7 @@
 		ED847A03285B870500F33C7F /* StretchyTableHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StretchyTableHeaderView.swift; sourceTree = "<group>"; };
 		ED847A05285C6EBA00F33C7F /* MediaPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPlayerView.swift; sourceTree = "<group>"; };
 		ED847A07285C711200F33C7F /* MediaPlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPlayerController.swift; sourceTree = "<group>"; };
+		ED847A09285C764000F33C7F /* MKMapView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MKMapView+Ext.swift"; sourceTree = "<group>"; };
 		EDC336112859DC3F00A6A95A /* betterdays.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = betterdays.mp3; sourceTree = "<group>"; };
 		EDC336122859DC4000A6A95A /* creativeminds.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = creativeminds.mp3; sourceTree = "<group>"; };
 		EDC336132859DC4000A6A95A /* dreams.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = dreams.mp3; sourceTree = "<group>"; };
@@ -220,6 +222,7 @@
 				ED0B424C2858895A000680C2 /* UIViewController+Ext.swift */,
 				ED0B424E28588A61000680C2 /* UITextField+Ext.swift */,
 				ED847A01285B7FCA00F33C7F /* MKPlacemark+Ext.swift */,
+				ED847A09285C764000F33C7F /* MKMapView+Ext.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -501,6 +504,7 @@
 				ED0B424928588845000680C2 /* UIButton+Ext.swift in Sources */,
 				ED0A485B28587C0C004661BB /* NotificationController.swift in Sources */,
 				ED0A483A285873DB004661BB /* AppDelegate.swift in Sources */,
+				ED847A0A285C764000F33C7F /* MKMapView+Ext.swift in Sources */,
 				ED847A04285B870500F33C7F /* StretchyTableHeaderView.swift in Sources */,
 				ED0A483C285873DB004661BB /* SceneDelegate.swift in Sources */,
 				ED194CB12859DF0700C9E5D3 /* MusicSample.swift in Sources */,

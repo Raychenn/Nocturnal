@@ -23,6 +23,7 @@ class PreviewMapCell: UITableViewCell {
             let coordinate = CLLocationCoordinate2D(latitude: event.destinationLocation.latitude, longitude: event.destinationLocation.longitude)
             annotation.coordinate = CLLocationCoordinate2D(latitude: coordinate.latitude, longitude: coordinate.longitude)
             mapView.addAnnotation(annotation)
+            mapView.zoomToFit(annotations: [annotation])
         }
     }
     

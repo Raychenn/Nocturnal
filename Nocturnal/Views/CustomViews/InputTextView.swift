@@ -26,10 +26,8 @@ class InputTextView: UITextView {
     var placeholderShouldCenter = true {
         didSet {
             if placeholderShouldCenter {
-                //used in commentInputAccesoryView
                 placeholderLabel.centerY(inView: self, leftAnchor: leftAnchor, paddingLeft: 8)
-            }else{
-                //used in upload text view
+            } else {
                 placeholderLabel.anchor(top: topAnchor, left: leftAnchor, paddingTop: 6, paddingLeft: 8)
             }
         }
@@ -51,9 +49,6 @@ class InputTextView: UITextView {
     // MARK: - selector
     
     @objc func handleTextDidChange() {
-        //when this TextView's text changed, we hide the placeholder label
         placeholderLabel.isHidden = !text.isEmpty
     }
-    
 }
-

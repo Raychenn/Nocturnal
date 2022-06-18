@@ -46,7 +46,7 @@ struct StorageUploader {
         let metadata = StorageMetadata()
          metadata.contentType = "audio/mpeg"
         
-        ref.putData(musicData, metadata: metadata) { metadata, error in
+        ref.putData(musicData, metadata: metadata) { _, error in
             guard error == nil else {
                 print("Fail to upload music \(String(describing: error))")
                 return
@@ -61,6 +61,32 @@ struct StorageUploader {
                 guard let musicUrl = url?.absoluteString else { return }
                 
                 completion(musicUrl)
+            }
+        }
+    }
+    
+    func uploadProfileImage(with image: UIImage, completion: @escaping (String) -> Void) {
+        
+        guard let imageData = image.jpegData(compressionQuality: 0.75) else { return }
+        let fileName = UUID().uuidString
+        
+        let ref = Storage.storage().reference(withPath: "profile_images/\(fileName)")
+        
+        ref.putData(imageData, metadata: nil) { _, error in
+            if let error = error {
+                print("fail to upload image: \(error.localizedDescription)")
+                return
+            }
+            
+            ref.downloadURL { url, error in
+                guard error == nil else {
+                    print("error downloading images")
+                    return
+                }
+                
+                guard let imageUrl = url?.absoluteString else { return }
+                
+                completion(imageUrl)
             }
         }
     }

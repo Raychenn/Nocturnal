@@ -1,0 +1,29 @@
+//
+//  User.swift
+//  Nocturnal
+//
+//  Created by Boray Chen on 2022/6/18.
+//
+
+import Foundation
+import FirebaseFirestoreSwift
+import FirebaseFirestore
+
+enum Gender: Int, Codable {
+    case male = 0
+    case female
+    case unspecified
+}
+
+struct User: Codable {
+    @DocumentID var id: String?
+    let name: String
+    let email: String
+    let profileImageURL: String
+    let birthday: Timestamp
+    let gender: Int
+    let numberOfHostedEvents: Int
+    let bio: String
+    let joinedEventsId: [String]
+    let blockedUsersId: [String]
+}

@@ -110,7 +110,15 @@ class EventDetailController: UIViewController {
     
     // MARK: - Selectors
     @objc func didTapJoinButton() {
-        print("send application reqeust notification to host")
+        
+        UserService.shared.fetchUser(uid: uid) { result in
+            switch result {
+            case .success(let user):
+                print("Current User \(user)")
+            case .failure(let error):
+                print("Fail to get user \(error)")
+            }
+        }
     }
     
     @objc func didTapBackButton() {

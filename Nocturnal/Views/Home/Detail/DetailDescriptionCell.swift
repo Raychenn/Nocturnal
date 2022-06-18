@@ -42,7 +42,14 @@ class DetailDescriptionCell: UITableViewCell {
         descriptionTitleLabel.anchor(top: contentView.topAnchor, left: contentView.leftAnchor, paddingTop: 8, paddingLeft: 8)
         
         contentView.addSubview(decriptionContentLabel)
-        decriptionContentLabel.anchor(top: descriptionTitleLabel.bottomAnchor, left: contentView.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 8, paddingLeft: 8, paddingBottom: 8 ,paddingRight: 8)
+        decriptionContentLabel.anchor(top: descriptionTitleLabel.bottomAnchor,
+                                      left: contentView.leftAnchor,
+                                      bottom: contentView.bottomAnchor,
+                                      right: contentView.rightAnchor,
+                                      paddingTop: 8,
+                                      paddingLeft: 8,
+                                      paddingBottom: 8,
+                                      paddingRight: 8)
     }
     
     func configureCell(with event: Event) {

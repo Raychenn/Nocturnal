@@ -6,23 +6,191 @@
 //
 
 import UIKit
+import FirebaseFirestore
 
-class NotificationController: UIViewController {
+class NotificationController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+    // MARK: - Properties
+    
+    private lazy var tableView: UITableView = {
+        let table = UITableView()
+        table.register(NotificationCell.self, forCellReuseIdentifier: NotificationCell.identifier)
+        return table
+    }()
+    
+    var hosts: [User] = [] {
+        didSet {
+            tableView.reloadData()
+        }
     }
     
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    var applicants: [User] = [] {
+        didSet {
+            tableView.reloadData()
+        }
     }
-    */
+    
+    var notifications: [Notification] = []
 
+    // MARK: - Life Cyle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        print("uid \(uid)")
+        fetchNotifications()
+        setupUI()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
+    // MARK: - API
+    
+    private func fetchHosts(uids: [String]) {
+        UserService.shared.fetchUsers(uids: uids) { result in
+            switch result {
+            case .success(let users):
+                self.hosts = users
+                print("hosts \(self.hosts)")
+            case .failure(let error):
+                print("Fail to fetch hosts \(error)")
+            }
+        }
+    }
+    
+    private func fetchApplicants(uids: [String]) {
+        UserService.shared.fetchUsers(uids: uids) { result in
+            switch result {
+            case .success(let users):
+                self.applicants = users
+                print("applicants \(users)")
+            case .failure(let error):
+                print("Fail to fetch applicants \(error)")
+            }
+        }
+    }
+    
+    private func fetchNotifications() {
+        NotificationService.shared.fetchNotifications(uid: uid) { result in
+            switch result {
+            case .success(let notifications):
+                print("got notifications \(notifications)")
+                
+                self.notifications = self.getFilteredNotifications(notifications: notifications)
+                self.fetchHostsAndApplicants()
+            case .failure(let error):
+                print("Fail to get notification \(error)")
+            }
+        }
+    }
+    
+    private func fetchHostsAndApplicants() {
+        var applicantsId: [String] = []
+        notifications.forEach({ applicantsId.append($0.applicantId) })
+        var hostsId: [String] = []
+        notifications.forEach({ hostsId.append($0.hostId) })
+        
+        self.notifications.forEach { notification in
+            let type = NotificationType(rawValue: notification.type)
+            if type == .joinEventRequest {
+                fetchApplicants(uids: applicantsId)
+            } else {
+                // fetch hosts
+                fetchHosts(uids: hostsId)
+            }
+        }
+    }
+    
+   // MARK: - Helpers
+    
+    private func setupUI() {
+        tableView.dataSource = self
+        tableView.delegate = self
+        view.backgroundColor = .white
+        view.addSubview(tableView)
+        tableView.fillSuperview()
+    }
+    
+    private func getFilteredNotifications(notifications: [Notification]) -> [Notification] {
+      let result = notifications.filter { notification in
+            let type = NotificationType(rawValue: notification.type)
+            
+          return notification.applicantId != uid || type == .successJoinedEventResponse || type == .failureJoinedEventResponse
+        }
+        return result
+    }
+    
+    // MARK: - UITableViewDataSource
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return notifications.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let notificationCell = tableView.dequeueReusableCell(withIdentifier: NotificationCell.identifier, for: indexPath) as? NotificationCell else { return UITableViewCell() }
+
+        let notification = notifications[indexPath.row]
+        let applicant = applicants[indexPath.row]
+//        let host = hosts[indexPath.row]
+        let type = NotificationType(rawValue: notification.type)
+        if type == .joinEventRequest {
+            // 別的applicant送通知's cell
+            notificationCell.configueCell(with: notification, user: applicant)
+            notificationCell.delegate = self
+        } else {
+            // 收到host 回傳通知's cell
+//            notificationCell.configueCell(with: notification, user: host)
+        }
+        
+        return notificationCell
+    }
+}
+
+// MARK: - NotificationCellDelegate
+
+extension NotificationController: NotificationCellDelegate {
+    
+    func cell(_ cell: NotificationCell, wantsToAccept uid: String) {
+        let selectedIndexPath = tableView.indexPath(for: cell) ?? IndexPath()
+        let selectedNotification = notifications[selectedIndexPath.row]
+        let type = NotificationType.successJoinedEventResponse.rawValue
+        
+        let notification = Notification(applicantId: uid ,
+                                        eventId: selectedNotification.eventId,
+                                        hostId: selectedNotification.hostId,
+                                        sentTime: Timestamp(date: Date()),
+                                        type: type, isRequestPermitted: true)
+        
+        NotificationService.shared.postAceeptedNotification(to: selectedNotification.applicantId ,
+                                                          notification: notification) { error in
+            guard error == nil else {
+                print("Fail to postAcceptNotification \(String(describing: error))")
+                return
+            }
+            
+            print("Succesfully postAcceptNotification")
+        }
+    }
+    
+    func cell(_ cell: NotificationCell, wantsToDeny uid: String) {
+        let selectedIndexPath = tableView.indexPath(for: cell) ?? IndexPath()
+        let selectedNotification = notifications[selectedIndexPath.row]
+        let type = NotificationType.failureJoinedEventResponse.rawValue
+
+        let notification = Notification(applicantId: uid ,
+                                        eventId: selectedNotification.eventId,
+                                        hostId: selectedNotification.hostId,
+                                        sentTime: Timestamp(date: Date()),
+                                        type: type, isRequestPermitted: false)
+
+        NotificationService.shared.postDeniedNotification(to: selectedNotification.applicantId, notification: notification) { error in
+            guard error == nil else {
+                print("Fail to postDeyNotification \(String(describing: error))")
+                return
+            }
+            
+            print("Succesfully postDeyNotification")
+        }
+    }
 }

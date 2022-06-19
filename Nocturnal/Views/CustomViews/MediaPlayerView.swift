@@ -22,13 +22,13 @@ class MediaPlayerView: UIView {
     }()
     
     private lazy var albumCoverImageView: UIImageView = {
-        let iv = UIImageView()
-        iv.translatesAutoresizingMaskIntoConstraints = false
-        iv.contentMode = .scaleAspectFill
-        iv.clipsToBounds = true
-        iv.layer.cornerRadius = 100
-        iv.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMaxYCorner]
-        return iv
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 100
+        imageView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMaxYCorner]
+        return imageView
     }()
     
     private lazy var progressBarSlider: UISlider = {
@@ -78,7 +78,7 @@ class MediaPlayerView: UIView {
         button.translatesAutoresizingMaskIntoConstraints = false
         let config = UIImage.SymbolConfiguration(pointSize: 40)
         button.setImage(UIImage(systemName: "play.circle.fill", withConfiguration: config), for: .normal)
-        button.addTarget(self, action: #selector(didTapPlayPause), for:.touchUpInside)
+        button.addTarget(self, action: #selector(didTapPlayPause), for: .touchUpInside)
         button.tintColor = .white
         return button
     }()
@@ -88,7 +88,7 @@ class MediaPlayerView: UIView {
         button.translatesAutoresizingMaskIntoConstraints = false
         let config = UIImage.SymbolConfiguration(pointSize: 30)
         button.setImage(UIImage(systemName: "goforward.5", withConfiguration: config), for: .normal)
-        button.addTarget(self, action: #selector(didTapForwardButton), for:.touchUpInside)
+        button.addTarget(self, action: #selector(didTapForwardButton), for: .touchUpInside)
         button.tintColor = .white
         return button
     }()
@@ -98,7 +98,7 @@ class MediaPlayerView: UIView {
         button.translatesAutoresizingMaskIntoConstraints = false
         let config = UIImage.SymbolConfiguration(pointSize: 30)
         button.setImage(UIImage(systemName: "gobackward.5", withConfiguration: config), for: .normal)
-        button.addTarget(self, action: #selector(didTapBackwardButton), for:.touchUpInside)
+        button.addTarget(self, action: #selector(didTapBackwardButton), for: .touchUpInside)
         button.tintColor = .white
         return button
     }()
@@ -147,7 +147,14 @@ class MediaPlayerView: UIView {
         setupPlayer(event: event)
         [albumNameLabel, songNameLabel, artistLabel, elapsedTimeLabel, remaingTimeLabel].forEach({ $0.textColor = .white })
         
-        [albumNameLabel, albumCoverImageView, songNameLabel, artistLabel, progressBarSlider, elapsedTimeLabel ,remaingTimeLabel, hstack].forEach({ addSubview($0) })
+        [albumNameLabel,
+         albumCoverImageView,
+         songNameLabel,
+         artistLabel,
+         progressBarSlider,
+         elapsedTimeLabel,
+         remaingTimeLabel,
+         hstack].forEach({ addSubview($0) })
         
         NSLayoutConstraint.activate([
             albumNameLabel.topAnchor.constraint(equalTo: topAnchor, constant: 16),
@@ -243,7 +250,7 @@ class MediaPlayerView: UIView {
     
     func timeObserverSetup() {
         // Invoke callback every second
-        let interval = CMTime(seconds:1.0, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+        let interval = CMTime(seconds: 1.0, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
 
         // Queue on which to invoke the callback
         let mainQueue = DispatchQueue.main

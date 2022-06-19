@@ -183,7 +183,6 @@ extension AddEventController: UploadEventInfoCellDelegate {
             print("musicUrlData nil")
             return
         }
-        let fakeHostID = UUID().uuidString
         print("event address \(userInputData.eventAddress)")
         let geoCoder = CLGeocoder()
         geoCoder.geocodeAddressString(userInputData.eventAddress) { (placemarks, error) in
@@ -206,7 +205,7 @@ extension AddEventController: UploadEventInfoCellDelegate {
                 StorageUploader.shared.uploadEventMusic(with: musicUrlData) { downloadedMusicURL in
                     
                     let newEvent = Event(title: userInputData.eventName,
-                                         hostID: fakeHostID,
+                                         hostID: uid,
                                          description: userInputData.eventDescription,
                                          startingDate: Timestamp(date: userInputData.eventTime),
                                          destinationLocation: fakeLocation,

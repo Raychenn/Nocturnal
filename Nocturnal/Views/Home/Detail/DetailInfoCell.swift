@@ -220,7 +220,6 @@ class DetailInfoCell: UITableViewCell {
         joinedMembersLabel.text = "Joined Members: \(event.participants.count)"
         
         //need to fetch event host user info to get his profileImageURL&name
-        
     }
     
     private func setupCellUI() {

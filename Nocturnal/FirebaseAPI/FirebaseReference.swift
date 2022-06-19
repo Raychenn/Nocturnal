@@ -10,3 +10,5 @@ import FirebaseFirestore
 import FirebaseFirestoreSwift
 
 let collection_event = Firestore.firestore().collection("events")
+let collection_users = Firestore.firestore().collection("users")
+let collection_notification = Firestore.firestore().collection("notifications")

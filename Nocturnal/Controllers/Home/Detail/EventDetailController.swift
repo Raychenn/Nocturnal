@@ -8,15 +8,16 @@
 import UIKit
 import AVFoundation
 import CoreLocation
+import FirebaseFirestore
 
 var player: AVPlayer?
 
 class EventDetailController: UIViewController {
-
+    
     // MARK: - Properties
     
     private lazy var tableView: UITableView = {
-       let table = UITableView()
+        let table = UITableView()
         table.contentInsetAdjustmentBehavior = .never
         table.sectionHeaderTopPadding = 0
         table.dataSource = self
@@ -32,7 +33,7 @@ class EventDetailController: UIViewController {
     }()
     
     private lazy var joinButton: UIButton = {
-       let button = UIButton()
+        let button = UIButton()
         button.setTitle("Join", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .primaryBlue
@@ -41,7 +42,7 @@ class EventDetailController: UIViewController {
     }()
     
     private lazy var backButton: UIButton = {
-       let button = UIButton()
+        let button = UIButton()
         button.setImage( UIImage(systemName: "chevron.left"), for: .normal)
         button.tintColor = .black
         button.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
@@ -50,10 +51,25 @@ class EventDetailController: UIViewController {
     
     private let event: Event
     
+    private var currentUser: User? {
+        didSet {
+            // host can not join his own event
+            guard let currentUserId = currentUser?.id else {
+                print("currentUserId is nil")
+                return
+            }
+            if event.hostID == currentUserId {
+                joinButton.isHidden = true
+            } else {
+                joinButton.isHidden = false
+            }
+        }
+    }
+    
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        fetchCurrentUser()
         setupUI()
     }
     
@@ -70,6 +86,20 @@ class EventDetailController: UIViewController {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - API
+    
+    private func fetchCurrentUser() {
+        UserService.shared.fetchUser(uid: uid) { result in
+            switch result {
+            case .success(let user):
+                self.currentUser = user
+                self.tableView.reloadData()
+            case .failure(let error):
+                print("Fail to get user \(error)")
+            }
+        }
     }
     
     // MARK: - Helpers
@@ -95,22 +125,26 @@ class EventDetailController: UIViewController {
         backButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingTop: 8, paddingLeft: 8)
     }
     
-    func playSound(url: URL) {
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
-            try AVAudioSession.sharedInstance().setActive(true)
-            let playerItem = AVPlayerItem(url: url)
-            player = AVPlayer(playerItem: playerItem)
-            guard let player = player else { return }
-            player.play()
-        } catch let error {
-            print(error.localizedDescription)
-        }
-    }
-    
     // MARK: - Selectors
     @objc func didTapJoinButton() {
-        print("send application reqeust notification to host")
+        let applicantId = currentUser?.id ?? ""
+        let eventId = self.event.id ?? ""
+        let notificationType = NotificationType.joinEventRequest.rawValue
+        
+        let notification = Notification(applicantId: applicantId,
+                                        eventId: eventId,
+                                        hostId: event.hostID,
+                                        sentTime: Timestamp(date: Date()),
+                                        type: notificationType, isRequestPermitted: false)
+        
+        NotificationService.shared.postNotification(to: event.hostID, notification: notification) { error in
+            if let error = error {
+                print("Error sending notification \(error)")
+                return
+            }
+            
+            print("Successfully sending notification")
+        }
     }
     
     @objc func didTapBackButton() {

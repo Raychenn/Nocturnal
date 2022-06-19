@@ -39,10 +39,12 @@
 		ED194CBA2859E8F300C9E5D3 /* FirebaseReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB92859E8F300C9E5D3 /* FirebaseReference.swift */; };
 		ED194CBC2859EB7500C9E5D3 /* StorageUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CBB2859EB7500C9E5D3 /* StorageUploader.swift */; };
 		ED194CBE285A007C00C9E5D3 /* InputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CBD285A007C00C9E5D3 /* InputTextView.swift */; };
+		ED204B22285DB16F0016FDCA /* UILabel+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED204B21285DB16F0016FDCA /* UILabel+Ext.swift */; };
 		ED81C3D4285D7F0F004C12EA /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED81C3D3285D7F0F004C12EA /* UserService.swift */; };
 		ED81C3D7285D93D3004C12EA /* Firebase+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED81C3D6285D93D3004C12EA /* Firebase+Ext.swift */; };
 		ED81C3D9285D9464004C12EA /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED81C3D8285D9464004C12EA /* Notification.swift */; };
 		ED81C3DB285D9804004C12EA /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED81C3DA285D9804004C12EA /* NotificationService.swift */; };
+		ED81C3DE285DA50D004C12EA /* NotificationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED81C3DD285DA50D004C12EA /* NotificationCell.swift */; };
 		ED83392C285AD57600236814 /* DetailHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED83392B285AD57600236814 /* DetailHeader.swift */; };
 		ED83392E285ADC4B00236814 /* DetailDescriptionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED83392D285ADC4B00236814 /* DetailDescriptionCell.swift */; };
 		ED833932285B1BA700236814 /* PreviewMapCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED833931285B1BA700236814 /* PreviewMapCell.swift */; };
@@ -107,10 +109,12 @@
 		ED194CB92859E8F300C9E5D3 /* FirebaseReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseReference.swift; sourceTree = "<group>"; };
 		ED194CBB2859EB7500C9E5D3 /* StorageUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageUploader.swift; sourceTree = "<group>"; };
 		ED194CBD285A007C00C9E5D3 /* InputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextView.swift; sourceTree = "<group>"; };
+		ED204B21285DB16F0016FDCA /* UILabel+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Ext.swift"; sourceTree = "<group>"; };
 		ED81C3D3285D7F0F004C12EA /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
 		ED81C3D6285D93D3004C12EA /* Firebase+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firebase+Ext.swift"; sourceTree = "<group>"; };
 		ED81C3D8285D9464004C12EA /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
 		ED81C3DA285D9804004C12EA /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		ED81C3DD285DA50D004C12EA /* NotificationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCell.swift; sourceTree = "<group>"; };
 		ED83392B285AD57600236814 /* DetailHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailHeader.swift; sourceTree = "<group>"; };
 		ED83392D285ADC4B00236814 /* DetailDescriptionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailDescriptionCell.swift; sourceTree = "<group>"; };
 		ED833931285B1BA700236814 /* PreviewMapCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewMapCell.swift; sourceTree = "<group>"; };
@@ -227,6 +231,7 @@
 		ED0A484F285877C6004661BB /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				ED81C3DC285DA4FE004C12EA /* Notification */,
 				ED0B4247285887FC000680C2 /* CustomViews */,
 				ED0B4254285986DC000680C2 /* Home */,
 			);
@@ -250,6 +255,7 @@
 				ED847A01285B7FCA00F33C7F /* MKPlacemark+Ext.swift */,
 				ED847A09285C764000F33C7F /* MKMapView+Ext.swift */,
 				ED81C3D6285D93D3004C12EA /* Firebase+Ext.swift */,
+				ED204B21285DB16F0016FDCA /* UILabel+Ext.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -354,6 +360,14 @@
 				ED847A07285C711200F33C7F /* MediaPlayerController.swift */,
 			);
 			path = Detail;
+			sourceTree = "<group>";
+		};
+		ED81C3DC285DA4FE004C12EA /* Notification */ = {
+			isa = PBXGroup;
+			children = (
+				ED81C3DD285DA50D004C12EA /* NotificationCell.swift */,
+			);
+			path = Notification;
 			sourceTree = "<group>";
 		};
 		ED847A0B285C7C4500F33C7F /* Managers */ = {
@@ -562,6 +576,7 @@
 				ED0A483E285873DB004661BB /* ViewController.swift in Sources */,
 				ED83392C285AD57600236814 /* DetailHeader.swift in Sources */,
 				ED0B424928588845000680C2 /* UIButton+Ext.swift in Sources */,
+				ED81C3DE285DA50D004C12EA /* NotificationCell.swift in Sources */,
 				ED0A485B28587C0C004661BB /* NotificationController.swift in Sources */,
 				ED0A483A285873DB004661BB /* AppDelegate.swift in Sources */,
 				ED81C3DB285D9804004C12EA /* NotificationService.swift in Sources */,
@@ -579,6 +594,7 @@
 				ED0B4244285886FC000680C2 /* UIImage+Ext.swift in Sources */,
 				ED194CBA2859E8F300C9E5D3 /* FirebaseReference.swift in Sources */,
 				ED0B423E2858863D000680C2 /* Date+Ext.swift in Sources */,
+				ED204B22285DB16F0016FDCA /* UILabel+Ext.swift in Sources */,
 				ED847A14285CDF9C00F33C7F /* RegistrationController.swift in Sources */,
 				ED847A02285B7FCA00F33C7F /* MKPlacemark+Ext.swift in Sources */,
 				ED847A06285C6EBA00F33C7F /* MediaPlayerView.swift in Sources */,

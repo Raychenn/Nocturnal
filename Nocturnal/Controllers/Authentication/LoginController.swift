@@ -93,6 +93,7 @@ class LoginController: UIViewController {
             
             self.loginButton.configuration?.showsActivityIndicator = false
             print("successfully logged user in")
+            self.dismiss(animated: true)
         }
     }
     

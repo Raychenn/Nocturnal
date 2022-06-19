@@ -11,7 +11,18 @@ import FirebaseFirestore
 enum NotificationType: Int {
     case joinEventRequest
     case successJoinedEventResponse
-    case failure
+    case failureJoinedEventResponse
+    
+    var description: String {
+        switch self {
+        case .joinEventRequest:
+            return "Send you a request"
+        case .successJoinedEventResponse:
+            return "Has accepted your request"
+        case .failureJoinedEventResponse:
+            return "Has denied your request"
+        }
+    }
 }
 
 struct Notification: Codable {
@@ -21,4 +32,5 @@ struct Notification: Codable {
     let hostId: String
     let sentTime: Timestamp
     let type: Int
+    var isRequestPermitted: Bool
 }

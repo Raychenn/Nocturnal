@@ -13,8 +13,16 @@ struct UserService {
     
     static let shared = UserService()
     
-    func fetchUser(uid: String, completion: @escaping (Result<User, Error>) -> Void) {
+    func updateUserToJoinEvent(uid: String, joinedEventId: String, completion: FirestoreCompletion) {
         
+        collection_users.document(uid).updateData(["joinedEventsId": FieldValue.arrayUnion([joinedEventId])], completion: completion)
+    }
+    
+    func removeUserFromEvent(uid: String, joinedEventId: String, completion: FirestoreCompletion) {
+        collection_users.document(uid).updateData(["joinedEventsId": FieldValue.arrayRemove([joinedEventId])], completion: completion)
+    }
+    
+    func fetchUser(uid: String, completion: @escaping (Result<User, Error>) -> Void) {
         collection_users.document(uid).getDocument { snapshot, error in
             guard let snapshot = snapshot, error == nil else {
                 completion(.failure(error!))
@@ -28,6 +36,31 @@ struct UserService {
                 completion(.failure(error))
                 print("Fail to decode user \(error)")
             }
+        }
+    }
+    
+    // 要抓每個notification的hosts看他們有沒有給通過
+    // 也要抓每個notification的applicants看host要不要給過
+    func fetchUsers(uids: [String], completion: @escaping (Result<[User], Error>) -> Void) {
+        let group = DispatchGroup()
+        
+        var users: [User] = []
+        
+        uids.forEach { uid in
+            group.enter()
+            fetchUser(uid: uid) { result in
+                group.leave()
+                switch result {
+                case .success(let user):
+                    users.append(user)
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+            }
+        }
+        
+        group.notify(queue: .main) {
+            completion(.success(users))
         }
     }
 }

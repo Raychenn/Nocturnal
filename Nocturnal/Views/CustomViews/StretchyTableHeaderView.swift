@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class StretchyTableHeaderView: UIView {
     
@@ -35,6 +36,10 @@ final class StretchyTableHeaderView: UIView {
     }
     
     // MARK: - Helpers
+    
+    func configureHeader(with url: URL) {
+        imageView.kf.setImage(with: url)
+    }
     
     private func createViews() {
         addSubview(containerView)

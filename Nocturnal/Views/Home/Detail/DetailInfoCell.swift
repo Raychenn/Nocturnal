@@ -13,6 +13,7 @@ import MapKit
 
 protocol DetailInfoCellDelegate: AnyObject {
     func playMusic(cell: DetailInfoCell, musicURL: String)
+    func openChatRoom(cell: DetailInfoCell)
 }
 
 class DetailInfoCell: UITableViewCell {
@@ -110,6 +111,15 @@ class DetailInfoCell: UITableViewCell {
         return label
     }()
     
+    private lazy var chatButton: UIButton = {
+        let button = UIButton()
+        let config = UIImage.SymbolConfiguration(pointSize: 25)
+        button.setImage( UIImage(systemName: "message.fill", withConfiguration: config), for: .normal)
+        button.tintColor = .black
+        button.addTarget(self, action: #selector(didTapChatButton), for: .touchUpInside)
+        return button
+    }()
+    
     private let joinedMembersImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -190,6 +200,10 @@ class DetailInfoCell: UITableViewCell {
         print("see all users")
     }
     
+    @objc func didTapChatButton() {
+        delegate?.openChatRoom(cell: self)
+    }
+    
     // MARK: - Heleprs
 
     func configureCell(with event: Event) {
@@ -207,12 +221,6 @@ class DetailInfoCell: UITableViewCell {
             let mkPlacemark = MKPlacemark(placemark: place)
             
             self?.addressLabel.text = mkPlacemark.title ?? "no address"
-//            let postalAddressFormatter = CNPostalAddressFormatter()
-//            postalAddressFormatter.style = .mailingAddress
-//
-//            if let postalAddress = place.postalAddress {
-//                self?.addressLabel.text  = postalAddressFormatter.string(from: postalAddress)
-//            }
         }
         
         styleLabel.text = "Event Style: \(event.style)"
@@ -220,6 +228,7 @@ class DetailInfoCell: UITableViewCell {
         joinedMembersLabel.text = "Joined Members: \(event.participants.count)"
         
         //need to fetch event host user info to get his profileImageURL&name
+        chatButton.isHidden = uid == event.hostID
     }
     
     private func setupCellUI() {
@@ -275,7 +284,11 @@ class DetailInfoCell: UITableViewCell {
         contentView.addSubview(hostNameLabel)
         hostNameLabel.centerY(inView: hostProfileImageView)
         hostNameLabel.anchor(left: hostProfileImageView.rightAnchor, paddingLeft: 8)
-
+        
+        contentView.addSubview(chatButton)
+        chatButton.centerY(inView: hostNameLabel)
+        chatButton.anchor(left: hostNameLabel.rightAnchor, paddingLeft: 8)
+        
         contentView.addSubview(playMusicButton)
         playMusicButton.centerY(inView: hostProfileImageView)
         playMusicButton.anchor(right: contentView.rightAnchor, paddingRight: 8)

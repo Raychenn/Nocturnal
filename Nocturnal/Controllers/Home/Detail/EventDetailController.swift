@@ -27,6 +27,7 @@ class EventDetailController: UIViewController {
         table.register(DetailDescriptionCell.self, forCellReuseIdentifier: DetailDescriptionCell.identifier)
         let header = StretchyTableHeaderView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: view.frame.size.width))
         header.imageView.image = UIImage(named: "cat")
+        header.configureHeader(with: URL(string: event.eventImageURL)!)
         table.tableHeaderView = header
         table.tableFooterView = UIView()
         return table
@@ -66,6 +67,8 @@ class EventDetailController: UIViewController {
         }
     }
     
+    private var host: User?
+        
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -77,6 +80,7 @@ class EventDetailController: UIViewController {
         super.viewWillDisappear(animated)
         
         tabBarController?.tabBar.isHidden = false
+        navigationController?.navigationBar.isHidden = false
     }
     
     init(event: Event) {
@@ -120,7 +124,6 @@ class EventDetailController: UIViewController {
         
         joinButton.setHeight(50)
         joinButton.layer.cornerRadius = 20
-        
         view.addSubview(backButton)
         backButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingTop: 8, paddingLeft: 8)
     }
@@ -224,11 +227,67 @@ extension EventDetailController: UIScrollViewDelegate {
         header.scrollViewDidScroll(scrollView: scrollView)
     }
 }
-// MARK: -
+// MARK: - DetailInfoCellDelegate
 extension EventDetailController: DetailInfoCellDelegate {
+    
+    func openChatRoom(cell: DetailInfoCell) {
+    
+        let newChatroomId = generateChatRoomId(otherUid: event.hostID)
+        let chatRoom = ChatRoom(id: newChatroomId, chatMembersId: [uid, event.hostID])
+        
+        ChatService.shared.checkIfChatRoomExist(chatRoomId: newChatroomId) { isExisted in
+            if isExisted {
+                print("chat room existed")
+                UserService.shared.fetchUser(uid: self.event.hostID) { [weak self] result in
+                    guard let self = self else { return }
+                    switch result {
+                    case .success(let host):
+                        let chatVC = ChatController(theOtherUserName: host.name, chatRoom: chatRoom, theOtherUserId: host.id ?? "")
+                        let nav = UINavigationController(rootViewController: chatVC)
+                        nav.modalPresentationStyle = .fullScreen
+                        self.present(nav, animated: true)
+                    case .failure(let error):
+                        print("Fail to fetch host \(error)")
+                    }
+                }
+                return
+            } else {
+                print("Chat room not existed, prepare to upload")
+                ChatService.shared.uploadNewChatroom(chatRoom: chatRoom) { [weak self] error in
+                    guard let self = self else { return }
+                    if let error = error {
+                        print("Failt to upload chat room \(error)")
+                        return
+                    }
+                    UserService.shared.fetchUser(uid: self.event.hostID) { [weak self] result in
+                        guard let self = self else { return }
+                        switch result {
+                        case .success(let host):
+                            let chatVC = ChatController(theOtherUserName: host.name, chatRoom: chatRoom, theOtherUserId: host.id ?? "")
+                            let nav = UINavigationController(rootViewController: chatVC)
+                            nav.modalPresentationStyle = .fullScreen
+                            self.present(nav, animated: true)
+                        case .failure(let error):
+                            print("Fail to fetch host \(error)")
+                        }
+                    }
+                    print("Success upload chat room")
+                    
+                }
+            }
+        }
+    }
     
     func playMusic(cell: DetailInfoCell, musicURL: String) {
         let musicPlayerVC = MusicPlayerController(event: event)
         present(musicPlayerVC, animated: true)
+    }
+    
+    func generateChatRoomId(otherUid: String) -> String {
+        if uid > otherUid {
+            return otherUid + uid
+        } else {
+            return uid + otherUid
+        }
     }
 }

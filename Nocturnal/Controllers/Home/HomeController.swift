@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class HomeController: UIViewController {
     
@@ -68,6 +69,11 @@ class HomeController: UIViewController {
         navigationController?.pushViewController(addEventVC, animated: true)
     }
     
+    @objc func handleLogout() {
+       try? Auth.auth().signOut()
+       checkIfUserIsLoggedIn()
+    }
+    
     // MARK: - Helpers
     
     private func configureCollectionViewLayout() -> UICollectionViewCompositionalLayout {
@@ -102,6 +108,21 @@ class HomeController: UIViewController {
         
         addEventButton.layer.cornerRadius = 60/2
         addEventButton.layer.masksToBounds = true
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Log Out", style: .plain, target: self, action: #selector(handleLogout))
+    }
+    
+    func checkIfUserIsLoggedIn() {
+//        try? Auth.auth().signOut()
+        if Auth.auth().currentUser == nil {
+            DispatchQueue.main.async {
+                let loginController = LoginController()
+                // after log in completes, we delegate the action of fetching/updating user function back to MainTabBarController so that all other controllers will also take effects
+                let nav = UINavigationController(rootViewController: loginController)
+                nav.modalPresentationStyle = .fullScreen
+                self.present(nav, animated: true, completion: nil)
+            }
+        }
     }
 }
 

@@ -73,6 +73,9 @@
 		EDC3361C2859DC4100A6A95A /* slowmotion.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336162859DC4100A6A95A /* slowmotion.mp3 */; };
 		EDC663EB28614FB8007FEF82 /* ConservasationsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC663EA28614FB8007FEF82 /* ConservasationsController.swift */; };
 		EDC663ED28615D8D007FEF82 /* ConversationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC663EC28615D8D007FEF82 /* ConversationCell.swift */; };
+		EDC663F028617465007FEF82 /* ExploreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC663EF28617465007FEF82 /* ExploreCell.swift */; };
+		EDC663F228619407007FEF82 /* NTSegmentControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC663F128619407007FEF82 /* NTSegmentControl.swift */; };
+		EDC663F428619F22007FEF82 /* SearchResultController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC663F328619F22007FEF82 /* SearchResultController.swift */; };
 		EDD1031F2860142C00AECAD9 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD1031E2860142C00AECAD9 /* Message.swift */; };
 		EDD1032528601EBA00AECAD9 /* ChatController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD1032428601EBA00AECAD9 /* ChatController.swift */; };
 		EDD1032728602B4A00AECAD9 /* ChatRoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD1032628602B4A00AECAD9 /* ChatRoom.swift */; };
@@ -156,6 +159,9 @@
 		EDC336162859DC4100A6A95A /* slowmotion.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = slowmotion.mp3; sourceTree = "<group>"; };
 		EDC663EA28614FB8007FEF82 /* ConservasationsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConservasationsController.swift; sourceTree = "<group>"; };
 		EDC663EC28615D8D007FEF82 /* ConversationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationCell.swift; sourceTree = "<group>"; };
+		EDC663EF28617465007FEF82 /* ExploreCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreCell.swift; sourceTree = "<group>"; };
+		EDC663F128619407007FEF82 /* NTSegmentControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSegmentControl.swift; sourceTree = "<group>"; };
+		EDC663F328619F22007FEF82 /* SearchResultController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultController.swift; sourceTree = "<group>"; };
 		EDD1031E2860142C00AECAD9 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		EDD1032428601EBA00AECAD9 /* ChatController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatController.swift; sourceTree = "<group>"; };
 		EDD1032628602B4A00AECAD9 /* ChatRoom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRoom.swift; sourceTree = "<group>"; };
@@ -257,6 +263,7 @@
 		ED0A484F285877C6004661BB /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				EDC663EE2861745B007FEF82 /* Explore */,
 				EDD1031D2860131800AECAD9 /* Chat */,
 				ED81C3DC285DA4FE004C12EA /* Notification */,
 				ED0B4247285887FC000680C2 /* CustomViews */,
@@ -310,6 +317,7 @@
 			isa = PBXGroup;
 			children = (
 				ED0A485628587A7C004661BB /* ExploreController.swift */,
+				EDC663F328619F22007FEF82 /* SearchResultController.swift */,
 			);
 			path = Explore;
 			sourceTree = "<group>";
@@ -348,6 +356,7 @@
 				ED847A19285CE0BE00F33C7F /* AuthButton.swift */,
 				EDD1032C28603F8800AECAD9 /* DateHeaderLabel.swift */,
 				ED0E58222860758F00064C02 /* MessageInputAccessoryView.swift */,
+				EDC663F128619407007FEF82 /* NTSegmentControl.swift */,
 			);
 			path = CustomViews;
 			sourceTree = "<group>";
@@ -449,6 +458,14 @@
 				EDC336162859DC4100A6A95A /* slowmotion.mp3 */,
 			);
 			path = "Music Samples";
+			sourceTree = "<group>";
+		};
+		EDC663EE2861745B007FEF82 /* Explore */ = {
+			isa = PBXGroup;
+			children = (
+				EDC663EF28617465007FEF82 /* ExploreCell.swift */,
+			);
+			path = Explore;
 			sourceTree = "<group>";
 		};
 		EDD1031D2860131800AECAD9 /* Chat */ = {
@@ -592,8 +609,6 @@
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Nocturnal/Pods-Nocturnal-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
-			outputPaths = (
-			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Nocturnal/Pods-Nocturnal-frameworks.sh\"\n";
@@ -628,11 +643,13 @@
 				ED0A485328587884004661BB /* MainTabBarController.swift in Sources */,
 				ED0B425228597CCC000680C2 /* AddEventController.swift in Sources */,
 				ED194CB62859E5D100C9E5D3 /* EventService.swift in Sources */,
+				EDC663F428619F22007FEF82 /* SearchResultController.swift in Sources */,
 				EDF3E2AD285ACAE5000E2218 /* UICollectionView+Ext.swift in Sources */,
 				ED0B424028588697000680C2 /* UITableView+Ext.swift in Sources */,
 				ED847A16285CDFAA00F33C7F /* ResetPasswordController.swift in Sources */,
 				ED0E582528609AEE00064C02 /* MessageCell.swift in Sources */,
 				ED833932285B1BA700236814 /* PreviewMapCell.swift in Sources */,
+				EDC663F228619407007FEF82 /* NTSegmentControl.swift in Sources */,
 				ED847A08285C711200F33C7F /* MediaPlayerController.swift in Sources */,
 				ED833934285B25C000236814 /* FullMapController.swift in Sources */,
 				ED847A12285CDE7300F33C7F /* AuthTextField.swift in Sources */,
@@ -679,6 +696,7 @@
 				ED0B425828598718000680C2 /* UploadEventInfoCell.swift in Sources */,
 				ED0B4242285886D7000680C2 /* UIScrollView+Ext.swift in Sources */,
 				EDD1031F2860142C00AECAD9 /* Message.swift in Sources */,
+				EDC663F028617465007FEF82 /* ExploreCell.swift in Sources */,
 				ED847A10285CDE1A00F33C7F /* LoginController.swift in Sources */,
 				ED0B423C28588611000680C2 /* UIColor+Ext.swift in Sources */,
 				ED0A485528587A27004661BB /* HomeController.swift in Sources */,

@@ -19,11 +19,15 @@ class DetailDescriptionCell: UITableViewCell {
     
     let decriptionContentLabel: UILabel = {
         let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 20, weight: .semibold)
-        label.numberOfLines = 0
+        label.numberOfLines = 5
+        label.lineBreakMode = .byTruncatingTail
         label.text = "loading"
         return label
     }()
+    
+    var descriptionLabelHeightConst: NSLayoutConstraint!
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -54,5 +58,14 @@ class DetailDescriptionCell: UITableViewCell {
     
     func configureCell(with event: Event) {
         decriptionContentLabel.text = event.description
+    }
+    
+    func animateDescriptionLabel(shouldShow: Bool) {
+        print("animateDescriptionLabel called")
+
+        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
+            
+            self.layoutIfNeeded()
+        }, completion: nil)
     }
 }

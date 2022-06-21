@@ -9,11 +9,11 @@ import UIKit
 
 extension UIViewController {
     
-    func configureChatNavBar(withTitle: String, preferLargeTitles: Bool) {
+    func configureChatNavBar(withTitle: String, backgroundColor: UIColor? = UIColor.black ,preferLargeTitles: Bool) {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
-        appearance.backgroundColor = .primaryBlue
+        appearance.backgroundColor = backgroundColor
         
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance

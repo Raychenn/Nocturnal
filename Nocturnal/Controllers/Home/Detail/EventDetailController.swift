@@ -64,10 +64,14 @@ class EventDetailController: UIViewController {
             } else {
                 joinButton.isHidden = false
             }
+            
+            print("joinButton hidden \(joinButton.isHidden)")
         }
     }
     
     private var host: User?
+    
+    private var shouldShowDescription = false
         
     // MARK: - Life Cycle
     override func viewDidLoad() {
@@ -199,6 +203,10 @@ extension EventDetailController: UITableViewDataSource {
 extension EventDetailController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+//        let descriptionCell = tableView.cellForRow(at: indexPath) as? DetailDescriptionCell
+//        shouldShowDescription = !shouldShowDescription
+//        descriptionCell?.animateDescriptionLabel(shouldShow: shouldShowDescription)
         tableView.deselectRow(at: indexPath, animated: true)
     }
     

@@ -36,7 +36,6 @@ class MediaPlayerView: UIView {
         slider.translatesAutoresizingMaskIntoConstraints = false
         let durationTime = self.player.currentItem?.asset.duration ?? CMTime()
         let duration = Float(CMTimeGetSeconds(durationTime))
-        slider.isContinuous = true
         slider.minimumValue = 0
         slider.addTarget(self, action: #selector(progressScrubbed), for: .valueChanged)
         slider.minimumTrackTintColor = UIColor(named: "subtitleColor")
@@ -305,17 +304,30 @@ class MediaPlayerView: UIView {
         remaingTimeLabel.text = getFormattedTime(timeInterval: TimeInterval(remainingTime))
     }
     
-    @objc func progressScrubbed(_ sender: UISlider) {
+    @objc func progressScrubbed(_ sender: UISlider, event: UIEvent) {
+        
         if let duration = player.currentItem?.duration {
             print("duration \(duration)")
-//            let totalSeconds = CMTimeGetSeconds(duration)
-//            print("totalSeconds \(totalSeconds)")
-//            let value = Float64(progressBarSlider.value) + totalSeconds
-//            print("jump to \(value)")
+
             let seekTime = CMTime(value: Int64(sender.value), timescale: 1)
             player.seek(to: seekTime)
         } else {
             print("no duration")
+        }
+        
+        if let touchEvent = event.allTouches?.first {
+            switch touchEvent.phase {
+            case .began:
+                self.removeTimerObserver()
+                self.player.pause()
+            case .moved:
+                break
+            case .ended:
+                self.timeObserverSetup()
+                self.player.play()
+            default:
+                break
+            }
         }
     }
 

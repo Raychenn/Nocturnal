@@ -226,8 +226,6 @@ class DetailInfoCell: UITableViewCell {
         styleLabel.text = "Event Style: \(event.style)"
         feeLabel.text = "$\(String(event.fee))"
         joinedMembersLabel.text = "Joined Members: \(event.participants.count)"
-        
-        //need to fetch event host user info to get his profileImageURL&name
         chatButton.isHidden = uid == event.hostID
     }
     

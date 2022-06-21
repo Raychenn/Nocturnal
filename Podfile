@@ -12,7 +12,7 @@ target 'Nocturnal' do
   pod 'JGProgressHUD'
   pod 'Kingfisher'
   pod 'SwiftLint'
-  pod 'MessageKit'
+  pod 'CHTCollectionViewWaterfallLayout'
   pod 'IQKeyboardManagerSwift'
 
 end

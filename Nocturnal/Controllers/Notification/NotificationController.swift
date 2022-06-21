@@ -79,6 +79,7 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
                 
                 self.notifications = self.getFilteredNotifications(notifications: notifications)
                 self.fetchHostsAndApplicants()
+                print("Host \(self.hosts), applicant \(self.applicants)")
             case .failure(let error):
                 print("Fail to get notification \(error)")
             }
@@ -129,19 +130,30 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let notificationCell = tableView.dequeueReusableCell(withIdentifier: NotificationCell.identifier, for: indexPath) as? NotificationCell else { return UITableViewCell() }
-
+        
         let notification = notifications[indexPath.row]
-        let applicant = applicants[indexPath.row]
-//        let host = hosts[indexPath.row]
-        let type = NotificationType(rawValue: notification.type)
-        if type == .joinEventRequest {
-            // 別的applicant送通知's cell
+        
+        if applicants.count == 0 {
+            let host = hosts[indexPath.row]
+
+            notificationCell.configueCell(with: notification, user: host)
+        } else if hosts.count == 0 {
+            let applicant = applicants[indexPath.row]
             notificationCell.configueCell(with: notification, user: applicant)
             notificationCell.delegate = self
-        } else {
+        }
+        
+//        let applicant = applicants[indexPath.row]
+//        let type = NotificationType(rawValue: notification.type)
+//        let host = hosts[indexPath.row]
+//        if type == .joinEventRequest {
+            // 別的applicant送通知's cell
+//            notificationCell.configueCell(with: notification, user: applicant)
+//            notificationCell.delegate = self
+//        } else {
             // 收到host 回傳通知's cell
 //            notificationCell.configueCell(with: notification, user: host)
-        }
+//        }
         
         return notificationCell
     }

@@ -10,6 +10,13 @@ import Kingfisher
 
 class MessageCell: UICollectionViewCell {
     
+    var message: Message? {
+        didSet {
+            guard let message = message else { return  }
+            textView.text = message.text
+        }
+    }
+    
      let profileImageView: UIImageView = {
        let imageView = UIImageView()
         imageView.contentMode = .scaleToFill
@@ -50,7 +57,7 @@ class MessageCell: UICollectionViewCell {
         
         addSubview(bubbleContainer)
         bubbleContainer.layer.cornerRadius = 12
-        bubbleContainer.anchor(top: topAnchor)
+        bubbleContainer.anchor(top: topAnchor, bottom: bottomAnchor)
         bubbleContainer.widthAnchor.constraint(lessThanOrEqualToConstant: 250).isActive = true
 
         bubbleLeftAnchor = bubbleContainer.leftAnchor.constraint(equalTo: profileImageView.rightAnchor, constant: 12)
@@ -67,9 +74,21 @@ class MessageCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureCell(message: Message) {
-        textView.text = message.content
-//        guard let url = URL(string: user.profileImageURL) else { return }
-//        profileImageView.kf.setImage(with: url)
+    func configureFromCell() {
+        guard let message = message else { return }
+        bubbleLeftAnchor.isActive = true
+        bubbleRightAnchor.isActive = false
+        bubbleContainer.backgroundColor = .purple
+        profileImageView.isHidden = false
+        textView.text = message.text
+    }
+    
+    func configureToCell() {
+        guard let message = message else { return }
+        bubbleLeftAnchor.isActive = false
+        bubbleRightAnchor.isActive = true
+        bubbleContainer.backgroundColor = .lightGray
+        profileImageView.isHidden = true
+        textView.text = message.text
     }
 }

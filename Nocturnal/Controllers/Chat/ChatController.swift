@@ -37,34 +37,29 @@ class ChatController: UICollectionViewController {
     
     private var messages: [Message] = []
     
-    private var theOtherUserName: String
-    
-    private var chatRoom: ChatRoom
-    
-    private var theOtherUserId: String
-    
-    private var isFromCurrentUser = false
-    
-    private var theOtherUser: User?
+    private var user: User
         
     // MARK: - Properties
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        addMessagesListener()
         setupUI()
     }
     
-    init(theOtherUserName: String, chatRoom: ChatRoom, theOtherUserId: String) {
-        self.theOtherUserName = theOtherUserName
-        self.chatRoom = chatRoom
-        self.theOtherUserId = theOtherUserId
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        tabBarController?.tabBar.isHidden = true
+    }
+    
+    init(user: User) {
+        self.user = user
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = .init(top: 16, left: 0, bottom: 16, right: 0)
         super.init(collectionViewLayout: layout)
-        fetchAllMessages()
+        addMessagesListener()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -80,60 +75,25 @@ class ChatController: UICollectionViewController {
     // MARK: - API
     
     private func addMessagesListener() {
-        ChatService.shared.addMessagesListener(chatRoomId: chatRoom.id ?? "") { [weak self] result in
-            guard let self = self else { return }
+        MessegeService.shared.addMessagesListener(forUser: user) { result in
             switch result {
-            case .success(let messages):
-                self.messages.append(messages)
-                self.collectionView.insertItems(at: [IndexPath(item: self.messages.count - 1, section: 0)])
-            case .failure(let error):
-                print("Fail to fetch message \(error)")
-            }
-        }
-    }
-    
-    private func fetchAllMessages() {
-        ChatService.shared.fetchAllMessages(chatRoomId: chatRoom.id ?? "") { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let messages):
-                print("Fetched messages \(messages)")
-                self.messages = messages
+            case .success(let message):
+                self.messages.append(message)
                 self.collectionView.reloadData()
+                self.collectionView.scrollToItem(at: [0, self.messages.count - 1], at: .bottom, animated: true)
             case .failure(let error):
-                print("Fail to get messages \(error)")
+                print("Fail to fetch messages \(error)")
             }
         }
     }
-    
-//    private func fetchSender() {
-//        UserService.shared.fetchUser(uid: theOtherUserId) { [weak self] result in
-//            guard let self = self else { return }
-//            switch result {
-//            case .success(let theOtherUser):
-//                print("theOtherUser \(theOtherUser)")
-//                self.theOtherUser = theOtherUser
-//                self.collectionView.reloadData()
-//            case .failure(let error):
-//                print("Fail to fetch user \(error)")
-//            }
-//        }
-//    }
-    
-    // MARK: - Selectors
-    
-    @objc func handleDissmisal() {
-        self.dismiss(animated: true)
-    }
-    
     // MARK: - Helpers
     
     private func setupUI() {
         IQKeyboardManager.shared.enable = false
-        navigationItem.title = theOtherUserName
+        navigationItem.title = user.name
         collectionView.register(MessageCell.self, forCellWithReuseIdentifier: MessageCell.identifier)
         collectionView.alwaysBounceVertical = true
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "x.circle.fill"), style: .plain, target: self, action: #selector(handleDissmisal))
+        collectionView.keyboardDismissMode = .interactive
     }
 //    func numberOfSections(in tableView: UITableView) -> Int {
 //        textMessages.count
@@ -142,35 +102,22 @@ class ChatController: UICollectionViewController {
     // MARK: - CollectionView DataSource
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        messages.count
+        print("messages.count \(messages.count)")
+       return messages.count
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let messageCell = collectionView.dequeueReusableCell(withReuseIdentifier: MessageCell.identifier, for: indexPath) as? MessageCell else { return UICollectionViewCell() }
-        
-//        guard let currentUser = currentUser, let theOtherUser = theOtherUser else {
-//            return UICollectionViewCell()
-//        }
-
+      
         let message = messages[indexPath.item]
         
-        if uid == message.senderId {
-            // message right side (ourselves)
-            messageCell.bubbleLeftAnchor.isActive = false
-            messageCell.bubbleRightAnchor.isActive = true
-            messageCell.bubbleContainer.backgroundColor = .lightGray
-            messageCell.configureCell(message: message)
-            messageCell.profileImageView.isHidden = true
-            
-        } else {
-            // message left side
-            messageCell.bubbleLeftAnchor.isActive = true
-            messageCell.bubbleRightAnchor.isActive = false
-            messageCell.bubbleContainer.backgroundColor = .purple
-            messageCell.configureCell(message: message)
-            messageCell.profileImageView.isHidden = false
-        }
+        messageCell.message = message
         
+        if message.fromId == uid {
+            messageCell.configureToCell()
+        } else {
+            messageCell.configureFromCell()
+        }
         return messageCell
     }
 }
@@ -181,7 +128,15 @@ extension ChatController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        return CGSize(width: view.frame.width, height: 50)
+        let frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 50)
+        let estimatedSizeCell = MessageCell(frame: frame)
+        estimatedSizeCell.message = messages[indexPath.row]
+        estimatedSizeCell.layoutIfNeeded()
+        
+        let targetSize = CGSize(width: view.frame.width, height: 1000)
+        let estimatedSize = estimatedSizeCell.systemLayoutSizeFitting(targetSize)
+        
+        return .init(width: view.frame.width, height: estimatedSize.height)
     }
 }
 
@@ -191,15 +146,16 @@ extension ChatController: MessageInputAccessoryViewDelegate {
     func messageInputView(_ inputView: MessageInputAccessoryView, wantsToSend message: String) {
         messageInputView.clearCommentTextView()
         
+        let isFromCurrentUser = user.id ?? "" == uid
         // send message to firestore
-        let message = Message(senderId: uid, content: message, sentTime: Timestamp(date: Date()))
-        ChatService.shared.sendMessage(message: message, chatRoomId: chatRoom.id ?? "") { error in
+        let message = Message(toId: user.id ?? "", fromId: uid, text: message, user: user, sentTime: Timestamp(date: Date()), isFromCurrenUser: isFromCurrentUser)
+        
+        MessegeService.shared.uploadMessage(message, to: user) { error in
             if let error = error {
                 print("Fail to send message \(error)")
                 return
             }
-            
-            print("Success sending message")
+            print("Successfully sending message")
         }
     }
 }

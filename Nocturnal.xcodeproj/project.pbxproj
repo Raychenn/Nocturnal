@@ -63,15 +63,17 @@
 		ED847A18285CDFEA00F33C7F /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED847A17285CDFEA00F33C7F /* AuthService.swift */; };
 		ED847A1A285CE0BE00F33C7F /* AuthButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED847A19285CE0BE00F33C7F /* AuthButton.swift */; };
 		ED847A1C285CE5E700F33C7F /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED847A1B285CE5E700F33C7F /* User.swift */; };
+		ED8B1EF32860CC4B008A0ECB /* MessageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED8B1EF22860CC4B008A0ECB /* MessageService.swift */; };
+		ED8B1EF52860E2D8008A0ECB /* Conversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED8B1EF42860E2D8008A0ECB /* Conversation.swift */; };
 		EDC336172859DC4100A6A95A /* betterdays.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336112859DC3F00A6A95A /* betterdays.mp3 */; };
 		EDC336182859DC4100A6A95A /* creativeminds.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336122859DC4000A6A95A /* creativeminds.mp3 */; };
 		EDC336192859DC4100A6A95A /* dreams.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336132859DC4000A6A95A /* dreams.mp3 */; };
 		EDC3361A2859DC4100A6A95A /* relaxing.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336142859DC4000A6A95A /* relaxing.mp3 */; };
 		EDC3361B2859DC4100A6A95A /* allthat.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336152859DC4100A6A95A /* allthat.mp3 */; };
 		EDC3361C2859DC4100A6A95A /* slowmotion.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336162859DC4100A6A95A /* slowmotion.mp3 */; };
+		EDC663EB28614FB8007FEF82 /* ConservasationsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC663EA28614FB8007FEF82 /* ConservasationsController.swift */; };
+		EDC663ED28615D8D007FEF82 /* ConversationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC663EC28615D8D007FEF82 /* ConversationCell.swift */; };
 		EDD1031F2860142C00AECAD9 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD1031E2860142C00AECAD9 /* Message.swift */; };
-		EDD103212860146400AECAD9 /* Sender.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD103202860146400AECAD9 /* Sender.swift */; };
-		EDD10323286014A900AECAD9 /* MediaItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD10322286014A900AECAD9 /* MediaItem.swift */; };
 		EDD1032528601EBA00AECAD9 /* ChatController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD1032428601EBA00AECAD9 /* ChatController.swift */; };
 		EDD1032728602B4A00AECAD9 /* ChatRoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD1032628602B4A00AECAD9 /* ChatRoom.swift */; };
 		EDD103292860319300AECAD9 /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD103282860319300AECAD9 /* ChatService.swift */; };
@@ -122,9 +124,6 @@
 		ED194CBB2859EB7500C9E5D3 /* StorageUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageUploader.swift; sourceTree = "<group>"; };
 		ED194CBD285A007C00C9E5D3 /* InputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextView.swift; sourceTree = "<group>"; };
 		ED204B21285DB16F0016FDCA /* UILabel+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Ext.swift"; sourceTree = "<group>"; };
-		ED7627B0285F4E1F005EB15C /* ChatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatService.swift; sourceTree = "<group>"; };
-		ED7627B2285F5AFB005EB15C /* ConversationsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsController.swift; sourceTree = "<group>"; };
-		ED7627B4285F64F2005EB15C /* NewMessageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMessageController.swift; sourceTree = "<group>"; };
 		ED7627B6285F6922005EB15C /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
 		ED81C3D3285D7F0F004C12EA /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
 		ED81C3D6285D93D3004C12EA /* Firebase+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firebase+Ext.swift"; sourceTree = "<group>"; };
@@ -147,15 +146,17 @@
 		ED847A17285CDFEA00F33C7F /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		ED847A19285CE0BE00F33C7F /* AuthButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthButton.swift; sourceTree = "<group>"; };
 		ED847A1B285CE5E700F33C7F /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		ED8B1EF22860CC4B008A0ECB /* MessageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageService.swift; sourceTree = "<group>"; };
+		ED8B1EF42860E2D8008A0ECB /* Conversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Conversation.swift; sourceTree = "<group>"; };
 		EDC336112859DC3F00A6A95A /* betterdays.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = betterdays.mp3; sourceTree = "<group>"; };
 		EDC336122859DC4000A6A95A /* creativeminds.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = creativeminds.mp3; sourceTree = "<group>"; };
 		EDC336132859DC4000A6A95A /* dreams.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = dreams.mp3; sourceTree = "<group>"; };
 		EDC336142859DC4000A6A95A /* relaxing.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = relaxing.mp3; sourceTree = "<group>"; };
 		EDC336152859DC4100A6A95A /* allthat.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = allthat.mp3; sourceTree = "<group>"; };
 		EDC336162859DC4100A6A95A /* slowmotion.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = slowmotion.mp3; sourceTree = "<group>"; };
+		EDC663EA28614FB8007FEF82 /* ConservasationsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConservasationsController.swift; sourceTree = "<group>"; };
+		EDC663EC28615D8D007FEF82 /* ConversationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationCell.swift; sourceTree = "<group>"; };
 		EDD1031E2860142C00AECAD9 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
-		EDD103202860146400AECAD9 /* Sender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sender.swift; sourceTree = "<group>"; };
-		EDD10322286014A900AECAD9 /* MediaItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaItem.swift; sourceTree = "<group>"; };
 		EDD1032428601EBA00AECAD9 /* ChatController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatController.swift; sourceTree = "<group>"; };
 		EDD1032628602B4A00AECAD9 /* ChatRoom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRoom.swift; sourceTree = "<group>"; };
 		EDD103282860319300AECAD9 /* ChatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatService.swift; sourceTree = "<group>"; };
@@ -378,6 +379,7 @@
 				ED81C3D3285D7F0F004C12EA /* UserService.swift */,
 				ED81C3DA285D9804004C12EA /* NotificationService.swift */,
 				EDD103282860319300AECAD9 /* ChatService.swift */,
+				ED8B1EF22860CC4B008A0ECB /* MessageService.swift */,
 			);
 			path = FirebaseAPI;
 			sourceTree = "<group>";
@@ -386,9 +388,8 @@
 			isa = PBXGroup;
 			children = (
 				EDD1031E2860142C00AECAD9 /* Message.swift */,
-				EDD103202860146400AECAD9 /* Sender.swift */,
-				EDD10322286014A900AECAD9 /* MediaItem.swift */,
 				EDD1032628602B4A00AECAD9 /* ChatRoom.swift */,
+				ED8B1EF42860E2D8008A0ECB /* Conversation.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -396,9 +397,8 @@
 		ED26DAEE285F0EEE0094B546 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
-				ED7627B2285F5AFB005EB15C /* ConversationsController.swift */,
-				ED7627B4285F64F2005EB15C /* NewMessageController.swift */,
 				EDD1032428601EBA00AECAD9 /* ChatController.swift */,
+				EDC663EA28614FB8007FEF82 /* ConservasationsController.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -406,7 +406,6 @@
 		ED26DAF3285F13570094B546 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
-				ED7627B0285F4E1F005EB15C /* ChatService.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -458,6 +457,7 @@
 				ED7627B6285F6922005EB15C /* UserCell.swift */,
 				EDD1032A28603E3100AECAD9 /* ChatCell.swift */,
 				ED0E582428609AEE00064C02 /* MessageCell.swift */,
+				EDC663EC28615D8D007FEF82 /* ConversationCell.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -638,10 +638,11 @@
 				ED847A12285CDE7300F33C7F /* AuthTextField.swift in Sources */,
 				EDD1032B28603E3100AECAD9 /* ChatCell.swift in Sources */,
 				ED0E58232860758F00064C02 /* MessageInputAccessoryView.swift in Sources */,
+				ED8B1EF52860E2D8008A0ECB /* Conversation.swift in Sources */,
 				ED194CBC2859EB7500C9E5D3 /* StorageUploader.swift in Sources */,
 				ED847A18285CDFEA00F33C7F /* AuthService.swift in Sources */,
+				EDC663EB28614FB8007FEF82 /* ConservasationsController.swift in Sources */,
 				ED0A483E285873DB004661BB /* ViewController.swift in Sources */,
-				EDD103212860146400AECAD9 /* Sender.swift in Sources */,
 				ED83392C285AD57600236814 /* DetailHeader.swift in Sources */,
 				ED0B424928588845000680C2 /* UIButton+Ext.swift in Sources */,
 				ED81C3DE285DA50D004C12EA /* NotificationCell.swift in Sources */,
@@ -662,17 +663,18 @@
 				ED0A485D28587C28004661BB /* ProfileController.swift in Sources */,
 				ED0B424F28588A61000680C2 /* UITextField+Ext.swift in Sources */,
 				ED194CBE285A007C00C9E5D3 /* InputTextView.swift in Sources */,
-				EDD10323286014A900AECAD9 /* MediaItem.swift in Sources */,
 				EDD1032728602B4A00AECAD9 /* ChatRoom.swift in Sources */,
 				ED0B4244285886FC000680C2 /* UIImage+Ext.swift in Sources */,
 				ED194CBA2859E8F300C9E5D3 /* FirebaseReference.swift in Sources */,
 				ED0B423E2858863D000680C2 /* Date+Ext.swift in Sources */,
 				ED204B22285DB16F0016FDCA /* UILabel+Ext.swift in Sources */,
+				EDC663ED28615D8D007FEF82 /* ConversationCell.swift in Sources */,
 				ED847A14285CDF9C00F33C7F /* RegistrationController.swift in Sources */,
 				ED847A02285B7FCA00F33C7F /* MKPlacemark+Ext.swift in Sources */,
 				ED847A06285C6EBA00F33C7F /* MediaPlayerView.swift in Sources */,
 				ED194CB82859E62F00C9E5D3 /* Event.swift in Sources */,
 				ED0B424628588750000680C2 /* UIFont+Ext.swift in Sources */,
+				ED8B1EF32860CC4B008A0ECB /* MessageService.swift in Sources */,
 				ED0A485928587BDE004661BB /* StatsController.swift in Sources */,
 				ED0B425828598718000680C2 /* UploadEventInfoCell.swift in Sources */,
 				ED0B4242285886D7000680C2 /* UIScrollView+Ext.swift in Sources */,

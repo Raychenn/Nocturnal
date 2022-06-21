@@ -76,6 +76,12 @@ class EventDetailController: UIViewController {
         setupUI()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.navigationBar.isHidden = true
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
@@ -231,49 +237,14 @@ extension EventDetailController: UIScrollViewDelegate {
 extension EventDetailController: DetailInfoCellDelegate {
     
     func openChatRoom(cell: DetailInfoCell) {
-    
-        let newChatroomId = generateChatRoomId(otherUid: event.hostID)
-        let chatRoom = ChatRoom(id: newChatroomId, chatMembersId: [uid, event.hostID])
-        
-        ChatService.shared.checkIfChatRoomExist(chatRoomId: newChatroomId) { isExisted in
-            if isExisted {
-                print("chat room existed")
-                UserService.shared.fetchUser(uid: self.event.hostID) { [weak self] result in
-                    guard let self = self else { return }
-                    switch result {
-                    case .success(let host):
-                        let chatVC = ChatController(theOtherUserName: host.name, chatRoom: chatRoom, theOtherUserId: host.id ?? "")
-                        let nav = UINavigationController(rootViewController: chatVC)
-                        nav.modalPresentationStyle = .fullScreen
-                        self.present(nav, animated: true)
-                    case .failure(let error):
-                        print("Fail to fetch host \(error)")
-                    }
-                }
-                return
-            } else {
-                print("Chat room not existed, prepare to upload")
-                ChatService.shared.uploadNewChatroom(chatRoom: chatRoom) { [weak self] error in
-                    guard let self = self else { return }
-                    if let error = error {
-                        print("Failt to upload chat room \(error)")
-                        return
-                    }
-                    UserService.shared.fetchUser(uid: self.event.hostID) { [weak self] result in
-                        guard let self = self else { return }
-                        switch result {
-                        case .success(let host):
-                            let chatVC = ChatController(theOtherUserName: host.name, chatRoom: chatRoom, theOtherUserId: host.id ?? "")
-                            let nav = UINavigationController(rootViewController: chatVC)
-                            nav.modalPresentationStyle = .fullScreen
-                            self.present(nav, animated: true)
-                        case .failure(let error):
-                            print("Fail to fetch host \(error)")
-                        }
-                    }
-                    print("Success upload chat room")
-                    
-                }
+        UserService.shared.fetchUser(uid: self.event.hostID) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let host):
+                let chatVC = ChatController(user: host)
+                self.navigationController?.pushViewController(chatVC, animated: true)
+            case .failure(let error):
+                print("Fail to fetch host \(error)")
             }
         }
     }

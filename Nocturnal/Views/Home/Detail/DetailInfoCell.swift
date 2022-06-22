@@ -28,7 +28,7 @@ class DetailInfoCell: UITableViewCell {
         label.font = .systemFont(ofSize: 30, weight: .medium)
         label.text = "The beginng's Guide to create Animated"
         label.numberOfLines = 0
-        
+        label.textColor = .white
         return label
     }()
     
@@ -43,6 +43,7 @@ class DetailInfoCell: UITableViewCell {
     private let dateLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 15, weight: .medium)
+        label.textColor = .white
         label.text = "Jun 4 . 7:00 PM"
         return label
     }()
@@ -58,6 +59,7 @@ class DetailInfoCell: UITableViewCell {
     private let addressLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
+        label.textColor = .white
         label.font = .systemFont(ofSize: 15, weight: .medium)
         label.text = "Loading Address"
         return label
@@ -73,6 +75,7 @@ class DetailInfoCell: UITableViewCell {
     
     private let styleLabel: UILabel = {
         let label = UILabel()
+        label.textColor = .white
         label.font = .systemFont(ofSize: 15, weight: .medium)
         label.text = "Event Style: Loading"
         return label
@@ -88,6 +91,7 @@ class DetailInfoCell: UITableViewCell {
     
     private let feeLabel: UILabel = {
         let label = UILabel()
+        label.textColor = .white
         label.font = .systemFont(ofSize: 15, weight: .medium)
         label.text = "$15.50"
         return label
@@ -108,6 +112,7 @@ class DetailInfoCell: UITableViewCell {
         let label = UILabel()
         label.font = .systemFont(ofSize: 15, weight: .medium)
         label.text = "Host: Ray Chen"
+        label.textColor = .white
         return label
     }()
     
@@ -115,7 +120,7 @@ class DetailInfoCell: UITableViewCell {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 25)
         button.setImage( UIImage(systemName: "message.fill", withConfiguration: config), for: .normal)
-        button.tintColor = .black
+        button.tintColor = .white
         button.addTarget(self, action: #selector(didTapChatButton), for: .touchUpInside)
         return button
     }()
@@ -132,6 +137,7 @@ class DetailInfoCell: UITableViewCell {
         let label = UILabel()
         label.font = .systemFont(ofSize: 15, weight: .medium)
         label.text = "Joined Members: 7"
+        label.textColor = .white
         return label
     }()
     
@@ -206,7 +212,10 @@ class DetailInfoCell: UITableViewCell {
     
     // MARK: - Heleprs
 
-    func configureCell(with event: Event) {
+    func configureCell(with event: Event, host: User) {
+        backgroundColor = .black
+        self.hostProfileImageView.kf.setImage(with: URL(string: host.profileImageURL)!)
+        self.hostNameLabel.text = host.name
         self.event = event
         titleLabel.text = event.title
         let formattedDateString = Date.dateFormatter.string(from: event.startingDate.dateValue())
@@ -237,6 +246,8 @@ class DetailInfoCell: UITableViewCell {
                           paddingTop: 10,
                           paddingLeft: 8,
                           paddingRight: 8)
+        
+        titleLabel.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
         
         let dateStack = UIStackView(arrangedSubviews: [dateImageView, dateLabel])
         dateStack.axis = .horizontal

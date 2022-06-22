@@ -69,6 +69,13 @@ class NotificationCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+//        permissionButton.setTitle(nil, for: .normal)
+//        permissionButton.removeTarget(nil, action: nil, for: .allEvents)
+    }
+    
     // MARK: - Selector
     
     @objc func didTapProfileImageView() {
@@ -76,6 +83,7 @@ class NotificationCell: UITableViewCell {
     }
     
     @objc func didTapPermissionButton() {
+        
         guard let applicantId = applicantId else {
             print("applicantId nil")
             return

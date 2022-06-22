@@ -19,6 +19,7 @@ struct User: Codable {
     @DocumentID var id: String?
     let name: String
     let email: String
+    let country: String        
     let profileImageURL: String
     let birthday: Timestamp
     let gender: Int
@@ -26,4 +27,9 @@ struct User: Codable {
     let bio: String
     let joinedEventsId: [String]
     let blockedUsersId: [String]
+    
+    var age: Int {
+        // should calculate this based on birthday
+        return 99
+    }
 }

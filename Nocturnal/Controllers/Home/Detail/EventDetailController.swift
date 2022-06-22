@@ -37,6 +37,7 @@ class EventDetailController: UIViewController {
         let button = UIButton()
         button.setTitle("Join", for: .normal)
         button.setTitleColor(.white, for: .normal)
+        button.setHeight(50)
         button.backgroundColor = .primaryBlue
         button.addTarget(self, action: #selector(didTapJoinButton), for: .touchUpInside)
         return button
@@ -55,34 +56,28 @@ class EventDetailController: UIViewController {
     private var currentUser: User? {
         didSet {
             // host can not join his own event
-            guard let currentUserId = currentUser?.id else {
-                print("currentUserId is nil")
-                return
-            }
-            if event.hostID == currentUserId {
-                joinButton.isHidden = true
-            } else {
-                joinButton.isHidden = false
-            }
-            
-            print("joinButton hidden \(joinButton.isHidden)")
+            tableView.reloadData()
         }
     }
     
-    private var host: User?
-    
-    private var shouldShowDescription = false
+    private var host: User? {
+        didSet {
+            tableView.reloadData()
+        }
+    }
+        
+    var buttonStack = UIStackView()
         
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        fetchHost()
         fetchCurrentUser()
-        setupUI()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        setupUI()
         navigationController?.navigationBar.isHidden = true
     }
     
@@ -109,7 +104,17 @@ class EventDetailController: UIViewController {
             switch result {
             case .success(let user):
                 self.currentUser = user
-                self.tableView.reloadData()
+            case .failure(let error):
+                print("Fail to get user \(error)")
+            }
+        }
+    }
+    
+    private func fetchHost() {
+        UserService.shared.fetchUser(uid: event.hostID) { result in
+            switch result {
+            case .success(let host):
+                self.host = host
             case .failure(let error):
                 print("Fail to get user \(error)")
             }
@@ -122,9 +127,11 @@ class EventDetailController: UIViewController {
         tabBarController?.tabBar.isHidden = true
         view.backgroundColor = .white
         view.addSubview(tableView)
+        view.addSubview(buttonStack)
+        joinButton.layer.cornerRadius = 20
+        buttonStack.addArrangedSubview(joinButton)
         tableView.anchor(top: view.topAnchor, left: view.leftAnchor, right: view.rightAnchor)
-        view.addSubview(joinButton)
-        joinButton.anchor(top: tableView.bottomAnchor,
+        buttonStack.anchor(top: tableView.bottomAnchor,
                           left: view.leftAnchor,
                           bottom: view.safeAreaLayoutGuide.bottomAnchor,
                           right: view.rightAnchor,
@@ -132,8 +139,12 @@ class EventDetailController: UIViewController {
                           paddingBottom: 8,
                           paddingRight: 16)
         
-        joinButton.setHeight(50)
-        joinButton.layer.cornerRadius = 20
+        if event.hostID == uid {
+            buttonStack.removeArrangedSubview(joinButton)
+            joinButton.removeFromSuperview()
+        } else {
+            buttonStack.addArrangedSubview(joinButton)
+        }
         view.addSubview(backButton)
         backButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingTop: 8, paddingLeft: 8)
     }
@@ -179,9 +190,11 @@ extension EventDetailController: UITableViewDataSource {
         
         guard let descriptionCell = tableView.dequeueReusableCell(withIdentifier: DetailDescriptionCell.identifier) as? DetailDescriptionCell else { return UITableViewCell() }
         
+        guard let host = host else { return UITableViewCell() }
+        
         switch indexPath.row {
         case 0:
-            infoCell.configureCell(with: event)
+            infoCell.configureCell(with: event, host: host)
             infoCell.delegate = self
             return infoCell
         case 1:
@@ -204,15 +217,18 @@ extension EventDetailController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-//        let descriptionCell = tableView.cellForRow(at: indexPath) as? DetailDescriptionCell
+        let descriptionCell = tableView.cellForRow(at: indexPath) as? DetailDescriptionCell
 //        shouldShowDescription = !shouldShowDescription
-//        descriptionCell?.animateDescriptionLabel(shouldShow: shouldShowDescription)
+        descriptionCell?.animateDescriptionLabel()
+        
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
-        if indexPath.row == 1 {
+        if indexPath.row == 0 {
+            return 350
+        } else if indexPath.row == 1 {
             return 200
         }
         

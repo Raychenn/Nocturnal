@@ -20,5 +20,12 @@ extension UILabel {
         
         attributedText = attributedTitle
     }
+    
+    func makeBasicSemiboldLabel(fontSize: CGFloat, text: String) -> UILabel {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: fontSize, weight: .semibold)
+        label.numberOfLines = 0
+        label.text = text
+        return label
+    }
 }
-

@@ -38,6 +38,7 @@ struct NotificationService {
     }
     
     func postAceeptedNotification(to applicantUid: String, notification: Notification, completion: FirestoreCompletion) {
+        print("postAceeptedNotification called")
         updatePermissionNotification(for: uid, isPermitted: notification.isRequestPermitted) { error in
             guard error == nil else {
                 print("Fail to update notification \(String(describing: error))")
@@ -65,7 +66,7 @@ struct NotificationService {
     
     func postDeniedNotification(to applicantUid: String, notification: Notification, completion: FirestoreCompletion) {
         // finish here tomorrow (opposite of postAceeptedNotification)
-        updatePermissionNotification(for: uid, isPermitted:  notification.isRequestPermitted) { error in
+        updatePermissionNotification(for: uid, isPermitted: notification.isRequestPermitted) { error in
             guard error == nil else {
                 print("Fail to update notification \(String(describing: error))")
                 return

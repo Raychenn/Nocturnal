@@ -95,6 +95,9 @@ class NotificationCell: UITableViewCell {
         }
         
         notification.isRequestPermitted = !notification.isRequestPermitted
+        self.notification?.isRequestPermitted = notification.isRequestPermitted
+        
+        print("notification isRequestPermitted \(notification.isRequestPermitted)")
         
         permissionButton.setTitle(notification.isRequestPermitted ? "Deny": "Accept", for: .normal)
         

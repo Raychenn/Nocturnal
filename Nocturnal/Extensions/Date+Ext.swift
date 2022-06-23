@@ -24,11 +24,21 @@ public enum Zodiac {
 
 extension Date {
     
-    static var dateFormatter: DateFormatter {
+    static var dateTimeFormatter: DateFormatter {
         
         let formatter = DateFormatter()
         
         formatter.dateFormat = "yyyy.MM.dd HH:mm"
+                
+        return formatter
+        
+    }
+    
+    static var dateFormatter: DateFormatter {
+        
+        let formatter = DateFormatter()
+        
+        formatter.dateFormat = "MM/dd/yyyy"
                 
         return formatter
         

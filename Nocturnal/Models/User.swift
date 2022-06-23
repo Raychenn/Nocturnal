@@ -13,6 +13,17 @@ enum Gender: Int, Codable {
     case male = 0
     case female
     case unspecified
+    
+    var description: String {
+        switch self {
+        case .male:
+            return "Male"
+        case .female:
+            return "Female"
+        case .unspecified:
+            return "Unspecified"
+        }
+    }
 }
 
 struct User: Codable {

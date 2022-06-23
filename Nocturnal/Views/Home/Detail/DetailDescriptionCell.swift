@@ -11,9 +11,9 @@ class DetailDescriptionCell: UITableViewCell {
     
     private let descriptionTitleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 25, weight: .semibold)
+        label.font = .systemFont(ofSize: 25, weight: .bold)
         label.numberOfLines = 0
-        label.text = "Event Description"
+        label.text = "About"
         return label
     }()
     

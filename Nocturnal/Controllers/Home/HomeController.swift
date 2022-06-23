@@ -70,7 +70,12 @@ class HomeController: UIViewController {
     }
     
     @objc func handleLogout() {
-       try? Auth.auth().signOut()
+        do {
+            try Auth.auth().signOut()
+        } catch  {
+            print("Fail to log out \(error)")
+        }
+       
        checkIfUserIsLoggedIn()
     }
     
@@ -113,7 +118,6 @@ class HomeController: UIViewController {
     }
     
     func checkIfUserIsLoggedIn() {
-//        try? Auth.auth().signOut()
         if Auth.auth().currentUser == nil {
             DispatchQueue.main.async {
                 let loginController = LoginController()

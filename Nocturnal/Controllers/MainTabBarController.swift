@@ -65,7 +65,7 @@ class MainTabBarController: UITabBarController {
     func configureTabBarStyle() {
         let appearance = UITabBarAppearance()
         appearance.configureWithDefaultBackground()
-        appearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterialDark)
+        appearance.backgroundEffect = UIBlurEffect(style: .systemThickMaterialDark)
         tabBar.scrollEdgeAppearance = appearance
         tabBar.standardAppearance = appearance
     }

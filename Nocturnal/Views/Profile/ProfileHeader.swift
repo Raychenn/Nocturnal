@@ -11,7 +11,7 @@ class ProfileHeader: UITableViewHeaderFooterView {
     
     static let identifier = "ProfileHeader"
     
-    private let profileImageView: UIImageView = {
+     let profileImageView: UIImageView = {
        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.backgroundColor = .lightBlue
@@ -22,7 +22,7 @@ class ProfileHeader: UITableViewHeaderFooterView {
     private let genderLabel: UILabel = {
        let label = UILabel()
         label.font = .systemFont(ofSize: 18, weight: .bold)
-        label.textColor = .white
+        label.textColor = .lightBlue
         label.text = "Male"
         return label
     }()
@@ -39,7 +39,7 @@ class ProfileHeader: UITableViewHeaderFooterView {
     private let zodiacLabel: UILabel = {
        let label = UILabel()
         label.font = .systemFont(ofSize: 18, weight: .bold)
-        label.textColor = .white
+        label.textColor = .lightBlue
         label.text = "Scorpion"
         return label
     }()
@@ -56,7 +56,7 @@ class ProfileHeader: UITableViewHeaderFooterView {
     private let ageTitleLabel: UILabel = {
        let label = UILabel()
         label.font = .systemFont(ofSize: 18, weight: .bold)
-        label.textColor = .white
+        label.textColor = .lightBlue
         label.text = "27"
         return label
     }()
@@ -75,6 +75,11 @@ class ProfileHeader: UITableViewHeaderFooterView {
         setupUI()
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -85,7 +90,7 @@ class ProfileHeader: UITableViewHeaderFooterView {
         let topStack = UIStackView(arrangedSubviews: [genderLabel, zodiacLabel, ageTitleLabel])
         topStack.axis = .horizontal
         topStack.distribution = .equalCentering
-        profileImageView.addSubview(topStack)
+        addSubview(topStack)
         
         topStack.anchor(left: profileImageView.leftAnchor, right: profileImageView.rightAnchor, paddingLeft: 25, paddingRight: 35)
         
@@ -99,13 +104,5 @@ class ProfileHeader: UITableViewHeaderFooterView {
                            right: profileImageView.rightAnchor,
                            paddingTop: 8,
                            paddingLeft: 25, paddingBottom: 30, paddingRight: 25)
-        
-        let gradientView = UIView()
-        gradientView.frame = self.frame
-        let gradient = CAGradientLayer()
-        gradient.colors = [UIColor.darkGray.cgColor, UIColor.black.cgColor]
-        gradient.locations = [0, 1]
-        gradientView.layer.addSublayer(gradient)
-        self.insertSubview(gradientView, aboveSubview: profileImageView)
     }
 }

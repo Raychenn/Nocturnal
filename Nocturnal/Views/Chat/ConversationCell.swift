@@ -88,7 +88,7 @@ class ConversationCell: UITableViewCell {
         }
         
         profileImageView.kf.setImage(with: profileURL)
-        timestampLabel.text = Date.dateFormatter.string(from: conversation.message.sentTime.dateValue())
+        timestampLabel.text = Date.dateTimeFormatter.string(from: conversation.message.sentTime.dateValue())
         usernameLabel.text = conversation.user.name
         messageLabel.text = conversation.message.text
     }

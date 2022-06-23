@@ -124,7 +124,7 @@ class NotificationCell: UITableViewCell {
         }
         
         titleLabel.attributedText(firstPart: user.name, secondPart: "\(type.description)")
-        timeLabel.text = "\(Date.dateFormatter.string(from: notification.sentTime.dateValue()))"
+        timeLabel.text = "\(Date.dateTimeFormatter.string(from: notification.sentTime.dateValue()))"
     }
     
     private func setupCellUI() {

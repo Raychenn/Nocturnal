@@ -12,6 +12,14 @@ import FirebaseFirestoreSwift
 struct UserService {
     
     static let shared = UserService()
+    /// testing
+    func updateUserProfile(newUserData: User, completion: FirestoreCompletion) {
+        do {
+            try collection_users.document(uid).setData(from: newUserData, encoder: .init(), completion: completion)
+        } catch {
+            print("Fail to encode user \(error)")
+        }
+    }
     
     func updateUserToJoinEvent(uid: String, joinedEventId: String, completion: FirestoreCompletion) {
         

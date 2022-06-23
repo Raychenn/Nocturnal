@@ -94,6 +94,22 @@ extension ProfileController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let profileHeader = tableView.dequeueReusableHeaderFooterView(withIdentifier: ProfileHeader.identifier) as? ProfileHeader else { return UIView() }
         
+        let gradientView = UIView(frame: profileHeader.profileImageView.frame)
+
+        let gradient = CAGradientLayer()
+
+        gradient.frame = gradientView.frame
+
+        gradient.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
+
+        gradient.locations = [0.0, 1.0]
+
+        gradientView.layer.insertSublayer(gradient, at: 0)
+
+        profileHeader.profileImageView.addSubview(gradientView)
+
+        profileHeader.bringSubviewToFront(gradientView)
+        
         return profileHeader
     }
     
@@ -106,7 +122,7 @@ extension ProfileController: UITableViewDelegate {
 extension ProfileController: ProfileCellDelegate {
     
     func didTapEditProfile(cell: ProfileCell) {
-        let editProfileVC = EditProfileController()
+        let editProfileVC = EditProfileController(user: currentUser)
         navigationController?.pushViewController(editProfileVC, animated: true)
     }
     

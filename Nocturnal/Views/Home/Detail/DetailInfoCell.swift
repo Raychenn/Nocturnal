@@ -218,7 +218,7 @@ class DetailInfoCell: UITableViewCell {
         self.hostNameLabel.text = host.name
         self.event = event
         titleLabel.text = event.title
-        let formattedDateString = Date.dateFormatter.string(from: event.startingDate.dateValue())
+        let formattedDateString = Date.dateTimeFormatter.string(from: event.startingDate.dateValue())
         dateLabel.text = "\(formattedDateString)"
         let location = CLLocation(latitude: event.destinationLocation.latitude, longitude: event.destinationLocation.longitude)
         CLGeocoder().reverseGeocodeLocation(location, preferredLocale: nil) { [weak self] (clPlacemark: [CLPlacemark]?, error: Error?) in

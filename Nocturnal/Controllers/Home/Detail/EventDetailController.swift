@@ -22,6 +22,7 @@ class EventDetailController: UIViewController {
         table.sectionHeaderTopPadding = 0
         table.dataSource = self
         table.delegate = self
+        table.allowsSelection = false
         table.register(DetailInfoCell.self, forCellReuseIdentifier: DetailInfoCell.identifier)
         table.register(PreviewMapCell.self, forCellReuseIdentifier: PreviewMapCell.identifier)
         table.register(DetailDescriptionCell.self, forCellReuseIdentifier: DetailDescriptionCell.identifier)

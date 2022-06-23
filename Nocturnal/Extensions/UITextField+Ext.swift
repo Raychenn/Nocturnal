@@ -43,4 +43,17 @@ extension UITextField {
          textfield.setLeftPaddingPoints(amount: 8)
          return textfield
     }
+    
+    func makeEditProfileTextField(placeholder: String) -> UITextField {
+        let textField = UITextField()
+        textField.textColor = .white
+        textField.font = .systemFont(ofSize: 13)
+         textField.setLeftPaddingPoints(amount: 8)
+         textField.attributedPlaceholder = NSAttributedString(
+             string: "\(placeholder)",
+             attributes: [NSAttributedString.Key.foregroundColor: UIColor.white, NSAttributedString.Key.font: UIFont.systemFont(ofSize: 13, weight: .semibold)]
+         )
+         textField.backgroundColor = .darkGray
+         return textField
+    }
 }

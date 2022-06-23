@@ -99,6 +99,7 @@ class ProfileCell: UITableViewCell {
     
     func configureCell(with user: User, joinedEventsURL: [String]) {
         usernameLabel.text = user.name
+        countryLabel.text = user.country
         self.joinedEventsURL = joinedEventsURL
     }
     

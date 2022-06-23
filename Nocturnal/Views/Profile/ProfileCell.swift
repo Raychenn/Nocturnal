@@ -106,14 +106,14 @@ class ProfileCell: UITableViewCell {
         collectionView.dataSource = self
         collectionView.delegate = self
         backgroundColor = UIColor.white
-        layer.cornerRadius = 60
-        layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+        layer.cornerRadius = 25
+        layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner]
         
         contentView.addSubview(usernameLabel)
-        usernameLabel.anchor(top: contentView.topAnchor, left: contentView.leftAnchor, paddingTop: 20, paddingLeft: 10)
+        usernameLabel.anchor(top: contentView.topAnchor, left: contentView.leftAnchor, paddingTop: 20, paddingLeft: 20)
         
         contentView.addSubview(countryLabel)
-        countryLabel.anchor(top: usernameLabel.bottomAnchor, left: contentView.leftAnchor, paddingTop: 8, paddingLeft: 10)
+        countryLabel.anchor(top: usernameLabel.bottomAnchor, left: contentView.leftAnchor, paddingTop: 8, paddingLeft: 20)
         
         contentView.addSubview(editProfileButton)
         editProfileButton.centerY(inView: countryLabel)
@@ -139,6 +139,7 @@ class ProfileCell: UITableViewCell {
                         right: contentView.rightAnchor,
                         paddingTop: 10,
                         paddingLeft: 10,
+                        paddingBottom: 100,
                         paddingRight: 10)
     }
 }

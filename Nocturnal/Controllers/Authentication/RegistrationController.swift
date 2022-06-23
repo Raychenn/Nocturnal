@@ -100,6 +100,7 @@ class RegistrationController: UIViewController {
             
             let user = User(name: fullName,
                             email: email,
+                            country: "",
                             profileImageURL: downloadedImgURL,
                             birthday: Timestamp(date: Date()),
                             gender: defaultGender,

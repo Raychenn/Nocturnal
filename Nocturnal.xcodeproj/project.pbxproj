@@ -42,6 +42,11 @@
 		ED194CBC2859EB7500C9E5D3 /* StorageUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CBB2859EB7500C9E5D3 /* StorageUploader.swift */; };
 		ED194CBE285A007C00C9E5D3 /* InputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CBD285A007C00C9E5D3 /* InputTextView.swift */; };
 		ED204B22285DB16F0016FDCA /* UILabel+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED204B21285DB16F0016FDCA /* UILabel+Ext.swift */; };
+		ED626A872862B09E003BB636 /* ProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED626A862862B09E003BB636 /* ProfileCell.swift */; };
+		ED626A8A2862B41C003BB636 /* JoinedEventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED626A892862B41C003BB636 /* JoinedEventCell.swift */; };
+		ED626A8C2862B892003BB636 /* EventPhotosCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED626A8B2862B892003BB636 /* EventPhotosCell.swift */; };
+		ED626A8E2862BA97003BB636 /* ProfileHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED626A8D2862BA97003BB636 /* ProfileHeader.swift */; };
+		ED626A902862DA20003BB636 /* EditProfileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED626A8F2862DA20003BB636 /* EditProfileController.swift */; };
 		ED81C3D4285D7F0F004C12EA /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED81C3D3285D7F0F004C12EA /* UserService.swift */; };
 		ED81C3D7285D93D3004C12EA /* Firebase+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED81C3D6285D93D3004C12EA /* Firebase+Ext.swift */; };
 		ED81C3D9285D9464004C12EA /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED81C3D8285D9464004C12EA /* Notification.swift */; };
@@ -127,6 +132,11 @@
 		ED194CBB2859EB7500C9E5D3 /* StorageUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageUploader.swift; sourceTree = "<group>"; };
 		ED194CBD285A007C00C9E5D3 /* InputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextView.swift; sourceTree = "<group>"; };
 		ED204B21285DB16F0016FDCA /* UILabel+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Ext.swift"; sourceTree = "<group>"; };
+		ED626A862862B09E003BB636 /* ProfileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCell.swift; sourceTree = "<group>"; };
+		ED626A892862B41C003BB636 /* JoinedEventCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinedEventCell.swift; sourceTree = "<group>"; };
+		ED626A8B2862B892003BB636 /* EventPhotosCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventPhotosCell.swift; sourceTree = "<group>"; };
+		ED626A8D2862BA97003BB636 /* ProfileHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeader.swift; sourceTree = "<group>"; };
+		ED626A8F2862DA20003BB636 /* EditProfileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileController.swift; sourceTree = "<group>"; };
 		ED7627B6285F6922005EB15C /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
 		ED81C3D3285D7F0F004C12EA /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
 		ED81C3D6285D93D3004C12EA /* Firebase+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firebase+Ext.swift"; sourceTree = "<group>"; };
@@ -263,6 +273,7 @@
 		ED0A484F285877C6004661BB /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				ED626A882862B3FD003BB636 /* Profile */,
 				EDC663EE2861745B007FEF82 /* Explore */,
 				EDD1031D2860131800AECAD9 /* Chat */,
 				ED81C3DC285DA4FE004C12EA /* Notification */,
@@ -342,6 +353,7 @@
 			isa = PBXGroup;
 			children = (
 				ED0A485C28587C28004661BB /* ProfileController.swift */,
+				ED626A8F2862DA20003BB636 /* EditProfileController.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -417,6 +429,17 @@
 			children = (
 			);
 			path = Chat;
+			sourceTree = "<group>";
+		};
+		ED626A882862B3FD003BB636 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				ED626A862862B09E003BB636 /* ProfileCell.swift */,
+				ED626A892862B41C003BB636 /* JoinedEventCell.swift */,
+				ED626A8B2862B892003BB636 /* EventPhotosCell.swift */,
+				ED626A8D2862BA97003BB636 /* ProfileHeader.swift */,
+			);
+			path = Profile;
 			sourceTree = "<group>";
 		};
 		ED81C3D5285D9376004C12EA /* Detail */ = {
@@ -656,6 +679,7 @@
 				EDD1032B28603E3100AECAD9 /* ChatCell.swift in Sources */,
 				ED0E58232860758F00064C02 /* MessageInputAccessoryView.swift in Sources */,
 				ED8B1EF52860E2D8008A0ECB /* Conversation.swift in Sources */,
+				ED626A872862B09E003BB636 /* ProfileCell.swift in Sources */,
 				ED194CBC2859EB7500C9E5D3 /* StorageUploader.swift in Sources */,
 				ED847A18285CDFEA00F33C7F /* AuthService.swift in Sources */,
 				EDC663EB28614FB8007FEF82 /* ConservasationsController.swift in Sources */,
@@ -683,9 +707,12 @@
 				EDD1032728602B4A00AECAD9 /* ChatRoom.swift in Sources */,
 				ED0B4244285886FC000680C2 /* UIImage+Ext.swift in Sources */,
 				ED194CBA2859E8F300C9E5D3 /* FirebaseReference.swift in Sources */,
+				ED626A8C2862B892003BB636 /* EventPhotosCell.swift in Sources */,
+				ED626A8A2862B41C003BB636 /* JoinedEventCell.swift in Sources */,
 				ED0B423E2858863D000680C2 /* Date+Ext.swift in Sources */,
 				ED204B22285DB16F0016FDCA /* UILabel+Ext.swift in Sources */,
 				EDC663ED28615D8D007FEF82 /* ConversationCell.swift in Sources */,
+				ED626A8E2862BA97003BB636 /* ProfileHeader.swift in Sources */,
 				ED847A14285CDF9C00F33C7F /* RegistrationController.swift in Sources */,
 				ED847A02285B7FCA00F33C7F /* MKPlacemark+Ext.swift in Sources */,
 				ED847A06285C6EBA00F33C7F /* MediaPlayerView.swift in Sources */,
@@ -700,6 +727,7 @@
 				ED847A10285CDE1A00F33C7F /* LoginController.swift in Sources */,
 				ED0B423C28588611000680C2 /* UIColor+Ext.swift in Sources */,
 				ED0A485528587A27004661BB /* HomeController.swift in Sources */,
+				ED626A902862DA20003BB636 /* EditProfileController.swift in Sources */,
 				ED81C3D7285D93D3004C12EA /* Firebase+Ext.swift in Sources */,
 				ED83392E285ADC4B00236814 /* DetailDescriptionCell.swift in Sources */,
 				ED0A485728587A7C004661BB /* ExploreController.swift in Sources */,

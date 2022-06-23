@@ -9,7 +9,7 @@ import UIKit
 
 extension UIViewController {
     
-    func configureChatNavBar(withTitle: String, backgroundColor: UIColor? = UIColor.black ,preferLargeTitles: Bool) {
+    func configureChatNavBar(withTitle: String,backgroundColor: UIColor? = UIColor.black, preferLargeTitles: Bool) {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]

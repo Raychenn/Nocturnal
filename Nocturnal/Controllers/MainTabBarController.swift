@@ -12,14 +12,26 @@ class MainTabBarController: UITabBarController {
 
     // MARK: - Properties
     
+    var currentUser: User?
+    
     // MARK: - Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        checkIfUserIsLoggedIn()
-        configureViewControllers()
-        configureTabBarStyle()
-        configureNavigationBarUI()
+        
+        fetchCurrentUser { [weak self] user in
+            guard let self = self else { return }
+            self.currentUser = user
+            self.configureViewControllers()
+            self.configureTabBarStyle()
+            self.configureNavigationBarUI()
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        self.checkIfUserIsLoggedIn()
     }
     
     // MARK: - API
@@ -37,6 +49,17 @@ class MainTabBarController: UITabBarController {
         }
     }
     
+    private func fetchCurrentUser(completion: @escaping (User) -> Void) {
+        UserService.shared.fetchUser(uid: uid) { result in
+            switch result {
+            case .success(let user):
+                completion(user)
+            case .failure(let error):
+                print("Fail to fetch user \(error)")
+            }
+        }
+    }
+    
     // MARK: - helpers
     
     func configureTabBarStyle() {
@@ -48,6 +71,10 @@ class MainTabBarController: UITabBarController {
     }
     
     func configureViewControllers() {
+        guard let currentUser = currentUser else {
+            print("Current user nil")
+            return
+        }
         // conform to delegate
         self.delegate = self
         
@@ -61,7 +88,7 @@ class MainTabBarController: UITabBarController {
         let notification = templateNavigationViewController(unselectedImage: UIImage(systemName: "heart")!, selectedImage: UIImage(systemName: "heart.fill")!, rootViewController: NotificationController())
          
 //        let profileController = ProfileContoller(user: user)
-        let profile = templateNavigationViewController(unselectedImage: UIImage(systemName: "person")!, selectedImage: UIImage(systemName: "person.fill")!, rootViewController: ProfileController())
+        let profile = templateNavigationViewController(unselectedImage: UIImage(systemName: "person")!, selectedImage: UIImage(systemName: "person.fill")!, rootViewController: ProfileController(user: currentUser))
         
         viewControllers = [home, explore, stats, notification, profile]
         tabBar.tintColor = .black

@@ -54,11 +54,13 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         return searchController.isActive && (!isSearchBarEmpty || searchBarScopeIsFiltering)
     }
     
-    var events: [Event] = []
+    var events: [Event] = [] 
     
     var filtedEvents: [Event] = []
 
     var randomHeights: [CGFloat] = []
+    
+    var originalAllEvents: [Event] = []
     
     // MARK: - Life Cycle
     
@@ -70,7 +72,6 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
         fetchEvents()
     }
     
@@ -80,6 +81,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
             switch result {
             case .success(let events):
                 self.events = events
+                self.originalAllEvents = events
                 self.generateRandomHeight(eventCount: events.count)
                 self.collectionView.reloadData()
             case .failure(let error):
@@ -89,14 +91,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     }
     
     private func resetEvents() {
-        EventService.shared.fetchAllEvents { result in
-            switch result {
-            case .success(let events):
-                self.events = events
-            case .failure(let error):
-                print("Fail to fetch events: \(error)")
-            }
-        }
+        self.events = originalAllEvents
     }
     
     // MARK: - Selectors
@@ -127,7 +122,6 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
                  }
              })
             self.events = filteredEvents
-            print("event count when button tapped \(events.count)")
             collectionView.reloadData()
         case 2:
             resetEvents()
@@ -204,7 +198,6 @@ extension ExploreController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
         guard let exploreCell = collectionView.dequeueReusableCell(withReuseIdentifier: ExploreCell.identifier, for: indexPath) as? ExploreCell else { return UICollectionViewCell() }
         
         let event: Event
@@ -227,16 +220,15 @@ extension ExploreController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let event: Event
-        print("events \(events.count)")
-        print("filtered events \(filtedEvents.count)")
-     
+        
         if isFiltering {
-            event = filtedEvents[indexPath.row]
+            event = filtedEvents[indexPath.item]
         } else {
-            event = events[indexPath.row]
+            event = events[indexPath.item]
         }
         
         let detailedVC = EventDetailController(event: event)
+        detailedVC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(detailedVC, animated: true)
     }
 }

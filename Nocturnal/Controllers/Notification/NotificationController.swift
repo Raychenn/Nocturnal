@@ -52,7 +52,6 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
             switch result {
             case .success(let users):
                 self.hosts = users
-                print("hosts \(self.hosts)")
             case .failure(let error):
                 print("Fail to fetch hosts \(error)")
             }
@@ -64,7 +63,6 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
             switch result {
             case .success(let users):
                 self.applicants = users
-                print("applicants \(users)")
             case .failure(let error):
                 print("Fail to fetch applicants \(error)")
             }
@@ -74,9 +72,7 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     private func fetchNotifications() {
         NotificationService.shared.fetchNotifications(uid: uid) { result in
             switch result {
-            case .success(let notifications):
-                print("got notifications \(notifications)")
-                
+            case .success(let notifications):                
                 self.notifications = self.getFilteredNotifications(notifications: notifications)
                 self.fetchHostsAndApplicants()
                 print("Host \(self.hosts), applicant \(self.applicants)")
@@ -143,18 +139,6 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
             notificationCell.delegate = self
         }
         
-//        let applicant = applicants[indexPath.row]
-//        let type = NotificationType(rawValue: notification.type)
-//        let host = hosts[indexPath.row]
-//        if type == .joinEventRequest {
-            // 別的applicant送通知's cell
-//            notificationCell.configueCell(with: notification, user: applicant)
-//            notificationCell.delegate = self
-//        } else {
-            // 收到host 回傳通知's cell
-//            notificationCell.configueCell(with: notification, user: host)
-//        }
-        
         return notificationCell
     }
 }
@@ -164,6 +148,7 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
 extension NotificationController: NotificationCellDelegate {
     
     func cell(_ cell: NotificationCell, wantsToAccept uid: String) {
+        print("wantsToAccept called")
         let selectedIndexPath = tableView.indexPath(for: cell) ?? IndexPath()
         let selectedNotification = notifications[selectedIndexPath.row]
         let type = NotificationType.successJoinedEventResponse.rawValue
@@ -186,6 +171,7 @@ extension NotificationController: NotificationCellDelegate {
     }
     
     func cell(_ cell: NotificationCell, wantsToDeny uid: String) {
+        print("wantsToDeny called")
         let selectedIndexPath = tableView.indexPath(for: cell) ?? IndexPath()
         let selectedNotification = notifications[selectedIndexPath.row]
         let type = NotificationType.failureJoinedEventResponse.rawValue

@@ -13,6 +13,10 @@ struct UserService {
     
     static let shared = UserService()
     
+    func updateUserEventRequest(eventId: String, completion: FirestoreCompletion) {
+        collection_users.document(uid).updateData(["requestedEventsId": FieldValue.arrayUnion([eventId])], completion: completion)
+    }
+    
     /// testing
     func updateUserProfile(newUserData: User, completion: FirestoreCompletion) {
         do {

@@ -213,7 +213,9 @@ extension AddEventController: UploadEventInfoCellDelegate {
                                          style: userInputData.eventStyle,
                                          eventImageURL: downloadedImageURL,
                                          eventMusicURL: downloadedMusicURL,
-                                         participants: [])
+                                         participants: [],
+                                         deniedUsersId: [],
+                                         pendingUsersId: [])
                     
                     EventService.shared.postNewEvent(event: newEvent) { [weak self] error in
                         print("start uploading event")

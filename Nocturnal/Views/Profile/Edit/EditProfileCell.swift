@@ -117,16 +117,18 @@ class EditProfileCell: UITableViewCell {
         
         emailField.text = user.email
         countryField.text = user.country
-        switch user.gender {
-        case 0:
-            genderField.text = "Male"
-        case 1:
-            genderField.text = "Female"
-        case 2:
-            genderField.text = "Unspecified"
-        default:
-            break
+        let gender = Gender(rawValue: user.gender) ?? .unspecified
+        
+        switch gender {
+        case .male:
+            genderField.text = gender.description
+        case .female:
+            genderField.text = gender.description
+            
+        case .unspecified:
+            genderField.text = gender.description
         }
+        
         datePicker.date = user.birthday.dateValue()
         bioInputTextView.text = user.bio
     }
@@ -203,13 +205,13 @@ class EditProfileCell: UITableViewCell {
             print("currentUser nil")
             return
         }
-        
+        let currentGender = Gender(rawValue: currentUser.gender) ?? .unspecified
         self.data.firstname = firstnameField.text ?? currentUser.name
         self.data.familyname = familynameField.text ?? currentUser.name
         self.data.email = emailField.text ?? currentUser.email
         self.data.country = countryField.text ?? currentUser.country
         self.data.birthday = Timestamp(date: selectedBirthday ?? Date())
-        self.data.gender = genderField.text ?? currentUser.gender.description
+        self.data.gender = genderField.text ?? currentGender.description
         self.data.bio = bioInputTextView.text ?? currentUser.bio
         
         delegate?.didTapSave(cell: self, editedData: data)

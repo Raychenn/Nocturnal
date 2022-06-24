@@ -146,6 +146,8 @@ extension EditProfileController: EditProfileCellDelegate {
             gender = Gender(rawValue: 0) ?? .unspecified
         case "Female":
             gender = Gender(rawValue: 1) ?? .unspecified
+        case "Unspecified":
+            gender = Gender(rawValue: 2) ?? .unspecified
         default:
             break
         }

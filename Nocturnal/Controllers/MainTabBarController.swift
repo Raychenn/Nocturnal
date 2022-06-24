@@ -18,20 +18,20 @@ class MainTabBarController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+       
         fetchCurrentUser { [weak self] user in
             guard let self = self else { return }
             self.currentUser = user
             self.configureViewControllers()
             self.configureTabBarStyle()
             self.configureNavigationBarUI()
+            self.checkIfUserIsLoggedIn()
         }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        self.checkIfUserIsLoggedIn()
     }
     
     // MARK: - API

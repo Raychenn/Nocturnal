@@ -58,7 +58,6 @@ class EditProfileController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
     // MARK: - Helpers
     func setupUI() {
         view.backgroundColor = .systemBackground
@@ -153,7 +152,6 @@ extension EditProfileController: EditProfileCellDelegate {
     
         let imageToUpload = updatedImage == nil ? currentImage: updatedImage ?? UIImage()
         
-        print("imageToUpload \(imageToUpload)")
         StorageUploader.shared.uploadProfileImage(with: imageToUpload) { [weak self] downloadedImageURL in
             guard let self = self else { return }
             let user = User(name: "\(editedData.firstname) \(editedData.familyname)",
@@ -191,7 +189,6 @@ extension EditProfileController: EditProfileCellDelegate {
 extension EditProfileController: EditProfileHeaderDelegate {
     
     func updateProfileImage(header: EditProfileHeader) {
-        print("updateProfileImage tapped")
         let picker = UIImagePickerController()
         picker.delegate = self
         picker.allowsEditing = true

@@ -12,6 +12,7 @@ import FirebaseFirestoreSwift
 struct UserService {
     
     static let shared = UserService()
+    
     /// testing
     func updateUserProfile(newUserData: User, completion: FirestoreCompletion) {
         do {

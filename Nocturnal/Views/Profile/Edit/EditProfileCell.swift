@@ -36,6 +36,13 @@ class EditProfileCell: UITableViewCell {
         return picker
     }()
     
+    private lazy var countryPicker: UIPickerView = {
+       let picker = UIPickerView()
+        picker.dataSource = self
+        picker.delegate = self
+        return picker
+    }()
+    
     private let firstnameField = UITextField().makeEditProfileTextField(placeholder: "Name")
     
     private let familynameField: UITextField = UITextField().makeEditProfileTextField(placeholder: "Family Name")
@@ -57,6 +64,8 @@ class EditProfileCell: UITableViewCell {
     }()
     
     let genders: [Gender] = [.male, .female]
+    
+    let countries: [Country] = [.china, .france, .germany, .india, .italy, .japan, .korea, .australia, .usa, .spain]
     
     private lazy var saveButton: UIButton = {
        let button = UIButton()
@@ -104,7 +113,6 @@ class EditProfileCell: UITableViewCell {
     
     // MARK: - Helpers
     func configureCell(with user: User) {
-        print("user gender \(user.gender.description)")
         firstnameField.text = user.name
         
         emailField.text = user.email
@@ -119,7 +127,6 @@ class EditProfileCell: UITableViewCell {
         default:
             break
         }
-//        genderField.text = user.gender.description
         datePicker.date = user.birthday.dateValue()
         bioInputTextView.text = user.bio
     }
@@ -132,6 +139,7 @@ class EditProfileCell: UITableViewCell {
         }
         
         bioInputTextView.delegate = self
+        countryField.inputView = countryPicker
     }
     
     func setupCellUI() {
@@ -216,18 +224,22 @@ extension EditProfileCell: UIPickerViewDataSource, UIPickerViewDelegate {
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        genders.count
+        countryField.isFirstResponder ? countries.count: genders.count
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return genders[row].description
+        return countryField.isFirstResponder ? countries[row].rawValue: genders[row].description
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        genderField.text = "\(genders[row].description)"
+        if countryField.isFirstResponder {
+            countryField.text = countries[row].rawValue
+        } else {
+            genderField.text = "\(genders[row].description)"
+        }
     }
 }
-
+// MARK: - UITextFieldDelegate
 extension EditProfileCell: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -251,7 +263,7 @@ extension EditProfileCell: UITextFieldDelegate {
         return true
     }
 }
-
+// MARK: - UITextViewDelegate
 extension EditProfileCell: UITextViewDelegate {
     
     func textViewDidEndEditing(_ textView: UITextView) {

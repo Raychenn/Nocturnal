@@ -37,6 +37,7 @@
 		ED0E5821286069BC00064C02 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED0E5820286069BC00064C02 /* GoogleService-Info.plist */; };
 		ED0E58232860758F00064C02 /* MessageInputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0E58222860758F00064C02 /* MessageInputAccessoryView.swift */; };
 		ED0E582528609AEE00064C02 /* MessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0E582428609AEE00064C02 /* MessageCell.swift */; };
+		ED191D0F2865873E009A10CC /* String+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED191D0E2865873E009A10CC /* String+Ext.swift */; };
 		ED194CB12859DF0700C9E5D3 /* MusicSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB02859DF0700C9E5D3 /* MusicSample.swift */; };
 		ED194CB62859E5D100C9E5D3 /* EventService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB52859E5D100C9E5D3 /* EventService.swift */; };
 		ED194CB82859E62F00C9E5D3 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB72859E62F00C9E5D3 /* Event.swift */; };
@@ -128,6 +129,7 @@
 		ED0E5820286069BC00064C02 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ED0E58222860758F00064C02 /* MessageInputAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageInputAccessoryView.swift; sourceTree = "<group>"; };
 		ED0E582428609AEE00064C02 /* MessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCell.swift; sourceTree = "<group>"; };
+		ED191D0E2865873E009A10CC /* String+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Ext.swift"; sourceTree = "<group>"; };
 		ED194CB02859DF0700C9E5D3 /* MusicSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicSample.swift; sourceTree = "<group>"; };
 		ED194CB52859E5D100C9E5D3 /* EventService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventService.swift; sourceTree = "<group>"; };
 		ED194CB72859E62F00C9E5D3 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
@@ -312,6 +314,7 @@
 				ED847A09285C764000F33C7F /* MKMapView+Ext.swift */,
 				ED81C3D6285D93D3004C12EA /* Firebase+Ext.swift */,
 				ED204B21285DB16F0016FDCA /* UILabel+Ext.swift */,
+				ED191D0E2865873E009A10CC /* String+Ext.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -695,6 +698,7 @@
 				ED847A18285CDFEA00F33C7F /* AuthService.swift in Sources */,
 				EDC663EB28614FB8007FEF82 /* ConservasationsController.swift in Sources */,
 				ED0A483E285873DB004661BB /* ViewController.swift in Sources */,
+				ED191D0F2865873E009A10CC /* String+Ext.swift in Sources */,
 				ED83392C285AD57600236814 /* DetailHeader.swift in Sources */,
 				ED0B424928588845000680C2 /* UIButton+Ext.swift in Sources */,
 				ED81C3DE285DA50D004C12EA /* NotificationCell.swift in Sources */,
@@ -821,7 +825,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -875,7 +879,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;

@@ -110,6 +110,8 @@ extension ProfileController: UITableViewDelegate {
 
         profileHeader.bringSubviewToFront(gradientView)
         
+        profileHeader.user = currentUser
+        profileHeader.configureHeader(user: currentUser)
         return profileHeader
     }
     

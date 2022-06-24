@@ -14,6 +14,20 @@ class EventService {
     
     static let shared = EventService()
     
+    func checkIfUserJoinedEvent(eventId: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+        let query = collection_event.document(eventId).parent.whereField("participants", arrayContains: uid)
+        query.getDocuments { snapshot, error in
+            guard let snapshot = snapshot, error == nil else {
+                completion(.failure(error!))
+                return
+            }
+
+            snapshot.documents.
+        }
+        
+        }
+    }
+    
     /// Update accepted user id to event participant array
     func updateEventParticipants(notification: Notification, completion: FirestoreCompletion) {
 //        print("event ID in updateEventParticipants \(notification.eventId)")

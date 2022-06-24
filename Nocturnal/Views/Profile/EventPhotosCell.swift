@@ -13,6 +13,7 @@ class EventPhotosCell: UICollectionViewCell {
     private lazy var eventPhotoImageView: UIImageView = {
        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
         imageView.isUserInteractionEnabled = true
         let tap = UITapGestureRecognizer(target: self, action: #selector(didTapImageView))
         imageView.addGestureRecognizer(tap)
@@ -22,7 +23,6 @@ class EventPhotosCell: UICollectionViewCell {
         
     override init(frame: CGRect) {
         super.init(frame: frame)
-        layer.cornerRadius = 10
         contentView.addSubview(eventPhotoImageView)
         eventPhotoImageView.fillSuperview()
     }
@@ -34,6 +34,7 @@ class EventPhotosCell: UICollectionViewCell {
     func configurePhotoCell(imageURL: String) {
         guard let url = URL(string: imageURL) else { return }
         eventPhotoImageView.kf.setImage(with: url)
+        eventPhotoImageView.layer.cornerRadius = 10
     }
     
     @objc func didTapImageView() {

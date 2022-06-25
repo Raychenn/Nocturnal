@@ -86,7 +86,15 @@ func postDeniedNotification(to applicantUid: String, notification: Notification,
                     return
                 }
                 
-                UserService.shared.removeUserFromEvent(uid: applicantUid, joinedEventId: notification.eventId, completion: completion)
+                EventService.shared.updateEventDeniedUsers(eventId: notification.eventId, applicantId: applicantUid) { error in
+                    
+                    guard error == nil else {
+                        print("Fail to update EventDeniedUsers \(String(describing: error))")
+                        return
+                    }
+                    
+                    UserService.shared.removeUserFromEvent(uid: applicantUid, joinedEventId: notification.eventId, completion: completion)
+                }
             }
         }
     }

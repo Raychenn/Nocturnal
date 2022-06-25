@@ -6,12 +6,15 @@
 //
 
 import UIKit
+import FirebaseFirestore
 
 class ProfileHeader: UITableViewHeaderFooterView {
     
+    // MARK: - Propeties
+    
     static let identifier = "ProfileHeader"
     
-    private let profileImageView: UIImageView = {
+     let profileImageView: UIImageView = {
        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.backgroundColor = .lightBlue
@@ -22,7 +25,7 @@ class ProfileHeader: UITableViewHeaderFooterView {
     private let genderLabel: UILabel = {
        let label = UILabel()
         label.font = .systemFont(ofSize: 18, weight: .bold)
-        label.textColor = .white
+        label.textColor = .lightBlue
         label.text = "Male"
         return label
     }()
@@ -36,12 +39,12 @@ class ProfileHeader: UITableViewHeaderFooterView {
         return imageView
     }()
     
-    private let zodiacLabel: UILabel = {
-       let label = UILabel()
-        label.font = .systemFont(ofSize: 18, weight: .bold)
-        label.textColor = .white
-        label.text = "Scorpion"
-        return label
+    private let zodiaContentImageView: UIImageView = {
+        let imageView = UIImageView()
+         imageView.contentMode = .scaleAspectFill
+         imageView.tintColor = .white
+         imageView.setDimensions(height: 50, width: 50)
+         return imageView
     }()
     
     private let zodiacImageView: UIImageView = {
@@ -56,7 +59,7 @@ class ProfileHeader: UITableViewHeaderFooterView {
     private let ageTitleLabel: UILabel = {
        let label = UILabel()
         label.font = .systemFont(ofSize: 18, weight: .bold)
-        label.textColor = .white
+        label.textColor = .lightBlue
         label.text = "27"
         return label
     }()
@@ -70,22 +73,62 @@ class ProfileHeader: UITableViewHeaderFooterView {
          return imageView
     }()
     
+    var user: User?
+    
+    // MARK: - Life Cycle
+    
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
         setupUI()
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Helpers
+    
+    func configureHeader(user: User) {
+        let gender = Gender(rawValue: user.gender) ?? .male
+        genderLabel.text = gender.description
+        zodiaContentImageView.image = UIImage(named: calculateZodiac())?.withRenderingMode(.alwaysTemplate)
+        ageTitleLabel.text = "\(calculateAge())"
+    }
+    
+    func calculateAge() -> Int {
+        guard let user = user else {
+            print("user is nil")
+            return 0
+        }
+        
+        let calendar = Calendar(identifier: .gregorian)
+        let birthday = user.birthday.dateValue()
+        let ageComponents = calendar.dateComponents([.year], from: birthday, to: Date())
+        let age = ageComponents.year ?? 18
+        return age
+    }
+    
+    func calculateZodiac() -> String {
+        guard let user = user else {
+            print("user is nil")
+            return ""
+        }
+        
+        return getZodiacSign(user.birthday.dateValue())
+    }
+    
     func setupUI() {
         addSubview(profileImageView)
         profileImageView.fillSuperview()
-        let topStack = UIStackView(arrangedSubviews: [genderLabel, zodiacLabel, ageTitleLabel])
+        let topStack = UIStackView(arrangedSubviews: [genderLabel, zodiaContentImageView, ageTitleLabel])
         topStack.axis = .horizontal
         topStack.distribution = .equalCentering
-        profileImageView.addSubview(topStack)
+        addSubview(topStack)
         
         topStack.anchor(left: profileImageView.leftAnchor, right: profileImageView.rightAnchor, paddingLeft: 25, paddingRight: 35)
         
@@ -99,13 +142,5 @@ class ProfileHeader: UITableViewHeaderFooterView {
                            right: profileImageView.rightAnchor,
                            paddingTop: 8,
                            paddingLeft: 25, paddingBottom: 30, paddingRight: 25)
-        
-        let gradientView = UIView()
-        gradientView.frame = self.frame
-        let gradient = CAGradientLayer()
-        gradient.colors = [UIColor.darkGray.cgColor, UIColor.black.cgColor]
-        gradient.locations = [0, 1]
-        gradientView.layer.addSublayer(gradient)
-        self.insertSubview(gradientView, aboveSubview: profileImageView)
     }
 }

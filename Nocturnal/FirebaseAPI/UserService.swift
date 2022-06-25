@@ -13,6 +13,19 @@ struct UserService {
     
     static let shared = UserService()
     
+    func updateUserEventRequest(eventId: String, completion: FirestoreCompletion) {
+        collection_users.document(uid).updateData(["requestedEventsId": FieldValue.arrayUnion([eventId])], completion: completion)
+    }
+    
+    /// testing
+    func updateUserProfile(newUserData: User, completion: FirestoreCompletion) {
+        do {
+            try collection_users.document(uid).setData(from: newUserData, encoder: .init(), completion: completion)
+        } catch {
+            print("Fail to encode user \(error)")
+        }
+    }
+    
     func updateUserToJoinEvent(uid: String, joinedEventId: String, completion: FirestoreCompletion) {
         
         collection_users.document(uid).updateData(["joinedEventsId": FieldValue.arrayUnion([joinedEventId])], completion: completion)

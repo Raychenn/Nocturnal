@@ -21,7 +21,7 @@ class ProfileCell: UITableViewCell {
     private let countryLabel: UILabel = {
        let label = UILabel()
         label.textColor = .lightGray
-        label.font = .systemFont(ofSize: 18)
+        label.font = .systemFont(ofSize: 35)
         label.text = "Norway"
         return label
     }()
@@ -31,12 +31,12 @@ class ProfileCell: UITableViewCell {
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.minimumInteritemSpacing = 4
+        layout.minimumInteritemSpacing = 30
+    
         layout.sectionInset = .init(top: 0, left: 10, bottom: 0, right: 0)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-  
-        collectionView.register(EventPhotosCell.self, forCellWithReuseIdentifier: EventPhotosCell.identifier)
         collectionView.backgroundColor = .red
+        collectionView.register(EventPhotosCell.self, forCellWithReuseIdentifier: EventPhotosCell.identifier)
         return collectionView
     }()
     
@@ -53,15 +53,15 @@ class ProfileCell: UITableViewCell {
     
     private lazy var editProfileButton: UIButton = {
        let button = UIButton()
-        button.setTitle("Edit Profile", for: .normal)
-        button.setTitleColor(.black, for: .normal)
+        button.setImage(UIImage(named: "editing")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = .black
         button.addTarget(self, action: #selector(didTapEditButton), for: .touchUpInside)
         return button
     }()
     
     private lazy var conversationButton: UIButton = {
        let button = UIButton()
-        button.setImage(UIImage(systemName: "message"), for: .normal)
+        button.setImage(UIImage(named: "chat")?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.tintColor = .black
         button.addTarget(self, action: #selector(didTapConversationButton), for: .touchUpInside)
         return button
@@ -99,7 +99,12 @@ class ProfileCell: UITableViewCell {
     
     func configureCell(with user: User, joinedEventsURL: [String]) {
         usernameLabel.text = user.name
+        let country = Country(rawValue: user.country.lowercased()) ?? .usa
+        let flag = flag(country: country.countryCode)
+        countryLabel.text = flag
+    
         self.joinedEventsURL = joinedEventsURL
+        
     }
     
     func setupCellUI() {
@@ -113,9 +118,10 @@ class ProfileCell: UITableViewCell {
         usernameLabel.anchor(top: contentView.topAnchor, left: contentView.leftAnchor, paddingTop: 20, paddingLeft: 20)
         
         contentView.addSubview(countryLabel)
-        countryLabel.anchor(top: usernameLabel.bottomAnchor, left: contentView.leftAnchor, paddingTop: 8, paddingLeft: 20)
+        countryLabel.anchor(top: usernameLabel.bottomAnchor, left: contentView.leftAnchor, paddingTop: 8, paddingLeft: 25)
         
         contentView.addSubview(editProfileButton)
+        editProfileButton.setDimensions(height: 40, width: 40)
         editProfileButton.centerY(inView: countryLabel)
         
         contentView.addSubview(conversationButton)
@@ -127,7 +133,7 @@ class ProfileCell: UITableViewCell {
         joinedEventsTitleLabel.anchor(top: countryLabel.bottomAnchor, left: contentView.leftAnchor, paddingTop: 20, paddingLeft: 10)
         
         contentView.addSubview(collectionView)
-        collectionView.anchor(top: joinedEventsTitleLabel.bottomAnchor, left: contentView.leftAnchor, right: contentView.rightAnchor, paddingTop: 10, paddingLeft: 10, height: 80)
+        collectionView.anchor(top: joinedEventsTitleLabel.bottomAnchor, left: contentView.leftAnchor, right: contentView.rightAnchor, paddingTop: 10, paddingLeft: 10, height: 150)
         
         contentView.addSubview(bioTitleLabel)
         bioTitleLabel.anchor(top: collectionView.bottomAnchor, left: contentView.leftAnchor, paddingTop: 20, paddingLeft: 10)
@@ -163,13 +169,11 @@ extension ProfileCell: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegate
 extension ProfileCell: UICollectionViewDelegate {
     
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-//        10
-//    }
 }
 // MARK: - UICollectionViewDelegateFlowLayout
 extension ProfileCell: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        CGSize(width: 60, height: 60)
+        let size = collectionView.frame.size.height * 0.8
+        return CGSize(width: size, height: size)
     }
 }

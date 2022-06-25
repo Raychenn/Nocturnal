@@ -21,9 +21,22 @@ struct Event: Codable {
     let eventImageURL: String
     let eventMusicURL: String
     let participants: [String]
+    let deniedUsersId: [String]
+    let pendingUsersId: [String]
 }
 
 struct Location: Codable {
     let lat: Double
     let long: Double
+}
+
+enum EventStyle: String {
+    case kpop = "K-pop"
+    case hippop = "Hip Pop"
+    case rock = "Rock"
+    case jazz = "Jazz"
+    case disco = "Disco"
+    case edm = "EDM"
+    case metal = "Metal"
+    case rapping = "Rapping"
 }

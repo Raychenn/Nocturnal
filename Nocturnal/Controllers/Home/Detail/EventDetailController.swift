@@ -10,11 +10,28 @@ import AVFoundation
 import CoreLocation
 import FirebaseFirestore
 
-var player: AVPlayer?
-
 class EventDetailController: UIViewController {
     
     // MARK: - Properties
+    enum JoinState: String {
+        case join
+        case joined
+        case pending
+        case denied
+        
+        var joinButtonTitle: String {
+            switch self {
+            case .join:
+                return "Join Now"
+            case .joined:
+                return "Joined"
+            case .pending:
+                return "Pending"
+            case .denied:
+                return "Denied"
+            }
+        }
+    }
     
     private lazy var tableView: UITableView = {
         let table = UITableView()
@@ -22,6 +39,7 @@ class EventDetailController: UIViewController {
         table.sectionHeaderTopPadding = 0
         table.dataSource = self
         table.delegate = self
+        table.allowsSelection = false
         table.register(DetailInfoCell.self, forCellReuseIdentifier: DetailInfoCell.identifier)
         table.register(PreviewMapCell.self, forCellReuseIdentifier: PreviewMapCell.identifier)
         table.register(DetailDescriptionCell.self, forCellReuseIdentifier: DetailDescriptionCell.identifier)
@@ -67,7 +85,33 @@ class EventDetailController: UIViewController {
     }
         
     var buttonStack = UIStackView()
-        
+            
+    var isJoined: Bool {
+        if event.participants.contains(uid) {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    var isDenied: Bool {
+        if event.deniedUsersId.contains(uid) {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    var isPending: Bool {
+        if event.pendingUsersId.contains(uid) {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    var joinState: JoinState = .join
+    
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -123,6 +167,7 @@ class EventDetailController: UIViewController {
     
     // MARK: - Helpers
     private func setupUI() {
+        setupJoinButtonState()
         navigationController?.navigationBar.isHidden = true
         tabBarController?.tabBar.isHidden = true
         view.backgroundColor = .white
@@ -144,13 +189,50 @@ class EventDetailController: UIViewController {
             joinButton.removeFromSuperview()
         } else {
             buttonStack.addArrangedSubview(joinButton)
+            
+            setJoinButton(forState: joinState)
         }
+        
         view.addSubview(backButton)
         backButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingTop: 8, paddingLeft: 8)
     }
     
+    private func setupJoinButtonState() {
+        if isJoined {
+            joinState = .joined
+        } else if isPending {
+            joinState = .pending
+        } else if isDenied {
+            joinState = .denied
+        } else {
+            joinState = .join
+        }
+    }
+    
+    private func setJoinButton(forState state: JoinState) {
+        switch joinState {
+        case .join:
+            joinButton.isEnabled = true
+            joinButton.backgroundColor = .primaryBlue
+            joinButton.setTitle(JoinState.join.joinButtonTitle, for: .normal)
+        case .joined:
+            joinButton.isEnabled = false
+            joinButton.backgroundColor = .darkGray
+            joinButton.setTitle(JoinState.joined.joinButtonTitle, for: .disabled)
+        case .pending:
+            joinButton.isEnabled = false
+            joinButton.backgroundColor = .darkGray
+            joinButton.setTitle(JoinState.pending.joinButtonTitle, for: .disabled)
+        case .denied:
+            joinButton.isEnabled = false
+            joinButton.backgroundColor = .darkGray
+            joinButton.setTitle(JoinState.denied.joinButtonTitle, for: .disabled)
+        }
+    }
+    
     // MARK: - Selectors
     @objc func didTapJoinButton() {
+        print("Tapped joined")
         let applicantId = currentUser?.id ?? ""
         let eventId = self.event.id ?? ""
         let notificationType = NotificationType.joinEventRequest.rawValue
@@ -161,13 +243,32 @@ class EventDetailController: UIViewController {
                                         sentTime: Timestamp(date: Date()),
                                         type: notificationType, isRequestPermitted: false)
         
-        NotificationService.shared.postNotification(to: event.hostID, notification: notification) { error in
+        NotificationService.shared.postNotification(to: event.hostID, notification: notification) { [weak self] error in
+            
+            guard let self = self else { return }
+            
             if let error = error {
                 print("Error sending notification \(error)")
                 return
             }
-            
-            print("Successfully sending notification")
+            // update user requestedEventsId
+            UserService.shared.updateUserEventRequest(eventId: self.event.id ?? "") { error in
+                if let error = error {
+                    print("Fail to updateUserEventRequest \(error)")
+                    return
+                }
+                
+                EventService.shared.updateEventPendingUsers(eventId: self.event.id ?? "", applicantId: uid) { error in
+                    if let error = error {
+                        print("Fail to updateEventPendingUsers \(error)")
+                        return
+                    }
+                    
+                    self.joinState = .pending
+                    self.setJoinButton(forState: self.joinState)
+                    print("Successfully sending notification, pop up alert")
+                }
+            }
         }
     }
     

@@ -78,7 +78,7 @@ class UploadEventInfoCell: UITableViewCell {
     private let eventMusicLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 15, weight: .medium)
-        label.text = "Event Music URL"
+        label.text = "Event Music"
         return label
     }()
     
@@ -145,12 +145,15 @@ class UploadEventInfoCell: UITableViewCell {
     
     private var selectedDate: Date?
     private var selectedMusic: String?
+    private var selectedStyle: String?
+    
+    let eventStyles: [EventStyle] = [.kpop, .hippop, .rock, .jazz, .disco, .metal, .rapping, .edm]
     
     // MARK: - Life Cycle
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupTextFieldDelegates()
+        setupTextFields()
         setupCellUI()
     }
     
@@ -173,12 +176,17 @@ class UploadEventInfoCell: UITableViewCell {
     
     // MARK: - Helpers
     
-    private func setupTextFieldDelegates() {
+    private func setupTextFields() {
         eventNameTextField.delegate = self
         eventAddressTextField.delegate = self
         eventStyleTextField.delegate = self
         eventFeeTextField.delegate = self
         eventMusicTextField.delegate = self
+        
+        let stylePicker = UIPickerView()
+        stylePicker.dataSource = self
+        stylePicker.delegate = self
+        eventStyleTextField.inputView = stylePicker
     }
     
     private func setupCellUI() {
@@ -301,15 +309,23 @@ extension UploadEventInfoCell: UIPickerViewDataSource, UIPickerViewDelegate {
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        musicSamples.count
+        
+        eventStyleTextField.isFirstResponder ? eventStyles.count: musicSamples.count
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return musicSamples[row].description
+        
+        return eventStyleTextField.isFirstResponder ? eventStyles[row].rawValue: musicSamples[row].description
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        eventMusicTextField.text = musicSamples[row].description
-        selectedMusic = musicSamples[row].rawValue
+        
+        if eventStyleTextField.isFirstResponder {
+            eventStyleTextField.text = eventStyles[row].rawValue
+            selectedStyle = eventStyles[row].rawValue
+        } else {
+            eventMusicTextField.text = musicSamples[row].description
+            selectedMusic = musicSamples[row].rawValue
+        }
     }
 }

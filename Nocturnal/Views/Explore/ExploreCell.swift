@@ -62,7 +62,7 @@ class ExploreCell: UICollectionViewCell {
         
         eventImageView.kf.setImage(with: eventUrl)
         eventNameLabel.text = event.title
-        eventTimeLabel.text = Date.dateFormatter.string(from: event.startingDate.dateValue())
+        eventTimeLabel.text = Date.dateTimeFormatter.string(from: event.startingDate.dateValue())
     }
     
     private func setupCellUI() {

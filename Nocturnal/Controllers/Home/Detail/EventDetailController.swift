@@ -44,7 +44,9 @@ class EventDetailController: UIViewController {
         table.register(PreviewMapCell.self, forCellReuseIdentifier: PreviewMapCell.identifier)
         table.register(DetailDescriptionCell.self, forCellReuseIdentifier: DetailDescriptionCell.identifier)
         let header = StretchyTableHeaderView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: view.frame.size.width))
-        header.imageView.image = UIImage(named: "cat")
+        header.clipsToBounds = true
+        header.layer.cornerRadius = 15
+        header.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
         header.configureHeader(with: URL(string: event.eventImageURL)!)
         table.tableHeaderView = header
         table.tableFooterView = UIView()
@@ -170,7 +172,7 @@ class EventDetailController: UIViewController {
         setupJoinButtonState()
         navigationController?.navigationBar.isHidden = true
         tabBarController?.tabBar.isHidden = true
-        view.backgroundColor = .white
+        view.backgroundColor = .black
         view.addSubview(tableView)
         view.addSubview(buttonStack)
         joinButton.layer.cornerRadius = 20
@@ -296,14 +298,19 @@ extension EventDetailController: UITableViewDataSource {
         switch indexPath.row {
         case 0:
             infoCell.configureCell(with: event, host: host)
+            infoCell.backgroundColor = UIColor.hexStringToUIColor(hex: "#161616")
             infoCell.delegate = self
             return infoCell
         case 1:
             mapCell.delegate = self
             mapCell.event = event
+            mapCell.configureCell(with: event)
+            mapCell.backgroundColor = UIColor.hexStringToUIColor(hex: "#161616")
             return mapCell
         case 2:
             descriptionCell.configureCell(with: event)
+            descriptionCell.delegate = self
+            descriptionCell.backgroundColor = UIColor.hexStringToUIColor(hex: "#161616")
             return descriptionCell
         default:
             break
@@ -317,10 +324,8 @@ extension EventDetailController: UITableViewDataSource {
 extension EventDetailController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        let descriptionCell = tableView.cellForRow(at: indexPath) as? DetailDescriptionCell
-//        shouldShowDescription = !shouldShowDescription
-        descriptionCell?.animateDescriptionLabel()
+        print("didSelectRowAt")
+//        let descriptionCell = tableView.cellForRow(at: indexPath) as? DetailDescriptionCell
         
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -385,5 +390,29 @@ extension EventDetailController: DetailInfoCellDelegate {
         } else {
             return uid + otherUid
         }
+    }
+}
+
+// MARK: - DetailDescriptionCellDelegate
+extension EventDetailController: DetailDescriptionCellDelegate {
+    
+    func animateDescriptionLabel(cell: DetailDescriptionCell) {
+//        cell.shouldShowLabel = !cell.shouldShowLabel
+//        if cell.shouldShowLabel {
+//            cell.decriptionContentLabel.numberOfLines = 0
+//
+//        } else {
+//            cell.decriptionContentLabel.numberOfLines = 5
+//        }
+//        cell.decriptionContentLabel.numberOfLines = numberOfLines
+//        let newTitle = numberOfLines == 0 ? "Less" : "More"
+//        cell.readMoreButton.setTitle(newTitle, for: .normal)
+        cell.decriptionContentLabel.numberOfLines = 0
+        cell.readMoreLabel.isHidden = true
+        
+        UIView.animate(withDuration: 0.5) { cell.contentView.layoutIfNeeded() }
+//        UIView.transition(with: cell.decriptionContentLabel, duration: 0.5, options: .curveLinear, animations: {
+//                cell.layoutIfNeeded()
+//            })
     }
 }

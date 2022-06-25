@@ -10,6 +10,7 @@ import UIKit
 protocol ProfileCellDelegate: AnyObject {
     func didTapEditProfile(cell: ProfileCell)
     func didTapOpenConversation(cell: ProfileCell)
+    func didTapSelectedEvent(cell: ProfileCell, event: Event)
 }
 
 class ProfileCell: UITableViewCell {
@@ -72,6 +73,14 @@ class ProfileCell: UITableViewCell {
             collectionView.reloadData()
         }
     }
+    
+    var user: User? {
+        didSet {
+            fetchEvents()
+        }
+    }
+    
+    var joinedEvents: [Event] = []
 
     // MARK: - Life Cycle
     
@@ -83,6 +92,21 @@ class ProfileCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - API
+    
+    private func fetchEvents() {
+        guard let user = user else { return }
+        
+        EventService.shared.fetchEvents(fromEventIds: user.joinedEventsId) { result in
+            switch result {
+            case .success(let events):
+                self.joinedEvents = events
+            case .failure(let error):
+                print("Fail to fetch events \(error)")
+            }
+        }
     }
     
     // MARK: - Selectors
@@ -110,7 +134,7 @@ class ProfileCell: UITableViewCell {
     func setupCellUI() {
         collectionView.dataSource = self
         collectionView.delegate = self
-        backgroundColor = UIColor.white
+        backgroundColor = UIColor.darkGray
         layer.cornerRadius = 25
         layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner]
         
@@ -169,6 +193,10 @@ extension ProfileCell: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegate
 extension ProfileCell: UICollectionViewDelegate {
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let selectedEvent = joinedEvents[indexPath.item]
+        delegate?.didTapSelectedEvent(cell: self, event: selectedEvent)
+    }
 }
 // MARK: - UICollectionViewDelegateFlowLayout
 extension ProfileCell: UICollectionViewDelegateFlowLayout {

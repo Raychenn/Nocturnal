@@ -24,7 +24,7 @@ class ProfileHeader: UITableViewHeaderFooterView {
     
     private let genderLabel: UILabel = {
        let label = UILabel()
-        label.font = .systemFont(ofSize: 18, weight: .bold)
+        label.font = .systemFont(ofSize: 16, weight: .bold)
         label.textColor = .lightBlue
         label.text = "Male"
         return label
@@ -58,7 +58,7 @@ class ProfileHeader: UITableViewHeaderFooterView {
     
     private let ageTitleLabel: UILabel = {
        let label = UILabel()
-        label.font = .systemFont(ofSize: 18, weight: .bold)
+        label.font = .systemFont(ofSize: 16, weight: .bold)
         label.textColor = .lightBlue
         label.text = "27"
         return label
@@ -130,7 +130,7 @@ class ProfileHeader: UITableViewHeaderFooterView {
         topStack.distribution = .equalCentering
         addSubview(topStack)
         
-        topStack.anchor(left: profileImageView.leftAnchor, right: profileImageView.rightAnchor, paddingLeft: 25, paddingRight: 35)
+        topStack.anchor(left: profileImageView.leftAnchor, right: profileImageView.rightAnchor, paddingLeft: 25, paddingRight: 40)
         
         let bottomStack = UIStackView(arrangedSubviews: [genderImageView, zodiacImageView, ageImageView])
         bottomStack.axis = .horizontal

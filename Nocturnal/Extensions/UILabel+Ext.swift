@@ -14,7 +14,7 @@ extension UILabel {
         
         let attributedTitle = NSMutableAttributedString(string: "\(firstPart) ", attributes: atts)
         
-        let boldAtts: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor.black, .font: UIFont.boldSystemFont(ofSize: 15)]
+        let boldAtts: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor.white, .font: UIFont.boldSystemFont(ofSize: 15)]
         
         attributedTitle.append(NSAttributedString(string: "\(secondPart)", attributes: boldAtts))
         

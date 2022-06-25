@@ -14,9 +14,11 @@ class HomeController: UIViewController {
     
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: configureCollectionViewLayout())
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+        collectionView.backgroundColor = UIColor.hexStringToUIColor(hex: "#1C242F")
+        collectionView.register(HomeEventCell.self, forCellWithReuseIdentifier: HomeEventCell.identifier)
         return collectionView
     }()
     
@@ -72,7 +74,7 @@ class HomeController: UIViewController {
     @objc func handleLogout() {
         do {
             try Auth.auth().signOut()
-        } catch  {
+        } catch {
             print("Fail to log out \(error)")
         }
        
@@ -83,26 +85,41 @@ class HomeController: UIViewController {
     
     private func configureCollectionViewLayout() -> UICollectionViewCompositionalLayout {
         return UICollectionViewCompositionalLayout { _, _ in
+            // Item
             let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
             let item = NSCollectionLayoutItem(layoutSize: itemSize)
             
-            // contentInset is like the padding or white space you add to an item in four directions
-            item.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0)
-            
-            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(0.45))
-            
-            let hGorup = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
-            let section = NSCollectionLayoutSection(group: hGorup)
-            
-            //        section.contentInsetsReference = .none
+            // Group
+            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.7), heightDimension: .fractionalWidth(0.9))
+            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+
+            // Section
+            let section = NSCollectionLayoutSection(group: group)
+            section.contentInsets = NSDirectionalEdgeInsets(top: 120, leading: 2.5, bottom: 0, trailing: 2.5)
+            section.orthogonalScrollingBehavior = .groupPagingCentered
+            section.visibleItemsInvalidationHandler = { (items, offset, environment) in
+                items.forEach { item in
+                    let distanceFromCenter = abs((item.frame.midX - offset.x) - environment.container.contentSize.width / 2.0)
+                    let minScale: CGFloat = 0.7
+                    let maxScale: CGFloat = 1.25
+                    let scale = max(maxScale - (distanceFromCenter / environment.container.contentSize.width), minScale)
+                    item.transform = CGAffineTransform(scaleX: scale, y: scale)
+                }
+            }
             return section
         }
     }
     
     private func setupUI() {
+        configureChatNavBar(withTitle: "Home", backgroundColor: UIColor.hexStringToUIColor(hex: "#1C242F"), preferLargeTitles: true)
         navigationItem.title = "Home"
         view.addSubview(collectionView)
-        collectionView.fillSuperview()
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
         
         view.addSubview(addEventButton)
         
@@ -141,13 +158,16 @@ extension HomeController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let eventCell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-        eventCell.backgroundColor = .darkGray
+        guard let eventCell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeEventCell.identifier, for: indexPath) as? HomeEventCell else { return UICollectionViewCell() }
+        
+        let event = events[indexPath.item]
+        eventCell.configureCell(event: event)
+        
         return eventCell
     }
 }
 
-// MARK: -
+// MARK: - UICollectionViewDelegate
 
 extension HomeController: UICollectionViewDelegate {
     

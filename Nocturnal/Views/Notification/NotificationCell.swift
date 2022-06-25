@@ -40,7 +40,7 @@ class NotificationCell: UITableViewCell {
        let label = UILabel()
         label.text = "loading time"
         label.font = .systemFont(ofSize: 13, weight: .light)
-        label.textColor = .black
+        label.textColor = .white
         
         return label
     }()

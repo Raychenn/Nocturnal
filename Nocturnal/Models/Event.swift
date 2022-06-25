@@ -30,7 +30,7 @@ struct Location: Codable {
     let long: Double
 }
 
-enum EventStyle: String {
+enum EventStyle: String, CaseIterable {
     case kpop = "K-pop"
     case hippop = "Hip Pop"
     case rock = "Rock"

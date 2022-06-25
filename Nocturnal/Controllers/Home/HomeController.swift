@@ -142,7 +142,7 @@ extension HomeController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let eventCell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-        eventCell.backgroundColor = .black
+        eventCell.backgroundColor = .darkGray
         return eventCell
     }
 }

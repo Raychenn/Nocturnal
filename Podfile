@@ -14,5 +14,5 @@ target 'Nocturnal' do
   pod 'SwiftLint'
   pod 'CHTCollectionViewWaterfallLayout'
   pod 'IQKeyboardManagerSwift'
-
+  pod 'Charts'
 end

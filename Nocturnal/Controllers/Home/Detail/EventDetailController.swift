@@ -258,9 +258,16 @@ class EventDetailController: UIViewController {
                     return
                 }
                 
-                self.joinState = .pending
-                self.setJoinButton(forState: self.joinState)
-                print("Successfully sending notification, pop up alert")
+                EventService.shared.updateEventPendingUsers(eventId: self.event.id ?? "", applicantId: uid) { error in
+                    if let error = error {
+                        print("Fail to updateEventPendingUsers \(error)")
+                        return
+                    }
+                    
+                    self.joinState = .pending
+                    self.setJoinButton(forState: self.joinState)
+                    print("Successfully sending notification, pop up alert")
+                }
             }
         }
     }

@@ -45,7 +45,6 @@ class EventDetailController: UIViewController {
         table.register(DetailDescriptionCell.self, forCellReuseIdentifier: DetailDescriptionCell.identifier)
         let header = StretchyTableHeaderView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: view.frame.size.width))
         header.backgroundColor = UIColor.hexStringToUIColor(hex: "#161616")
-        header.clipsToBounds = true
         header.layer.cornerRadius = 15
         header.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
         header.configureHeader(with: URL(string: event.eventImageURL)!)

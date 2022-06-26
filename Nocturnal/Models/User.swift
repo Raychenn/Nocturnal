@@ -69,6 +69,7 @@ enum Country: String {
     case china = "China"
     case france = "France"
     case korea = "Korea"
+    case unspecified = "Unspecified"
     
     var countryCode: String {
         switch self {
@@ -92,6 +93,8 @@ enum Country: String {
             return "FR"
         case .korea:
             return "KP"
+        case .unspecified:
+            return "Unspecified"
         }
     }
 }

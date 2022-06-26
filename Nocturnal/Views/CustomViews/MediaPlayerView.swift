@@ -140,7 +140,7 @@ class MediaPlayerView: UIView {
     // MARK: - Helpers
     
     private func setupUI() {
-        albumNameLabel.text = "Album name"
+        albumNameLabel.text = ""
         guard let eventImageURL = URL(string: event.eventImageURL) else { return }
         albumCoverImageView.kf.setImage(with: eventImageURL)
         setupPlayer(event: event)

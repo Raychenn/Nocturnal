@@ -123,10 +123,16 @@ class ProfileCell: UITableViewCell {
     
     func configureCell(with user: User, joinedEventsURL: [String]) {
         usernameLabel.text = user.name
-        let country = Country(rawValue: user.country.lowercased()) ?? .usa
-        let flag = flag(country: country.countryCode)
-        countryLabel.text = flag
-    
+        let country = Country(rawValue: user.country.lowercased()) ?? .unspecified
+        if country == .unspecified {
+            let character: Character = "🌍"
+            
+            countryLabel.text = String(character)
+        } else {
+            let flag = flag(country: country.countryCode)
+            countryLabel.text = flag
+        }
+
         self.joinedEventsURL = joinedEventsURL
         
     }

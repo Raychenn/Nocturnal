@@ -64,6 +64,12 @@ class LoginController: UIViewController {
         configureNotificationObserver()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        configureNavBar()
+    }
+    
     // MARK: - selectors
     
     @objc func handleShowSignUp() {
@@ -92,6 +98,7 @@ class LoginController: UIViewController {
             }
             
             self.loginButton.configuration?.showsActivityIndicator = false
+            
             print("successfully logged user in")
             self.dismiss(animated: true)
         }
@@ -124,6 +131,14 @@ class LoginController: UIViewController {
         view.addSubview(dontHaveAccountButton)
         dontHaveAccountButton.centerX(inView: view)
         dontHaveAccountButton.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor)
+    }
+    
+    private func configureNavBar() {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationController?.navigationBar.compactAppearance = appearance
     }
     
     private func configureNotificationObserver() {

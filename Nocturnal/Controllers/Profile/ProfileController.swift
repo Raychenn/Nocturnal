@@ -52,7 +52,7 @@ class ProfileController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-//        navigationController?.navigationBar.isHidden = true
+        navigationController?.navigationBar.isHidden = true
     }
     
     required init?(coder: NSCoder) {
@@ -140,6 +140,7 @@ extension ProfileController: ProfileCellDelegate {
     
     func didTapSelectedEvent(cell: ProfileCell, event: Event) {
         let detailController = EventDetailController(event: event)
+        detailController.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(detailController, animated: true)
     }
 }

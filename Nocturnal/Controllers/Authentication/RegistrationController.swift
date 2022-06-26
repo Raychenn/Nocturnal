@@ -120,6 +120,8 @@ class RegistrationController: UIViewController {
                 self.signUpButton.configuration?.showsActivityIndicator = false
                 self.dismiss(animated: true)
                 print("successfully register user with firestore")
+                // call homeController to configureUI again
+                
             }
         }
     }

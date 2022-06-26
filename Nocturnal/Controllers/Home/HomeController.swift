@@ -110,7 +110,7 @@ class HomeController: UIViewController {
         }
     }
     
-    private func setupUI() {
+    func setupUI() {
         configureChatNavBar(withTitle: "Home", backgroundColor: UIColor.hexStringToUIColor(hex: "#1C242F"), preferLargeTitles: true)
         navigationItem.title = "Home"
         view.addSubview(collectionView)

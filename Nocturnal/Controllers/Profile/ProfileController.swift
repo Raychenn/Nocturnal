@@ -15,6 +15,7 @@ class ProfileController: UIViewController {
         let table = UITableView(frame: .zero, style: .grouped)
         table.dataSource = self
         table.delegate = self
+        table.allowsSelection = false
         table.backgroundColor = .black
         table.contentInsetAdjustmentBehavior = .never
         table.register(ProfileCell.self, forCellReuseIdentifier: ProfileCell.identifier)
@@ -26,7 +27,7 @@ class ProfileController: UIViewController {
     }()
     
     private let currentUser: User
-    
+        
     private var joinedEventURLs: [String] = [] {
         didSet {
             tableView.reloadData()
@@ -83,6 +84,7 @@ extension ProfileController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let profileCell = tableView.dequeueReusableCell(withIdentifier: ProfileCell.identifier, for: indexPath) as? ProfileCell else { return UITableViewCell() }
         profileCell.delegate = self
+        profileCell.user = self.currentUser
         profileCell.configureCell(with: currentUser, joinedEventsURL: joinedEventURLs)
         return profileCell
     }
@@ -95,21 +97,14 @@ extension ProfileController: UITableViewDelegate {
         guard let profileHeader = tableView.dequeueReusableHeaderFooterView(withIdentifier: ProfileHeader.identifier) as? ProfileHeader else { return UIView() }
         
         let gradientView = UIView(frame: profileHeader.profileImageView.frame)
-
         let gradient = CAGradientLayer()
-
         gradient.frame = gradientView.frame
-
         gradient.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
-
         gradient.locations = [0.0, 1.0]
-
         gradientView.layer.insertSublayer(gradient, at: 0)
-
         profileHeader.profileImageView.addSubview(gradientView)
-
         profileHeader.bringSubviewToFront(gradientView)
-        
+
         profileHeader.user = currentUser
         profileHeader.configureHeader(user: currentUser)
         return profileHeader
@@ -122,7 +117,7 @@ extension ProfileController: UITableViewDelegate {
 
 // MARK: - ProfileCellDelegate
 extension ProfileController: ProfileCellDelegate {
-    
+
     func didTapEditProfile(cell: ProfileCell) {
         let editProfileVC = EditProfileController(user: currentUser)
         navigationController?.pushViewController(editProfileVC, animated: true)
@@ -133,5 +128,10 @@ extension ProfileController: ProfileCellDelegate {
         let nav = UINavigationController(rootViewController: conversationVC)
         nav.modalPresentationStyle = .fullScreen
         present(nav, animated: true)
+    }
+    
+    func didTapSelectedEvent(cell: ProfileCell, event: Event) {
+        let detailController = EventDetailController(event: event)
+        navigationController?.pushViewController(detailController, animated: true)
     }
 }

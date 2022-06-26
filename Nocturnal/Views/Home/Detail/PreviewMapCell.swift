@@ -43,7 +43,15 @@ class PreviewMapCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         contentView.addSubview(mapView)
-        mapView.fillSuperview()
+        mapView.layer.cornerRadius = 10
+        mapView.anchor(top: contentView.topAnchor,
+                       left: contentView.leftAnchor,
+                       bottom: contentView.bottomAnchor,
+                       right: contentView.rightAnchor,
+                       paddingTop: 16,
+                       paddingLeft: 16,
+                       paddingBottom: 16,
+                       paddingRight: 16)
     }
     
     required init?(coder: NSCoder) {
@@ -53,7 +61,9 @@ class PreviewMapCell: UITableViewCell {
     // MARK: - Helpers
     
     func configureCell(with event: Event) {
-        
+        let destinationCoordinate = CLLocationCoordinate2D(latitude: event.destinationLocation.latitude, longitude: event.destinationLocation.longitude)
+        let region = MKCoordinateRegion(center: destinationCoordinate, span: MKCoordinateSpan(latitudeDelta: 0.001, longitudeDelta: 0.001))
+        mapView.setRegion(region, animated: true)
     }
     
     // MARK: - Selectors

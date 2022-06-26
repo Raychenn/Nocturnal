@@ -89,6 +89,7 @@
 		EDD1032728602B4A00AECAD9 /* ChatRoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD1032628602B4A00AECAD9 /* ChatRoom.swift */; };
 		EDD1032B28603E3100AECAD9 /* ChatCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD1032A28603E3100AECAD9 /* ChatCell.swift */; };
 		EDD1032D28603F8800AECAD9 /* DateHeaderLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD1032C28603F8800AECAD9 /* DateHeaderLabel.swift */; };
+		EDEF690B286750BC00F944BF /* HomeEventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDEF690A286750BC00F944BF /* HomeEventCell.swift */; };
 		EDF3E2A8285AC563000E2218 /* EventDetailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF3E2A7285AC563000E2218 /* EventDetailController.swift */; };
 		EDF3E2AB285ACA91000E2218 /* DetailInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF3E2AA285ACA91000E2218 /* DetailInfoCell.swift */; };
 		EDF3E2AD285ACAE5000E2218 /* UICollectionView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF3E2AC285ACAE5000E2218 /* UICollectionView+Ext.swift */; };
@@ -182,6 +183,7 @@
 		EDD1032628602B4A00AECAD9 /* ChatRoom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRoom.swift; sourceTree = "<group>"; };
 		EDD1032A28603E3100AECAD9 /* ChatCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatCell.swift; sourceTree = "<group>"; };
 		EDD1032C28603F8800AECAD9 /* DateHeaderLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateHeaderLabel.swift; sourceTree = "<group>"; };
+		EDEF690A286750BC00F944BF /* HomeEventCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeEventCell.swift; sourceTree = "<group>"; };
 		EDF3E2A7285AC563000E2218 /* EventDetailController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailController.swift; sourceTree = "<group>"; };
 		EDF3E2AA285ACA91000E2218 /* DetailInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailInfoCell.swift; sourceTree = "<group>"; };
 		EDF3E2AC285ACAE5000E2218 /* UICollectionView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+Ext.swift"; sourceTree = "<group>"; };
@@ -399,6 +401,7 @@
 			children = (
 				EDF3E2A9285ACA76000E2218 /* Detail */,
 				ED0B425728598718000680C2 /* UploadEventInfoCell.swift */,
+				EDEF690A286750BC00F944BF /* HomeEventCell.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -729,6 +732,7 @@
 				ED204B22285DB16F0016FDCA /* UILabel+Ext.swift in Sources */,
 				EDC663ED28615D8D007FEF82 /* ConversationCell.swift in Sources */,
 				ED626A8E2862BA97003BB636 /* ProfileHeader.swift in Sources */,
+				EDEF690B286750BC00F944BF /* HomeEventCell.swift in Sources */,
 				ED847A14285CDF9C00F33C7F /* RegistrationController.swift in Sources */,
 				ED847A02285B7FCA00F33C7F /* MKPlacemark+Ext.swift in Sources */,
 				ED847A06285C6EBA00F33C7F /* MediaPlayerView.swift in Sources */,

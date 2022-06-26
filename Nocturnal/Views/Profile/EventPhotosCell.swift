@@ -14,9 +14,9 @@ class EventPhotosCell: UICollectionViewCell {
        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        imageView.isUserInteractionEnabled = true
-        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapImageView))
-        imageView.addGestureRecognizer(tap)
+//        imageView.isUserInteractionEnabled = true
+//        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapImageView))
+//        imageView.addGestureRecognizer(tap)
         imageView.backgroundColor = .lightBlue
         return imageView
     }()
@@ -37,7 +37,7 @@ class EventPhotosCell: UICollectionViewCell {
         eventPhotoImageView.layer.cornerRadius = 10
     }
     
-    @objc func didTapImageView() {
-        print("tapp")
-    }
+//    @objc func didTapImageView() {
+//        print("tapp")
+//    }
 }

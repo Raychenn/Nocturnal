@@ -19,13 +19,13 @@ class FullMapController: UIViewController {
         return map
     }()
     
-    private lazy var backButton: UIButton = {
-       let button = UIButton()
-        button.setImage( UIImage(systemName: "chevron.left"), for: .normal)
-        button.tintColor = .black
-        button.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
-        return button
-    }()
+//    private lazy var backButton: UIButton = {
+//       let button = UIButton()
+//        button.setImage( UIImage(systemName: "chevron.left"), for: .normal)
+//        button.tintColor = .black
+//        button.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
+//        return button
+//    }()
     
     let destinationCoordinate: CLLocationCoordinate2D
     
@@ -57,9 +57,9 @@ class FullMapController: UIViewController {
     
     // MARK: - Selectors
     
-    @objc func didTapBackButton() {
-        navigationController?.popViewController(animated: true)
-    }
+//    @objc func didTapBackButton() {
+//        navigationController?.popViewController(animated: true)
+//    }
     
     // MARK: - Helpers
     
@@ -67,8 +67,8 @@ class FullMapController: UIViewController {
         view.backgroundColor = .white
         view.addSubview(mapView)
         mapView.fillSuperview()
-        view.addSubview(backButton)
-        backButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingTop: 8, paddingLeft: 8)
+//        view.addSubview(backButton)
+//        backButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingTop: 8, paddingLeft: 8)
     }
     
     private func setupMap() {
@@ -79,7 +79,7 @@ class FullMapController: UIViewController {
 //        mapView.setRegion(region, animated: true)
         
         mapView.addAnnotation(annotation)
-        //        mapView.zoomToFit(annotations: [annotation])
+        mapView.zoomToFit(annotations: [annotation])
     }
     
     func setupLocationManager() {

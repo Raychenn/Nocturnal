@@ -7,7 +7,13 @@
 
 import UIKit
 
+protocol DetailDescriptionCellDelegate: AnyObject {
+    func animateDescriptionLabel(cell: DetailDescriptionCell)
+}
+
 class DetailDescriptionCell: UITableViewCell {
+    
+    weak var delegate: DetailDescriptionCellDelegate?
     
     private let descriptionTitleLabel: UILabel = {
         let label = UILabel()
@@ -17,22 +23,27 @@ class DetailDescriptionCell: UITableViewCell {
         return label
     }()
     
-    let decriptionContentLabel: UILabel = {
+    lazy var decriptionContentLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 20, weight: .semibold)
-        label.numberOfLines = 4
-        label.lineBreakMode = .byWordWrapping
+        label.numberOfLines = 5
+        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapDescriptionLabel))
+        label.addGestureRecognizer(tap)
+        label.isUserInteractionEnabled = true
+        label.lineBreakMode = .byTruncatingTail
+        label.backgroundColor = .red
         label.text = "loading"
         return label
     }()
     
-//    private lazy var readBoreButton: UIButton = {
-//        
-//    }()
-    
-    var descriptionLabelHeightConst: NSLayoutConstraint!
-    
+     lazy var readMoreLabel: UILabel = {
+        let label = UILabel()
+         label.text = "Read More"
+         label.font = .systemFont(ofSize: 15, weight: .semibold)
+         return label
+    }()
+            
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -45,10 +56,13 @@ class DetailDescriptionCell: UITableViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        
-//        DispatchQueue.main.async {
-//            self.decriptionContentLabel.addTrailing(with: "... ", moreText: "ReadMore", moreTextFont: .systemFont(ofSize: 20, weight: .semibold), moreTextColor: .lightBlue)
-//        }
+
+    }
+    
+    // MARK: - Selector
+    
+    @objc func didTapDescriptionLabel() {
+        delegate?.animateDescriptionLabel(cell: self)
     }
     
     // MARK: - Helpers
@@ -65,34 +79,15 @@ class DetailDescriptionCell: UITableViewCell {
                                       paddingLeft: 8,
                                       paddingRight: 8)
         
-        descriptionLabelHeightConst = decriptionContentLabel.heightAnchor.constraint(equalToConstant: 50)
-        descriptionLabelHeightConst.isActive = true
-        
-        decriptionContentLabel.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 8).isActive = true
+//        descriptionLabelHeightConst = decriptionContentLabel.heightAnchor.constraint(equalToConstant: 100)
+//        descriptionLabelHeightConst.isActive = true
+//        decriptionContentLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20).isActive = true
+        contentView.addSubview(readMoreLabel)
+        readMoreLabel.anchor(top: decriptionContentLabel.bottomAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 8, paddingBottom: 20, paddingRight: 8)
     }
     
     func configureCell(with event: Event) {
         decriptionContentLabel.text = event.description
     }
-    
-    func animateDescriptionLabel() {
-        decriptionContentLabel.numberOfLines = 0
-        decriptionContentLabel.lineBreakMode = .byWordWrapping
-        
-        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
-            self.descriptionLabelHeightConst.isActive = false
-            self.layoutIfNeeded()
-        }, completion: nil)
-    }
-    
-    func getLabelHeight(text: String, width: CGFloat, font: UIFont) -> CGFloat {
-        let lbl = UILabel(frame: .zero)
-        lbl.frame.size.width = width
-        lbl.font = font
-        lbl.numberOfLines = 0
-        lbl.text = text
-        lbl.sizeToFit()
 
-        return lbl.frame.size.height
-    }
 }

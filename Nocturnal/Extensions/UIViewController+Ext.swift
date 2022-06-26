@@ -9,9 +9,9 @@ import UIKit
 
 extension UIViewController {
     
-    func configureChatNavBar(withTitle: String,backgroundColor: UIColor? = UIColor.black, preferLargeTitles: Bool) {
+    func configureChatNavBar(withTitle: String, backgroundColor: UIColor? = UIColor.black, preferLargeTitles: Bool) {
         let appearance = UINavigationBarAppearance()
-        appearance.configureWithOpaqueBackground()
+        appearance.configureWithTransparentBackground()
         appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
         appearance.backgroundColor = backgroundColor
         
@@ -39,9 +39,10 @@ extension UIViewController {
         let appearance = UINavigationBarAppearance()
         appearance.backgroundColor = bgColor
         appearance.titleTextAttributes = [NSAttributedString.Key.font: UIFont.medium(size: size) as Any, NSAttributedString.Key.foregroundColor: textColor]
-        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        navigationController?.navigationBar.shadowImage = UIImage()
+//        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+//        navigationController?.navigationBar.shadowImage = UIImage()
         appearance.shadowColor = .clear
+        appearance.configureWithDefaultBackground()
         navigationController?.navigationBar.tintColor = tintColor
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.compactAppearance = appearance

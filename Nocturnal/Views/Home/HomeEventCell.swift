@@ -55,7 +55,6 @@ class HomeEventCell: UICollectionViewCell {
         guard let url = URL(string: event.eventImageURL) else { return }
         
         eventImageView.kf.setImage(with: url)
-        eventImageView.layer.cornerRadius = 10
         eventTimeLabel.text = Date.dateFormatter.string(from: event.startingDate.dateValue())
         eventNameLabel.text = event.title
     }
@@ -63,7 +62,7 @@ class HomeEventCell: UICollectionViewCell {
     func setupCellUI() {
         layer.cornerRadius = 20
         layer.masksToBounds = true
-      
+        backgroundColor = .black
         contentView.addSubview(eventImageView)
         eventImageView.fillSuperview()
         

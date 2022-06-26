@@ -18,7 +18,9 @@ class MainTabBarController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       
+        
+        self.checkIfUserIsLoggedIn()
+        
         fetchCurrentUser { [weak self] user in
             guard let self = self else { return }
             self.currentUser = user

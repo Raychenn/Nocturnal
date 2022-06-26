@@ -165,7 +165,8 @@ extension EditProfileController: EditProfileCellDelegate {
                             numberOfHostedEvents: self.currentUser.numberOfHostedEvents,
                             bio: editedData.bio,
                             joinedEventsId: self.currentUser.joinedEventsId,
-                            blockedUsersId: self.currentUser.blockedUsersId)
+                            blockedUsersId: self.currentUser.blockedUsersId,
+                            requestedEventsId: self.currentUser.requestedEventsId)
 
             UserService.shared.updateUserProfile(newUserData: user) { error in
                 guard error == nil else {

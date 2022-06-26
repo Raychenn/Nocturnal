@@ -13,6 +13,20 @@ struct UserService {
     
     static let shared = UserService()
     
+    // MARK: - Deletion
+    func deleteJoinedEvent(eventId: String, completion: FirestoreCompletion) {
+        collection_users.document(uid).updateData(["joinedEventsId": FieldValue.arrayRemove([eventId])], completion: completion)
+    }
+    
+    func deleteRequestedEvent(eventId: String, completion: FirestoreCompletion) {
+        collection_users.document(uid).updateData(["requestedEventsId": FieldValue.arrayRemove([eventId])], completion: completion)
+    }
+    
+    func removeUserFromEvent(uid: String, joinedEventId: String, completion: FirestoreCompletion) {
+        collection_users.document(uid).updateData(["joinedEventsId": FieldValue.arrayRemove([joinedEventId])], completion: completion)
+    }
+    
+    // MARK: - Update
     func updateUserEventRequest(eventId: String, completion: FirestoreCompletion) {
         collection_users.document(uid).updateData(["requestedEventsId": FieldValue.arrayUnion([eventId])], completion: completion)
     }
@@ -31,10 +45,8 @@ struct UserService {
         collection_users.document(uid).updateData(["joinedEventsId": FieldValue.arrayUnion([joinedEventId])], completion: completion)
     }
     
-    func removeUserFromEvent(uid: String, joinedEventId: String, completion: FirestoreCompletion) {
-        collection_users.document(uid).updateData(["joinedEventsId": FieldValue.arrayRemove([joinedEventId])], completion: completion)
-    }
-    
+    // MARK: - Get
+
     func fetchUser(uid: String, completion: @escaping (Result<User, Error>) -> Void) {
         collection_users.document(uid).getDocument { snapshot, error in
             guard let snapshot = snapshot, error == nil else {

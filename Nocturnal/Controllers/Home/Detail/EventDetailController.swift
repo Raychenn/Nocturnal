@@ -44,6 +44,7 @@ class EventDetailController: UIViewController {
         table.register(PreviewMapCell.self, forCellReuseIdentifier: PreviewMapCell.identifier)
         table.register(DetailDescriptionCell.self, forCellReuseIdentifier: DetailDescriptionCell.identifier)
         let header = StretchyTableHeaderView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: view.frame.size.width))
+        header.backgroundColor = UIColor.hexStringToUIColor(hex: "#161616")
         header.clipsToBounds = true
         header.layer.cornerRadius = 15
         header.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
@@ -365,6 +366,17 @@ extension EventDetailController: UIScrollViewDelegate {
 }
 // MARK: - DetailInfoCellDelegate
 extension EventDetailController: DetailInfoCellDelegate {
+    
+    func tappedHostProfile(cell: DetailInfoCell) {
+        print("go to profile")
+        guard let host = host else {
+            print("NO host")
+            return
+        }
+        let profileVC = ProfileController(user: host)
+        let nav = UINavigationController(rootViewController: profileVC)
+        present(nav, animated: true)
+    }
     
     func openChatRoom(cell: DetailInfoCell) {
         UserService.shared.fetchUser(uid: self.event.hostID) { [weak self] result in

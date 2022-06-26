@@ -14,6 +14,7 @@ import MapKit
 protocol DetailInfoCellDelegate: AnyObject {
     func playMusic(cell: DetailInfoCell, musicURL: String)
     func openChatRoom(cell: DetailInfoCell)
+    func tappedHostProfile(cell: DetailInfoCell)
 }
 
 class DetailInfoCell: UITableViewCell {
@@ -203,7 +204,8 @@ class DetailInfoCell: UITableViewCell {
     }
     
     @objc func didTapUserProfile() {
-        print("see all users")
+        guard let event = event else { return }
+        delegate?.tappedHostProfile(cell: self)
     }
     
     @objc func didTapChatButton() {

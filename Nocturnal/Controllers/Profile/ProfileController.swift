@@ -44,8 +44,15 @@ class ProfileController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         fetchJoinEvents()
         setupUI()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+//        navigationController?.navigationBar.isHidden = true
     }
     
     required init?(coder: NSCoder) {
@@ -96,7 +103,8 @@ extension ProfileController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let profileHeader = tableView.dequeueReusableHeaderFooterView(withIdentifier: ProfileHeader.identifier) as? ProfileHeader else { return UIView() }
         
-        let gradientView = UIView(frame: profileHeader.profileImageView.frame)
+        let gradientView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 400))
+        print("gradientView frameeee \(profileHeader.profileImageView.frame)")
         let gradient = CAGradientLayer()
         gradient.frame = gradientView.frame
         gradient.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]

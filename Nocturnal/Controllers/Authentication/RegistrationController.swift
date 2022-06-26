@@ -107,7 +107,8 @@ class RegistrationController: UIViewController {
                             numberOfHostedEvents: 0,
                             bio: "",
                             joinedEventsId: [],
-                            blockedUsersId: [])
+                            blockedUsersId: [],
+                            requestedEventsId: [])
             
             AuthService.shared.registerUser(withUser: user, password: password) { [weak self] error in
                 guard let self = self else { return }

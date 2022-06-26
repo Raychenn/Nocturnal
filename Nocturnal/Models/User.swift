@@ -21,6 +21,7 @@ struct User: Codable {
     let bio: String
     let joinedEventsId: [String]
     let blockedUsersId: [String]
+    let requestedEventsId: [String]
     
     var age: Int {
         // should calculate this based on birthday

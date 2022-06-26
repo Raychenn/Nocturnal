@@ -37,7 +37,7 @@ class UploadEventInfoCell: UITableViewCell {
     
     weak var delegate: UploadEventInfoCellDelegate?
     
-    var musicSamples: [MusicSample] = [.allthat, .betterdays, .creativeminds, .dreams, .relaxing, .slowmotion]
+    var musicSamples: [MusicSample] = [.enigma, .extreme, .powerfultrap, .summertime, .urbanhiphop, .yourstory]
     
     private let eventNameLabel: UILabel = {
         let label = UILabel()

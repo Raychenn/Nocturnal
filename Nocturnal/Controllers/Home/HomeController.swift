@@ -179,63 +179,60 @@ extension HomeController: UICollectionViewDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        
         let config = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
             guard let self = self else { return UIMenu() }
-            
+            let selectedEvent = self.events[indexPath.item]
+            let selecrtedEventId = selectedEvent.id ?? ""
+            let currentUserId = uid
+            let selectedEventHostId = selectedEvent.hostID
             let deleteAction = UIAction(title: "Delete",
-                                        image: UIImage(systemName: "trash"),
-                                        identifier: nil, discoverabilityTitle: nil,
-                                        attributes: .destructive, state: .off) { _ in
-                print("Tapp delete")
-                let selectedEvent = self.events[indexPath.item]
-                let selecrtedEventId = selectedEvent.id ?? ""
-                let currentUserId = uid
-                let selectedEventHostId = selectedEvent.hostID
-                
-                EventService.shared.deleteEvent(eventId: selecrtedEventId) { error in
-                    if let error = error {
-                        print("Fail to delete event \(error)")
-                        return
-                    }
-                    
-                    UserService.shared.deleteJoinedEvent(eventId: selecrtedEventId) { error in
+                                            image: UIImage(systemName: "trash"),
+                                            identifier: nil, discoverabilityTitle: nil,
+                                            attributes: .destructive, state: .off) { _ in
+                if selectedEventHostId != uid {
+                    let alert = UIAlertController(title: "Oops!", message: "You are not the host of this event", preferredStyle: .alert)
+                    let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+                    alert.addAction(okAction)
+                    self.present(alert, animated: true)
+                } else {
+                    EventService.shared.deleteEvent(eventId: selecrtedEventId) { error in
                         if let error = error {
-                            print("Fail to delete JoinedEvent for user \(error)")
+                            print("Fail to delete event \(error)")
                             return
                         }
-                        
-                        UserService.shared.deleteRequestedEvent(eventId: selecrtedEventId) { error in
+                        UserService.shared.deleteJoinedEvent(eventId: selecrtedEventId) { error in
                             if let error = error {
-                                print("Fail to delete RequestedEvent for user \(error)")
+                                print("Fail to delete JoinedEvent for user \(error)")
                                 return
                             }
-                            
-                            NotificationService.shared.deleteNotifications(eventId: selecrtedEventId, forUserId: selectedEventHostId) { error in
+                            UserService.shared.deleteRequestedEvent(eventId: selecrtedEventId) { error in
                                 if let error = error {
-                                    print("Fail to delete Notifications for host \(error)")
+                                    print("Fail to delete RequestedEvent for user \(error)")
                                     return
                                 }
-                                
-                                NotificationService.shared.deleteNotifications(eventId: selecrtedEventId, forUserId: currentUserId) { error in
+                                NotificationService.shared.deleteNotifications(eventId: selecrtedEventId, forUserId: selectedEventHostId) { error in
                                     if let error = error {
-                                        print("Fail to delete Notifications for current user \(error)")
+                                        print("Fail to delete Notifications for host \(error)")
                                         return
                                     }
-                                    
-                                    self.events.remove(at: indexPath.item)
-                                    collectionView.deleteItems(at: [indexPath])
-                                    print("Successfully delete event")
+                                    NotificationService.shared.deleteNotifications(eventId: selecrtedEventId, forUserId: currentUserId) { error in
+                                        if let error = error {
+                                            print("Fail to delete Notifications for current user \(error)")
+                                            return
+                                        }
+                                        self.events.remove(at: indexPath.item)
+    //                                    collectionView.deleteItems(at: [indexPath])
+                                        collectionView.reloadData()
+                                        print("Successfully delete event")
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-            
-            return UIMenu(title: "", image: nil, identifier: nil, options: .destructive, children: [deleteAction])
+                return UIMenu(title: "", image: nil, identifier: nil, options: .destructive, children: [deleteAction])
         }
-        
         return config
     }
 }

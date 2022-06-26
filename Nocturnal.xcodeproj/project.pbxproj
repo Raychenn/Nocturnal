@@ -90,6 +90,12 @@
 		EDD1032B28603E3100AECAD9 /* ChatCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD1032A28603E3100AECAD9 /* ChatCell.swift */; };
 		EDD1032D28603F8800AECAD9 /* DateHeaderLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD1032C28603F8800AECAD9 /* DateHeaderLabel.swift */; };
 		EDEF690B286750BC00F944BF /* HomeEventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDEF690A286750BC00F944BF /* HomeEventCell.swift */; };
+		EDEF691428687D3E00F944BF /* summertime.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDEF690E28687D3C00F944BF /* summertime.mp3 */; };
+		EDEF691528687D3E00F944BF /* enigma.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDEF690F28687D3D00F944BF /* enigma.mp3 */; };
+		EDEF691628687D3E00F944BF /* yourstory.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDEF691028687D3D00F944BF /* yourstory.mp3 */; };
+		EDEF691728687D3E00F944BF /* urbanhiphop.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDEF691128687D3D00F944BF /* urbanhiphop.mp3 */; };
+		EDEF691828687D3E00F944BF /* powerfultrap.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDEF691228687D3E00F944BF /* powerfultrap.mp3 */; };
+		EDEF691928687D3E00F944BF /* extreme.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDEF691328687D3E00F944BF /* extreme.mp3 */; };
 		EDF3E2A8285AC563000E2218 /* EventDetailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF3E2A7285AC563000E2218 /* EventDetailController.swift */; };
 		EDF3E2AB285ACA91000E2218 /* DetailInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF3E2AA285ACA91000E2218 /* DetailInfoCell.swift */; };
 		EDF3E2AD285ACAE5000E2218 /* UICollectionView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF3E2AC285ACAE5000E2218 /* UICollectionView+Ext.swift */; };
@@ -184,6 +190,12 @@
 		EDD1032A28603E3100AECAD9 /* ChatCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatCell.swift; sourceTree = "<group>"; };
 		EDD1032C28603F8800AECAD9 /* DateHeaderLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateHeaderLabel.swift; sourceTree = "<group>"; };
 		EDEF690A286750BC00F944BF /* HomeEventCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeEventCell.swift; sourceTree = "<group>"; };
+		EDEF690E28687D3C00F944BF /* summertime.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = summertime.mp3; sourceTree = "<group>"; };
+		EDEF690F28687D3D00F944BF /* enigma.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = enigma.mp3; sourceTree = "<group>"; };
+		EDEF691028687D3D00F944BF /* yourstory.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = yourstory.mp3; sourceTree = "<group>"; };
+		EDEF691128687D3D00F944BF /* urbanhiphop.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = urbanhiphop.mp3; sourceTree = "<group>"; };
+		EDEF691228687D3E00F944BF /* powerfultrap.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = powerfultrap.mp3; sourceTree = "<group>"; };
+		EDEF691328687D3E00F944BF /* extreme.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = extreme.mp3; sourceTree = "<group>"; };
 		EDF3E2A7285AC563000E2218 /* EventDetailController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailController.swift; sourceTree = "<group>"; };
 		EDF3E2AA285ACA91000E2218 /* DetailInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailInfoCell.swift; sourceTree = "<group>"; };
 		EDF3E2AC285ACAE5000E2218 /* UICollectionView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+Ext.swift"; sourceTree = "<group>"; };
@@ -490,6 +502,12 @@
 		EDC336102859DC2300A6A95A /* Music Samples */ = {
 			isa = PBXGroup;
 			children = (
+				EDEF690F28687D3D00F944BF /* enigma.mp3 */,
+				EDEF691328687D3E00F944BF /* extreme.mp3 */,
+				EDEF691228687D3E00F944BF /* powerfultrap.mp3 */,
+				EDEF690E28687D3C00F944BF /* summertime.mp3 */,
+				EDEF691128687D3D00F944BF /* urbanhiphop.mp3 */,
+				EDEF691028687D3D00F944BF /* yourstory.mp3 */,
 				EDC336152859DC4100A6A95A /* allthat.mp3 */,
 				EDC336112859DC3F00A6A95A /* betterdays.mp3 */,
 				EDC336122859DC4000A6A95A /* creativeminds.mp3 */,
@@ -600,14 +618,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED0A4846285873DC004661BB /* LaunchScreen.storyboard in Resources */,
+				EDEF691828687D3E00F944BF /* powerfultrap.mp3 in Resources */,
+				EDEF691528687D3E00F944BF /* enigma.mp3 in Resources */,
+				EDEF691928687D3E00F944BF /* extreme.mp3 in Resources */,
 				EDC3361C2859DC4100A6A95A /* slowmotion.mp3 in Resources */,
 				EDC3361A2859DC4100A6A95A /* relaxing.mp3 in Resources */,
 				ED0A4843285873DC004661BB /* Assets.xcassets in Resources */,
 				EDC3361B2859DC4100A6A95A /* allthat.mp3 in Resources */,
 				ED0A4841285873DB004661BB /* Main.storyboard in Resources */,
+				EDEF691628687D3E00F944BF /* yourstory.mp3 in Resources */,
 				EDC336172859DC4100A6A95A /* betterdays.mp3 in Resources */,
 				ED0E5821286069BC00064C02 /* GoogleService-Info.plist in Resources */,
 				EDC336192859DC4100A6A95A /* dreams.mp3 in Resources */,
+				EDEF691728687D3E00F944BF /* urbanhiphop.mp3 in Resources */,
+				EDEF691428687D3E00F944BF /* summertime.mp3 in Resources */,
 				EDC336182859DC4100A6A95A /* creativeminds.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

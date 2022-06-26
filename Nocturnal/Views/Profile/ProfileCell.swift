@@ -36,7 +36,6 @@ class ProfileCell: UITableViewCell {
     
         layout.sectionInset = .init(top: 0, left: 10, bottom: 0, right: 0)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .red
         collectionView.register(EventPhotosCell.self, forCellWithReuseIdentifier: EventPhotosCell.identifier)
         return collectionView
     }()

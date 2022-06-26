@@ -90,7 +90,7 @@ class HomeController: UIViewController {
             let item = NSCollectionLayoutItem(layoutSize: itemSize)
             
             // Group
-            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.7), heightDimension: .fractionalWidth(0.9))
+            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.7), heightDimension: .fractionalWidth(0.8))
             let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
 
             // Section

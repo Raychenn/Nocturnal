@@ -22,7 +22,7 @@ class ProfileCell: UITableViewCell {
     private let countryLabel: UILabel = {
        let label = UILabel()
         label.textColor = .lightGray
-        label.font = .systemFont(ofSize: 35)
+        label.font = .systemFont(ofSize: 45)
         label.text = "Norway"
         return label
     }()

@@ -24,7 +24,7 @@ class ProfileHeader: UITableViewHeaderFooterView {
     
     private let genderLabel: UILabel = {
        let label = UILabel()
-        label.font = .systemFont(ofSize: 16, weight: .bold)
+        label.font = .systemFont(ofSize: 14, weight: .bold)
         label.textColor = .lightBlue
         label.text = "Male"
         return label
@@ -43,7 +43,7 @@ class ProfileHeader: UITableViewHeaderFooterView {
         let imageView = UIImageView()
          imageView.contentMode = .scaleAspectFill
          imageView.tintColor = .white
-         imageView.setDimensions(height: 50, width: 50)
+         imageView.setDimensions(height: 45, width: 45)
          return imageView
     }()
     
@@ -58,7 +58,7 @@ class ProfileHeader: UITableViewHeaderFooterView {
     
     private let ageTitleLabel: UILabel = {
        let label = UILabel()
-        label.font = .systemFont(ofSize: 16, weight: .bold)
+        label.font = .systemFont(ofSize: 14, weight: .bold)
         label.textColor = .lightBlue
         label.text = "27"
         return label
@@ -140,7 +140,7 @@ class ProfileHeader: UITableViewHeaderFooterView {
                            left: profileImageView.leftAnchor,
                            bottom: profileImageView.bottomAnchor,
                            right: profileImageView.rightAnchor,
-                           paddingTop: 8,
+                           paddingTop: 16,
                            paddingLeft: 25, paddingBottom: 30, paddingRight: 25)
     }
 }

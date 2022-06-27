@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 protocol NotificationCellDelegate: AnyObject {
     func cell(_ cell: NotificationCell, wantsToAccept uid: String)
@@ -26,6 +27,16 @@ class NotificationCell: UITableViewCell {
         imageView.addGestureRecognizer(tap)
         return imageView
     }()
+    
+    private lazy var eventImageView: UIImageView = {
+        let imageView = UIImageView()
+         imageView.contentMode = .scaleAspectFill
+         imageView.isUserInteractionEnabled = true
+         imageView.backgroundColor = .lightGray
+         let tap = UITapGestureRecognizer(target: self, action: #selector(didTapEventImageView))
+         imageView.addGestureRecognizer(tap)
+         return imageView
+     }()
     
     private let titleLabel: UILabel = {
        let label = UILabel()
@@ -78,6 +89,10 @@ class NotificationCell: UITableViewCell {
     
     // MARK: - Selector
     
+    @objc func didTapEventImageView() {
+        print("didTapEventImageView")
+    }
+    
     @objc func didTapProfileImageView() {
         print("didTapProfileImageView")
     }
@@ -109,26 +124,37 @@ class NotificationCell: UITableViewCell {
     }
     
     // MARK: - Herpers
-    func configueCell(with notification: Notification, user: User) {
+    func configueCell(with notification: Notification, user: User, event: Event) {
         self.notification = notification
         guard let type = NotificationType(rawValue: notification.type) else { return }
         
         if type == .failureJoinedEventResponse || type == .successJoinedEventResponse {
             permissionButton.isHidden = true
+            eventImageView.isHidden = false
         } else {
             permissionButton.isHidden = false
+            eventImageView.isHidden = false
         }
         permissionButton.setTitle(notification.isRequestPermitted ? "Deny": "Accept", for: .normal)
         if type == .joinEventRequest {
             applicantId = notification.applicantId
+            eventImageView.isHidden = true
         }
         
         titleLabel.attributedText(firstPart: user.name, secondPart: "\(type.description)")
         timeLabel.text = "\(Date.dateTimeFormatter.string(from: notification.sentTime.dateValue()))"
+        guard let profileUrl = URL(string: user.profileImageURL), let eventUrl = URL(string: event.eventImageURL) else {
+            print("no profileImageURL")
+            return
+        }
+        
+        profileImageView.kf.setImage(with: profileUrl)
+        eventImageView.kf.setImage(with: eventUrl)
     }
     
     private func setupCellUI() {
         [profileImageView,
+         eventImageView,
          titleLabel,
          timeLabel,
          permissionButton].forEach({contentView.addSubview($0)})
@@ -139,10 +165,17 @@ class NotificationCell: UITableViewCell {
         profileImageView.anchor(top: contentView.topAnchor,
                                 left: contentView.leftAnchor,
                                 paddingTop: 8, paddingLeft: 8)
+        
+        eventImageView.setDimensions(height: 48, width: 48)
+        eventImageView.centerY(inView: self)
+        eventImageView.anchor(right: contentView.rightAnchor, paddingRight: 16)
+        
         titleLabel.anchor(top: contentView.topAnchor,
-                             left: profileImageView.rightAnchor,
+                          left: profileImageView.rightAnchor,
                           right: permissionButton.leftAnchor,
-                             paddingTop: 8, paddingLeft: 8, paddingRight: 16)
+                          paddingTop: 8,
+                          paddingLeft: 8,
+                          paddingRight: 16)
 
         timeLabel.anchor(top: titleLabel.bottomAnchor,
                          left: profileImageView.rightAnchor,

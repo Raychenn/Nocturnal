@@ -29,7 +29,7 @@ extension UIViewController {
     
     func configureGradientLayer() {
         let gradient = CAGradientLayer()
-        gradient.colors = [UIColor.systemPurple.cgColor, UIColor.systemBlue.cgColor]
+        gradient.colors = [UIColor.darkGray.cgColor, UIColor.black.cgColor]
         gradient.locations = [0, 1]
         view.layer.addSublayer(gradient)
         gradient.frame = view.frame
@@ -49,11 +49,11 @@ extension UIViewController {
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
     }
     
-    func presentAlert(withTitle title: String, message: String) {
+    func presentDeleteAlert(withTitle title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "OK", style: .destructive, handler: nil))
         
-        present(alert, animated: true, completion: nil)
+        present(alert, animated: true)
     }
     
     func presentLoadingView(shouldPresent: Bool, message: String? = nil) {

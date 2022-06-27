@@ -20,23 +20,26 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     
     var hosts: [User] = [] {
         didSet {
+            print("did set hosts \(hosts)")
             tableView.reloadData()
         }
     }
     
     var applicants: [User] = [] {
         didSet {
+            print("did set applicants \(applicants)")
             tableView.reloadData()
         }
     }
     
+    var events: [Event] = [] 
+    
     var notifications: [Notification] = []
-
+    
     // MARK: - Life Cyle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("uid \(uid)")
         fetchNotifications()
         setupUI()
     }
@@ -47,37 +50,55 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     
     // MARK: - API
     
-    private func fetchHosts(uids: [String]) {
+    private func fetchNotifications() {
+        NotificationService.shared.fetchNotifications(uid: uid) { result in
+            switch result {
+            case .success(let notifications):
+                self.notifications = self.getFilteredNotifications(notifications: notifications)
+                self.fetchEvents { [weak self] events in
+                    guard let self = self else { return }
+                    self.events = events
+                    self.fetchHostsAndApplicants()
+                }
+                
+            case .failure(let error):
+                print("Fail to get notification \(error)")
+            }
+        }
+    }
+    
+    private func fetchEvents(completion: @escaping ([Event]) -> Void) {
+        var eventsId: [String] = []
+        notifications.forEach({ eventsId.append($0.eventId) })
+        
+        EventService.shared.fetchEvents(fromEventIds: eventsId) { result in
+            switch result {
+            case .success(let events):
+                completion(events)
+            case .failure(let error):
+                print("Fail to fetch event \(error)")
+            }
+        }
+    }
+    
+    private func fetchHosts(uids: [String], completion: @escaping ([User]) -> Void) {
         UserService.shared.fetchUsers(uids: uids) { result in
             switch result {
             case .success(let users):
-                self.hosts = users
+                completion(users)
             case .failure(let error):
                 print("Fail to fetch hosts \(error)")
             }
         }
     }
     
-    private func fetchApplicants(uids: [String]) {
+    private func fetchApplicants(uids: [String], completion: @escaping ([User]) -> Void) {
         UserService.shared.fetchUsers(uids: uids) { result in
             switch result {
             case .success(let users):
-                self.applicants = users
+                completion(users)
             case .failure(let error):
                 print("Fail to fetch applicants \(error)")
-            }
-        }
-    }
-    
-    private func fetchNotifications() {
-        NotificationService.shared.fetchNotifications(uid: uid) { result in
-            switch result {
-            case .success(let notifications):                
-                self.notifications = self.getFilteredNotifications(notifications: notifications)
-                self.fetchHostsAndApplicants()
-                print("Host \(self.hosts), applicant \(self.applicants)")
-            case .failure(let error):
-                print("Fail to get notification \(error)")
             }
         }
     }
@@ -90,11 +111,18 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
         
         self.notifications.forEach { notification in
             let type = NotificationType(rawValue: notification.type)
+            
             if type == .joinEventRequest {
-                fetchApplicants(uids: applicantsId)
+                fetchApplicants(uids: applicantsId) { [weak self] applicants in
+                    guard let self = self else { return }
+                    self.applicants = applicants
+                }
             } else {
                 // fetch hosts
-                fetchHosts(uids: hostsId)
+                fetchHosts(uids: hostsId) { [weak self] hosts in
+                    guard let self = self else { return }
+                    self.hosts = hosts
+                }
             }
         }
     }
@@ -121,21 +149,23 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     // MARK: - UITableViewDataSource
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return notifications.count
+        return events.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let notificationCell = tableView.dequeueReusableCell(withIdentifier: NotificationCell.identifier, for: indexPath) as? NotificationCell else { return UITableViewCell() }
         
         let notification = notifications[indexPath.row]
+        let event = events[indexPath.row]
         
         if applicants.count == 0 {
             let host = hosts[indexPath.row]
 
-            notificationCell.configueCell(with: notification, user: host)
+            notificationCell.configueCell(with: notification, user: host, event: event)
         } else if hosts.count == 0 {
             let applicant = applicants[indexPath.row]
-            notificationCell.configueCell(with: notification, user: applicant)
+        
+            notificationCell.configueCell(with: notification, user: applicant, event: event)
             notificationCell.delegate = self
         }
         

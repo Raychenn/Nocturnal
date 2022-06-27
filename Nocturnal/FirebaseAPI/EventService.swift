@@ -14,6 +14,10 @@ class EventService {
     
     static let shared = EventService()
     
+    func deleteEvent(eventId: String, completion: FirestoreCompletion) {
+        collection_event.document(eventId).delete(completion: completion)
+    }
+    
     func updateEventPendingUsers(eventId: String, applicantId: String, completion: FirestoreCompletion) {
         collection_event.document(eventId).updateData(["pendingUsersId": FieldValue.arrayUnion([applicantId])], completion: completion)
     }

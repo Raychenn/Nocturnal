@@ -107,7 +107,8 @@ class RegistrationController: UIViewController {
                             numberOfHostedEvents: 0,
                             bio: "",
                             joinedEventsId: [],
-                            blockedUsersId: [])
+                            blockedUsersId: [],
+                            requestedEventsId: [])
             
             AuthService.shared.registerUser(withUser: user, password: password) { [weak self] error in
                 guard let self = self else { return }
@@ -119,6 +120,8 @@ class RegistrationController: UIViewController {
                 self.signUpButton.configuration?.showsActivityIndicator = false
                 self.dismiss(animated: true)
                 print("successfully register user with firestore")
+                // call homeController to configureUI again
+                
             }
         }
     }

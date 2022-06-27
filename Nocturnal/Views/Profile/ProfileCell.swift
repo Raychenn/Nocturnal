@@ -36,8 +36,8 @@ class ProfileCell: UITableViewCell {
     
         layout.sectionInset = .init(top: 0, left: 10, bottom: 0, right: 0)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .red
         collectionView.register(EventPhotosCell.self, forCellWithReuseIdentifier: EventPhotosCell.identifier)
+        collectionView.backgroundColor = .darkGray
         return collectionView
     }()
     
@@ -123,10 +123,18 @@ class ProfileCell: UITableViewCell {
     
     func configureCell(with user: User, joinedEventsURL: [String]) {
         usernameLabel.text = user.name
-        let country = Country(rawValue: user.country.lowercased()) ?? .usa
-        let flag = flag(country: country.countryCode)
-        countryLabel.text = flag
-    
+        print(user.country)
+        let country = Country(rawValue: user.country) ?? .unspecified
+        print("country is \(country)")
+        if country == .unspecified {
+            let character: Character = "🌍"
+            
+            countryLabel.text = String(character)
+        } else {
+            let flag = flag(country: country.countryCode)
+            countryLabel.text = flag
+        }
+
         self.joinedEventsURL = joinedEventsURL
         
     }

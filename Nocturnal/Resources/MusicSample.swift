@@ -8,50 +8,28 @@
 import Foundation
 
 enum MusicSample: String {
-    case allthat
-    case betterdays
-    case creativeminds
-    case dreams
-    case relaxing
-    case slowmotion
+    case enigma
+    case extreme
+    case powerfultrap
+    case summertime
+    case urbanhiphop
+    case yourstory
     
     var description: String {
         switch self {
-        case .allthat:
-            return "All Hat"
-        case .betterdays:
-            return "Better Days"
-        case .creativeminds:
-            return "Creative Minds"
-        case .dreams:
-            return "Dreams"
-        case .relaxing:
-            return "Relaxing"
-        case .slowmotion:
-            return "Slow Motion"
+        case .enigma:
+            return "Enigma"
+        case .extreme:
+            return "Extreme"
+        case .powerfultrap:
+            return "Powerful Trap"
+        case .summertime:
+            return "Summer Time"
+        case .urbanhiphop:
+            return "Urban Hip Hop"
+        case .yourstory:
+            return "Your Story"
         }
     }
     
-//    var url: String {
-//        switch self {
-//        case .allthat:
-//            guard let url = Bundle.main.url(forResource: MusicSample.allthat.rawValue, withExtension: "mp3") else { return }
-//            return url
-//        case .betterdays:
-//            guard let url = Bundle.main.url(forResource: MusicSample.betterdays.rawValue, withExtension: "mp3") else { return }
-//            return url
-//        case .creativeminds:
-//            guard let url = Bundle.main.url(forResource: MusicSample.creativeminds.rawValue, withExtension: "mp3") else { return }
-//            return url
-//        case .dreams:
-//            guard let url = Bundle.main.url(forResource: MusicSample.creativeminds.rawValue, withExtension: "mp3") else { return }
-//            return url
-//        case .relaxing:
-//            guard let url = Bundle.main.url(forResource: MusicSample.relaxing.rawValue, withExtension: "mp3") else { return }
-//            return url
-//        case .slowmotion:
-//            guard let url = Bundle.main.url(forResource: MusicSample.slowmotion.rawValue, withExtension: "mp3") else { return }
-//            return url
-//        }
-//    }
 }

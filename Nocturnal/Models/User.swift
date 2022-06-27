@@ -21,6 +21,7 @@ struct User: Codable {
     let bio: String
     let joinedEventsId: [String]
     let blockedUsersId: [String]
+    let requestedEventsId: [String]
     
     var age: Int {
         // should calculate this based on birthday
@@ -68,6 +69,7 @@ enum Country: String {
     case china = "China"
     case france = "France"
     case korea = "Korea"
+    case unspecified = "Unspecified"
     
     var countryCode: String {
         switch self {
@@ -91,6 +93,8 @@ enum Country: String {
             return "FR"
         case .korea:
             return "KP"
+        case .unspecified:
+            return "Unspecified"
         }
     }
 }

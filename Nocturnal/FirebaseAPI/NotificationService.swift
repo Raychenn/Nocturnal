@@ -13,6 +13,24 @@ struct NotificationService {
     
     static let shared = NotificationService()
     
+    // MARK: - Deletion
+    
+    func deleteNotifications(eventId: String, forUserId: String, completion: FirestoreCompletion) {
+        let query = collection_notification.document(forUserId).collection("user-notification").whereField("eventId", isEqualTo: eventId)
+        
+        query.getDocuments { snapshot, error in
+            guard let snapshot = snapshot else {
+                return
+            }
+
+            snapshot.documents.forEach { document in
+                document.reference.delete(completion: completion)
+            }
+        }
+    }
+    
+    // MARK: - Update
+    
     func updatePermissionNotification(for uid: String, isPermitted: Bool, notification: Notification, completion: FirestoreCompletion) {
         let query = collection_notification.document(uid).collection("user-notification").whereField("applicantId", isEqualTo: notification.applicantId).whereField("eventId", isEqualTo: notification.eventId)
         
@@ -99,7 +117,7 @@ func postDeniedNotification(to applicantUid: String, notification: Notification,
         }
     }
 }
-
+// MARK: - Get
 func fetchNotifications(uid: String, completion: @escaping (Result<[Notification], Error>) -> Void) {
     
     let query = collection_notification.document(uid).collection("user-notification").order(by: "sentTime", descending: true)

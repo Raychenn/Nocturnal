@@ -111,16 +111,16 @@ extension EditProfileController: UITableViewDelegate {
         
         editHeader.delegate = self
         
-        let gradientView = UIView(frame: editHeader.profileImageView.frame)
-        print("gradientView frame \(gradientView)")
-        let gradient = CAGradientLayer()
-        gradient.frame = gradientView.frame
-        gradient.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
-        gradient.locations = [0.0, 1.0]
-        gradientView.layer.insertSublayer(gradient, at: 0)
-        editHeader.profileImageView.addSubview(gradientView)
-        editHeader.bringSubviewToFront(gradientView)
-        editHeader.layoutIfNeeded()
+//        let gradientView = UIView(frame: editHeader.profileImageView.frame)
+//        print("gradientView frame \(gradientView)")
+//        let gradient = CAGradientLayer()
+//        gradient.frame = gradientView.frame
+//        gradient.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
+//        gradient.locations = [0.0, 1.0]
+//        gradientView.layer.insertSublayer(gradient, at: 0)
+//        editHeader.profileImageView.addSubview(gradientView)
+//        editHeader.bringSubviewToFront(gradientView)
+//        editHeader.layoutIfNeeded()
         return editHeader
     }
     
@@ -165,7 +165,8 @@ extension EditProfileController: EditProfileCellDelegate {
                             numberOfHostedEvents: self.currentUser.numberOfHostedEvents,
                             bio: editedData.bio,
                             joinedEventsId: self.currentUser.joinedEventsId,
-                            blockedUsersId: self.currentUser.blockedUsersId)
+                            blockedUsersId: self.currentUser.blockedUsersId,
+                            requestedEventsId: self.currentUser.requestedEventsId)
 
             UserService.shared.updateUserProfile(newUserData: user) { error in
                 guard error == nil else {

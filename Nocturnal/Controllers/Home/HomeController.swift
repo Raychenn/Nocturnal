@@ -90,7 +90,7 @@ class HomeController: UIViewController {
             let item = NSCollectionLayoutItem(layoutSize: itemSize)
             
             // Group
-            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.7), heightDimension: .fractionalWidth(0.9))
+            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.7), heightDimension: .fractionalWidth(0.8))
             let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
 
             // Section
@@ -100,8 +100,8 @@ class HomeController: UIViewController {
             section.visibleItemsInvalidationHandler = { (items, offset, environment) in
                 items.forEach { item in
                     let distanceFromCenter = abs((item.frame.midX - offset.x) - environment.container.contentSize.width / 2.0)
-                    let minScale: CGFloat = 0.7
-                    let maxScale: CGFloat = 1.25
+                    let minScale: CGFloat = 0.65
+                    let maxScale: CGFloat = 1.1
                     let scale = max(maxScale - (distanceFromCenter / environment.container.contentSize.width), minScale)
                     item.transform = CGAffineTransform(scaleX: scale, y: scale)
                 }
@@ -110,7 +110,7 @@ class HomeController: UIViewController {
         }
     }
     
-    private func setupUI() {
+    func setupUI() {
         configureChatNavBar(withTitle: "Home", backgroundColor: UIColor.hexStringToUIColor(hex: "#1C242F"), preferLargeTitles: true)
         navigationItem.title = "Home"
         view.addSubview(collectionView)
@@ -176,5 +176,63 @@ extension HomeController: UICollectionViewDelegate {
         let detailVC = EventDetailController(event: selectedEvent)
         detailVC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(detailVC, animated: true)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        let config = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
+            guard let self = self else { return UIMenu() }
+            let selectedEvent = self.events[indexPath.item]
+            let selecrtedEventId = selectedEvent.id ?? ""
+            let currentUserId = uid
+            let selectedEventHostId = selectedEvent.hostID
+            let deleteAction = UIAction(title: "Delete",
+                                            image: UIImage(systemName: "trash"),
+                                            identifier: nil, discoverabilityTitle: nil,
+                                            attributes: .destructive, state: .off) { _ in
+                if selectedEventHostId != uid {
+                    let alert = UIAlertController(title: "Oops!", message: "You are not the host of this event", preferredStyle: .alert)
+                    let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+                    alert.addAction(okAction)
+                    self.present(alert, animated: true)
+                } else {
+                    EventService.shared.deleteEvent(eventId: selecrtedEventId) { error in
+                        if let error = error {
+                            print("Fail to delete event \(error)")
+                            return
+                        }
+                        UserService.shared.deleteJoinedEvent(eventId: selecrtedEventId) { error in
+                            if let error = error {
+                                print("Fail to delete JoinedEvent for user \(error)")
+                                return
+                            }
+                            UserService.shared.deleteRequestedEvent(eventId: selecrtedEventId) { error in
+                                if let error = error {
+                                    print("Fail to delete RequestedEvent for user \(error)")
+                                    return
+                                }
+                                NotificationService.shared.deleteNotifications(eventId: selecrtedEventId, forUserId: selectedEventHostId) { error in
+                                    if let error = error {
+                                        print("Fail to delete Notifications for host \(error)")
+                                        return
+                                    }
+                                    NotificationService.shared.deleteNotifications(eventId: selecrtedEventId, forUserId: currentUserId) { error in
+                                        if let error = error {
+                                            print("Fail to delete Notifications for current user \(error)")
+                                            return
+                                        }
+                                        self.events.remove(at: indexPath.item)
+    //                                    collectionView.deleteItems(at: [indexPath])
+                                        collectionView.reloadData()
+                                        print("Successfully delete event")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+                return UIMenu(title: "", image: nil, identifier: nil, options: .destructive, children: [deleteAction])
+        }
+        return config
     }
 }

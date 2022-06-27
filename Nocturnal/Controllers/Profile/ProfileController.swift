@@ -26,13 +26,15 @@ class ProfileController: UIViewController {
         return table
     }()
     
-    private let currentUser: User
+    private var currentUser: User
         
     private var joinedEventURLs: [String] = [] {
         didSet {
             tableView.reloadData()
         }
     }
+    
+    let gradient = CAGradientLayer()
     
     // MARK: - Life Cycle
     
@@ -44,8 +46,21 @@ class ProfileController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         fetchJoinEvents()
         setupUI()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        fetchUser()
+        navigationController?.navigationBar.isHidden = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        gradient.removeFromSuperlayer()
     }
     
     required init?(coder: NSCoder) {
@@ -61,6 +76,18 @@ class ProfileController: UIViewController {
                 events.forEach({ self.joinedEventURLs.append($0.eventImageURL) })
             case .failure(let error):
                 print("Fail to fetch events \(error)")
+            }
+        }
+    }
+    
+    private func fetchUser() {
+        UserService.shared.fetchUser(uid: uid) { result in
+            switch result {
+            case .success(let user):
+                self.currentUser = user
+                self.tableView.reloadData()
+            case .failure(let error):
+                print("Fail to fetch user \(error)")
             }
         }
     }
@@ -96,8 +123,8 @@ extension ProfileController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let profileHeader = tableView.dequeueReusableHeaderFooterView(withIdentifier: ProfileHeader.identifier) as? ProfileHeader else { return UIView() }
         
-        let gradientView = UIView(frame: profileHeader.profileImageView.frame)
-        let gradient = CAGradientLayer()
+        let gradientView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 400))
+        print("gradientView frameeee \(profileHeader.profileImageView.frame)")
         gradient.frame = gradientView.frame
         gradient.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
         gradient.locations = [0.0, 1.0]
@@ -132,6 +159,7 @@ extension ProfileController: ProfileCellDelegate {
     
     func didTapSelectedEvent(cell: ProfileCell, event: Event) {
         let detailController = EventDetailController(event: event)
+        detailController.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(detailController, animated: true)
     }
 }

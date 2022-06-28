@@ -41,6 +41,7 @@
 		ED156078286B084C0089121D /* DeleteAccountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED156077286B084C0089121D /* DeleteAccountCell.swift */; };
 		ED15607A286B08610089121D /* BlockedUserListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED156079286B08610089121D /* BlockedUserListCell.swift */; };
 		ED15607C286B087E0089121D /* SignoutCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED15607B286B087E0089121D /* SignoutCell.swift */; };
+		ED1560A4286B43C50089121D /* BioCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1560A3286B43C50089121D /* BioCell.swift */; };
 		ED191D0F2865873E009A10CC /* String+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED191D0E2865873E009A10CC /* String+Ext.swift */; };
 		ED194CB12859DF0700C9E5D3 /* MusicSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB02859DF0700C9E5D3 /* MusicSample.swift */; };
 		ED194CB62859E5D100C9E5D3 /* EventService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB52859E5D100C9E5D3 /* EventService.swift */; };
@@ -145,6 +146,7 @@
 		ED156077286B084C0089121D /* DeleteAccountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteAccountCell.swift; sourceTree = "<group>"; };
 		ED156079286B08610089121D /* BlockedUserListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedUserListCell.swift; sourceTree = "<group>"; };
 		ED15607B286B087E0089121D /* SignoutCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignoutCell.swift; sourceTree = "<group>"; };
+		ED1560A3286B43C50089121D /* BioCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BioCell.swift; sourceTree = "<group>"; };
 		ED191D0E2865873E009A10CC /* String+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Ext.swift"; sourceTree = "<group>"; };
 		ED194CB02859DF0700C9E5D3 /* MusicSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicSample.swift; sourceTree = "<group>"; };
 		ED194CB52859E5D100C9E5D3 /* EventService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventService.swift; sourceTree = "<group>"; };
@@ -498,6 +500,7 @@
 				ED626A892862B41C003BB636 /* JoinedEventCell.swift */,
 				ED626A8B2862B892003BB636 /* EventPhotosCell.swift */,
 				ED626A8D2862BA97003BB636 /* ProfileHeader.swift */,
+				ED1560A3286B43C50089121D /* BioCell.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -801,6 +804,7 @@
 				ED0A485928587BDE004661BB /* StatsController.swift in Sources */,
 				ED0B425828598718000680C2 /* UploadEventInfoCell.swift in Sources */,
 				ED0B4242285886D7000680C2 /* UIScrollView+Ext.swift in Sources */,
+				ED1560A4286B43C50089121D /* BioCell.swift in Sources */,
 				EDD1031F2860142C00AECAD9 /* Message.swift in Sources */,
 				EDC663F028617465007FEF82 /* ExploreCell.swift in Sources */,
 				ED847A10285CDE1A00F33C7F /* LoginController.swift in Sources */,

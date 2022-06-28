@@ -8,12 +8,10 @@
 import UIKit
 import FirebaseFirestore
 
-class ProfileHeader: UITableViewHeaderFooterView {
+class ProfileHeader: UICollectionReusableView {
     
     // MARK: - Propeties
-    
-    static let identifier = "ProfileHeader"
-    
+        
      let profileImageView: UIImageView = {
        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -21,13 +19,11 @@ class ProfileHeader: UITableViewHeaderFooterView {
         imageView.image = UIImage(named: "profileImage")
         return imageView
     }()
-    
-    var user: User?
-    
+        
     // MARK: - Life Cycle
     
-    override init(reuseIdentifier: String?) {
-        super.init(reuseIdentifier: reuseIdentifier)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         setupUI()
     }
     

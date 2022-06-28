@@ -10,11 +10,10 @@ import UIKit
 protocol ProfileCellDelegate: AnyObject {
     func didTapEditProfile(cell: ProfileCell)
     func didTapOpenConversation(cell: ProfileCell)
-    func didTapSelectedEvent(cell: ProfileCell, event: Event)
     func didTapSetting(cell: ProfileCell)
 }
 
-class ProfileCell: UITableViewCell {
+class ProfileCell: UICollectionViewCell {
     
     // MARK: - Properties
     
@@ -87,31 +86,6 @@ class ProfileCell: UITableViewCell {
         return label
     }()
     
-    private let joinedEventsTitleLabel = UILabel().makeBasicSemiboldLabel(fontSize: 22, text: "Joined Events")
-    
-    private let collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.minimumInteritemSpacing = 30
-    
-        layout.sectionInset = .init(top: 0, left: 10, bottom: 0, right: 0)
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.register(EventPhotosCell.self, forCellWithReuseIdentifier: EventPhotosCell.identifier)
-        collectionView.backgroundColor = .darkGray
-        return collectionView
-    }()
-    
-    private let bioTitleLabel = UILabel().makeBasicSemiboldLabel(fontSize: 22, text: "Bio")
-    
-    private let bioLabel: UILabel = {
-       let label = UILabel()
-        label.textColor = .lightGray
-        label.font = .systemFont(ofSize: 18)
-        label.numberOfLines = 0
-        label.text = "This is my personal bio description This is my personal bio descriptionThis is my personal bio descriptionThis is my personal bio descriptionThis"
-        return label
-    }()
-    
     private lazy var editProfileButton: UIButton = {
        let button = UIButton()
         button.setImage(UIImage(named: "editing")?.withRenderingMode(.alwaysTemplate), for: .normal)
@@ -136,30 +110,6 @@ class ProfileCell: UITableViewCell {
          return button
      }()
     
-    private let noJoinedEventsLabel: UILabel = {
-       let label = UILabel()
-        label.text = "No Joined Events"
-        label.textColor = .white
-        label.font = .systemFont(ofSize: 20, weight: .bold)
-        return label
-    }()
-    
-//    private let bubbleInfoView
-    
-    let collectionViewStack = UIStackView()
-    
-    private var joinedEventsURL: [String] = [] {
-        didSet {
-            if joinedEventsURL.count == 0 {
-                noJoinedEventsLabel.isHidden = false
-            } else {
-                noJoinedEventsLabel.isHidden = true
-            }
-            
-            collectionView.reloadData()
-        }
-    }
-    
     var user: User? {
         didSet {
             guard let user = user else { return }
@@ -172,38 +122,18 @@ class ProfileCell: UITableViewCell {
                 settingsButton.isHidden = false
                 conversationButton.isHidden = false
             }
-            
-            fetchEvents()
         }
     }
-    
-    var joinedEvents: [Event] = []
 
     // MARK: - Life Cycle
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
+   
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         setupCellUI()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    // MARK: - API
-    
-    private func fetchEvents() {
-        guard let user = user else { return }
-        
-        EventService.shared.fetchEvents(fromEventIds: user.joinedEventsId) { result in
-            switch result {
-            case .success(let events):
-                self.joinedEvents = events
-            case .failure(let error):
-                print("Fail to fetch events \(error)")
-            }
-        }
     }
     
     // MARK: - Selectors
@@ -222,7 +152,7 @@ class ProfileCell: UITableViewCell {
    
     // MARK: - Helpers
     
-    func configureCell(with user: User, joinedEventsURL: [String]) {    
+    func configureCell(with user: User) {
         let gender = Gender(rawValue: user.gender) ?? .male
         genderLabel.text = "Gender"
         print("gender descrip \(gender.description)")
@@ -230,7 +160,6 @@ class ProfileCell: UITableViewCell {
         zodiaContentImageView.image = UIImage(named: calculateZodiac())?.withRenderingMode(.alwaysTemplate)
         ageContentLabel.text = "\(calculateAge()) years old"
         usernameLabel.text = user.name
-        print(user.country)
         let country = Country(rawValue: user.country) ?? .unspecified
         if country == .unspecified {
             let character: Character = "🌍"
@@ -241,14 +170,11 @@ class ProfileCell: UITableViewCell {
             countryLabel.text = flag
         }
 
-        self.joinedEventsURL = joinedEventsURL
         settingsButton.isHidden = user.id ?? "" == uid ? false: true
         editProfileButton.isHidden = user.id ?? "" == uid ? false: true
     }
     
     func setupCellUI() {
-        collectionView.dataSource = self
-        collectionView.delegate = self
         backgroundColor = UIColor.darkGray
         layer.cornerRadius = 25
         layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner]
@@ -271,22 +197,25 @@ class ProfileCell: UITableViewCell {
         
         contentView.addSubview(usernameLabel)
         usernameLabel.anchor(top: contentView.topAnchor, left: contentView.leftAnchor, paddingTop: 20, paddingLeft: 20)
+        usernameLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        countryTitleLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        zodiacLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        genderLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
+//        ageTitleLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
         
-        countryStack.anchor(top: usernameLabel.bottomAnchor,
-                            left: usernameLabel.leftAnchor,
-                            paddingTop: 5)
-        
+        countryStack.anchor(left: usernameLabel.leftAnchor)
         genderStack.anchor(top: countryStack.bottomAnchor,
                            left: usernameLabel.leftAnchor,
                            paddingTop: 5)
-        
         zodiacStack.anchor(top: genderStack.bottomAnchor,
                            left: usernameLabel.leftAnchor,
                            paddingTop: 5)
         
         ageStack.anchor(top: zodiacStack.bottomAnchor,
                         left: usernameLabel.leftAnchor,
-                        paddingTop: 5)
+                        bottom: contentView.bottomAnchor,
+                        paddingTop: 5,
+                        paddingBottom: 15)
         
         contentView.addSubview(editProfileButton)
         editProfileButton.setDimensions(height: 25, width: 25)
@@ -301,30 +230,6 @@ class ProfileCell: UITableViewCell {
         settingsButton.centerY(inView: usernameLabel)
         settingsButton.setDimensions(height: 25, width: 25)
         settingsButton.anchor(right: editProfileButton.leftAnchor, paddingRight: 12)
-        
-        contentView.addSubview(bioTitleLabel)
-        bioTitleLabel.anchor(top: ageStack.bottomAnchor, left: usernameLabel.leftAnchor, paddingTop: 10)
-
-        contentView.addSubview(bioLabel)
-        bioLabel.anchor(top: bioTitleLabel.bottomAnchor,
-                        left: usernameLabel.leftAnchor,
-                        right: contentView.rightAnchor,
-                        paddingTop: 10,
-                        paddingRight: 10)
-
-        contentView.addSubview(joinedEventsTitleLabel)
-        joinedEventsTitleLabel.anchor(top: bioLabel.bottomAnchor, left: contentView.leftAnchor, paddingTop: 10, paddingLeft: 10)
-
-//        collectionViewStack.addArrangedSubview(collectionView)
-        contentView.addSubview(collectionView)
-        collectionView.anchor(top: joinedEventsTitleLabel.bottomAnchor, left: usernameLabel.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 10)
-        
-        contentView.addSubview(noJoinedEventsLabel)
-        noJoinedEventsLabel.centerY(inView: collectionView)
-        noJoinedEventsLabel.centerX(inView: collectionView)
-        
-//        contentView.addSubview(collectionView)
-//        collectionView.anchor(top: joinedEventsTitleLabel.bottomAnchor, left: usernameLabel.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 10, paddingBottom: 10, height: 150)
     }
     
     func calculateAge() -> Int {
@@ -346,37 +251,5 @@ class ProfileCell: UITableViewCell {
             return ""
         }
         return getZodiacSign(user.birthday.dateValue())
-    }
-}
-// MARK: - UICollectionViewDataSource
-extension ProfileCell: UICollectionViewDataSource {
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return joinedEventsURL.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let photoCell = collectionView.dequeueReusableCell(withReuseIdentifier: EventPhotosCell.identifier, for: indexPath) as? EventPhotosCell else { return UICollectionViewCell() }
-        
-        let eventImageURL = joinedEventsURL[indexPath.item]
-        photoCell.configurePhotoCell(imageURL: eventImageURL)
-        
-        return photoCell
-    }
-    
-}
-// MARK: - UICollectionViewDelegate
-extension ProfileCell: UICollectionViewDelegate {
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let selectedEvent = joinedEvents[indexPath.item]
-        delegate?.didTapSelectedEvent(cell: self, event: selectedEvent)
-    }
-}
-// MARK: - UICollectionViewDelegateFlowLayout
-extension ProfileCell: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let size = collectionView.frame.size.height * 0.8
-        return CGSize(width: size, height: size)
     }
 }

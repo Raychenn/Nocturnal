@@ -424,6 +424,7 @@ extension EventDetailController: DetailInfoCellDelegate {
         print("host name \(host.name)")
         let profileVC = ProfileController(user: host)
         let nav = UINavigationController(rootViewController: profileVC)
+//        nav.modalPresentationStyle = .fullScreen
         present(nav, animated: true)
     }
     

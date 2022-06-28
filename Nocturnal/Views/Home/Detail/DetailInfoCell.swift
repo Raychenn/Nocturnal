@@ -241,6 +241,7 @@ class DetailInfoCell: UITableViewCell {
         self.hostNameLabel.text = host.name
         self.event = event
         titleLabel.text = event.title
+        titleLabel.setContentHuggingPriority(.required, for: .vertical)
         let formattedDateString = Date.dateTimeFormatter.string(from: event.startingDate.dateValue())
         dateLabel.text = "\(formattedDateString)"
         let location = CLLocation(latitude: event.destinationLocation.latitude, longitude: event.destinationLocation.longitude)
@@ -325,7 +326,7 @@ class DetailInfoCell: UITableViewCell {
         hostNameLabel.anchor(left: hostProfileImageView.rightAnchor, paddingLeft: 25)
 
         contentView.addSubview(chatButton)
-        chatButton.anchor(top: parentVStack.bottomAnchor, left: hostProfileImageView.rightAnchor, paddingTop: 0, paddingLeft: 2)
+        chatButton.anchor(top: parentVStack.bottomAnchor, left: hostProfileImageView.rightAnchor, paddingTop: 8, paddingLeft: 2)
 
         contentView.addSubview(playMusicButton)
         playMusicButton.centerY(inView: hostProfileImageView)

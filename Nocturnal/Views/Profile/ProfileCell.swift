@@ -15,14 +15,73 @@ protocol ProfileCellDelegate: AnyObject {
 
 class ProfileCell: UITableViewCell {
     
+    // MARK: - Properties
+    
     weak var delegate: ProfileCellDelegate?
     
+    private let genderLabel: UILabel = {
+       let label = UILabel()
+        label.font = .systemFont(ofSize: 18)
+        label.textColor = .lightGray
+        label.text = "Gender"
+        return label
+    }()
+    
+    private let genderImageView: UIImageView = {
+       let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.image = UIImage(named: "gender")?.withRenderingMode(.alwaysTemplate)
+        imageView.tintColor = .white
+        imageView.setDimensions(height: 20, width: 20)
+        return imageView
+    }()
+    
+    private let zodiaContentImageView: UIImageView = {
+        let imageView = UIImageView()
+         imageView.contentMode = .scaleAspectFill
+         imageView.tintColor = .white
+         imageView.setDimensions(height: 15, width: 15)
+         return imageView
+    }()
+    
+    private let zodiacLabel: UILabel = {
+       let label = UILabel()
+        label.font = .systemFont(ofSize: 18)
+        label.textColor = .lightGray
+        label.text = "Zodiac Sign: "
+        return label
+    }()
+    
+    private let ageTitleLabel: UILabel = {
+       let label = UILabel()
+        label.font = .systemFont(ofSize: 18)
+        label.textColor = .lightGray
+        label.text = "Age: "
+        return label
+    }()
+    
+    private let ageContentLabel: UILabel = {
+       let label = UILabel()
+        label.font = .systemFont(ofSize: 18)
+        label.textColor = .lightGray
+        label.text = "15 years old"
+        return label
+    }()
+    
     private let usernameLabel = UILabel().makeBasicSemiboldLabel(fontSize: 25, text: "Evie Sharon")
+    
+    private let countryTitleLabel: UILabel = {
+        let label = UILabel()
+         label.textColor = .lightGray
+         label.font = .systemFont(ofSize: 18)
+         label.text = "Country: "
+         return label
+     }()
     
     private let countryLabel: UILabel = {
        let label = UILabel()
         label.textColor = .lightGray
-        label.font = .systemFont(ofSize: 45)
+        label.font = .systemFont(ofSize: 14)
         label.text = "Norway"
         return label
     }()
@@ -122,6 +181,13 @@ class ProfileCell: UITableViewCell {
     // MARK: - Helpers
     
     func configureCell(with user: User, joinedEventsURL: [String]) {
+        let gender = Gender(rawValue: user.gender) ?? .male
+        genderLabel.text = "Gender"
+        print("gender descrip \(gender.description)")
+        genderImageView.image = UIImage(named: "Male")
+        zodiaContentImageView.image = UIImage(named: calculateZodiac())?.withRenderingMode(.alwaysTemplate)
+        ageTitleLabel.text = "Age"
+        ageContentLabel.text = "\(calculateAge()) years old"
         usernameLabel.text = user.name
         print(user.country)
         let country = Country(rawValue: user.country) ?? .unspecified
@@ -139,46 +205,114 @@ class ProfileCell: UITableViewCell {
         
     }
     
+    func setupPersonalInfoUI() {
+        let countryStack = UIStackView(arrangedSubviews: [countryTitleLabel, countryLabel])
+        countryStack.axis = .horizontal
+        countryStack.spacing = 5
+        
+        let genderStack = UIStackView(arrangedSubviews: [genderLabel, genderImageView])
+        genderStack.axis = .horizontal
+        genderStack.spacing = 5
+        
+        let zodiacStack = UIStackView(arrangedSubviews: [zodiacLabel, zodiaContentImageView])
+        zodiacStack.axis = .horizontal
+        zodiacStack.spacing = 5
+        
+        let ageStack = UIStackView(arrangedSubviews: [ageTitleLabel, ageContentLabel])
+        ageStack.axis = .horizontal
+        ageStack.spacing = 5
+        
+        [countryStack, genderStack, zodiacStack, ageStack].forEach({ contentView.addSubview($0) })
+    }
+    
     func setupCellUI() {
         collectionView.dataSource = self
         collectionView.delegate = self
         backgroundColor = UIColor.darkGray
         layer.cornerRadius = 25
         layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+        let countryStack = UIStackView(arrangedSubviews: [countryTitleLabel, countryLabel])
+        countryStack.axis = .horizontal
+        countryStack.spacing = 5
+        
+        let genderStack = UIStackView(arrangedSubviews: [genderLabel, genderImageView])
+        genderStack.axis = .horizontal
+        genderStack.spacing = 5
+        
+        let zodiacStack = UIStackView(arrangedSubviews: [zodiacLabel, zodiaContentImageView])
+        zodiacStack.axis = .horizontal
+        zodiacStack.spacing = 5
+        
+        let ageStack = UIStackView(arrangedSubviews: [ageTitleLabel, ageContentLabel])
+        ageStack.axis = .horizontal
+        ageStack.spacing = 5
+        
+        [countryStack, genderStack, zodiacStack, ageStack].forEach({ contentView.addSubview($0) })
         
         contentView.addSubview(usernameLabel)
         usernameLabel.anchor(top: contentView.topAnchor, left: contentView.leftAnchor, paddingTop: 20, paddingLeft: 20)
         
-        contentView.addSubview(countryLabel)
-        countryLabel.anchor(top: usernameLabel.bottomAnchor, left: contentView.leftAnchor, paddingTop: 8, paddingLeft: 25)
+        countryStack.anchor(top: usernameLabel.bottomAnchor,
+                            left: usernameLabel.leftAnchor,
+                            paddingTop: 5)
+        
+        genderStack.anchor(top: countryStack.bottomAnchor,
+                           left: usernameLabel.leftAnchor,
+                           paddingTop: 5)
+        
+        zodiacStack.anchor(top: genderStack.bottomAnchor,
+                           left: usernameLabel.leftAnchor,
+                           paddingTop: 5)
+        
+        ageStack.anchor(top: zodiacStack.bottomAnchor,
+                        left: usernameLabel.leftAnchor,
+                        paddingTop: 5)
         
         contentView.addSubview(editProfileButton)
-        editProfileButton.setDimensions(height: 40, width: 40)
-        editProfileButton.centerY(inView: countryLabel)
+        editProfileButton.setDimensions(height: 25, width: 25)
+        editProfileButton.centerY(inView: usernameLabel)
         
         contentView.addSubview(conversationButton)
-        conversationButton.centerY(inView: countryLabel)
+        conversationButton.centerY(inView: usernameLabel)
         conversationButton.anchor(left: editProfileButton.rightAnchor, right: contentView.rightAnchor, paddingLeft: 12, paddingRight: 15)
-        conversationButton.setDimensions(height: 50, width: 50)
-        
-        contentView.addSubview(joinedEventsTitleLabel)
-        joinedEventsTitleLabel.anchor(top: countryLabel.bottomAnchor, left: contentView.leftAnchor, paddingTop: 20, paddingLeft: 10)
-        
-        contentView.addSubview(collectionView)
-        collectionView.anchor(top: joinedEventsTitleLabel.bottomAnchor, left: contentView.leftAnchor, right: contentView.rightAnchor, paddingTop: 10, paddingLeft: 10, height: 150)
+        conversationButton.setDimensions(height: 25, width: 25)
         
         contentView.addSubview(bioTitleLabel)
-        bioTitleLabel.anchor(top: collectionView.bottomAnchor, left: contentView.leftAnchor, paddingTop: 20, paddingLeft: 10)
-        
+        bioTitleLabel.anchor(top: ageStack.bottomAnchor, left: usernameLabel.leftAnchor, paddingTop: 10)
+
         contentView.addSubview(bioLabel)
         bioLabel.anchor(top: bioTitleLabel.bottomAnchor,
-                        left: contentView.leftAnchor,
-                        bottom: contentView.bottomAnchor,
+                        left: usernameLabel.leftAnchor,
                         right: contentView.rightAnchor,
                         paddingTop: 10,
-                        paddingLeft: 10,
-                        paddingBottom: 100,
                         paddingRight: 10)
+
+        contentView.addSubview(joinedEventsTitleLabel)
+        joinedEventsTitleLabel.anchor(top: bioLabel.bottomAnchor, left: contentView.leftAnchor, paddingTop: 10, paddingLeft: 10)
+
+        contentView.addSubview(collectionView)
+        collectionView.anchor(top: joinedEventsTitleLabel.bottomAnchor, left: usernameLabel.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 10, paddingBottom: 10, height: 150)
+    }
+    
+    func calculateAge() -> Int {
+        guard let user = user else {
+            print("user is nil")
+            return 0
+        }
+        
+        let calendar = Calendar(identifier: .gregorian)
+        let birthday = user.birthday.dateValue()
+        let ageComponents = calendar.dateComponents([.year], from: birthday, to: Date())
+        let age = ageComponents.year ?? 18
+        return age
+    }
+    
+    func calculateZodiac() -> String {
+        guard let user = user else {
+            print("user is nil")
+            return ""
+        }
+        return getZodiacSign(user.birthday.dateValue())
     }
 }
 // MARK: - UICollectionViewDataSource

@@ -15,16 +15,24 @@ struct NotificationService {
     
     // MARK: - Deletion
     
-    func deleteNotifications(eventId: String, forUserId: String, completion: FirestoreCompletion) {
-        let query = collection_notification.document(forUserId).collection("user-notification").whereField("eventId", isEqualTo: eventId)
-        
-        query.getDocuments { snapshot, error in
-            guard let snapshot = snapshot else {
+    func deleteNotifications(eventId: String, completion: FirestoreCompletion) {
+        collection_notification.getDocuments { snapshot, error in
+            guard let snapshot = snapshot, error == nil else {
+                print("Fail to deleteNotifications1 \(error!)")
                 return
             }
-
             snapshot.documents.forEach { document in
-                document.reference.delete(completion: completion)
+                print("document \(document.reference)")
+                document.reference.collection("user-notification").whereField("eventId", isEqualTo: eventId).getDocuments { snapshot, error in
+
+                    guard let snapshot = snapshot, error == nil else {
+                        print("Fail to deleteNotifications1 \(error!)")
+                        return
+                    }
+                    snapshot.documents.forEach { document in
+                        document.reference.delete(completion: completion)
+                    }
+                }
             }
         }
     }
@@ -48,7 +56,10 @@ struct NotificationService {
 
 func postNotification(to uid: String, notification: Notification, completion: FirestoreCompletion) {
     
+    let notificationDoc = collection_notification.document(uid)
     let newNotificationDocument = collection_notification.document(uid).collection("user-notification").document()
+    
+    notificationDoc.setData(["id": uid])
     
     do {
         try newNotificationDocument.setData(from: notification, encoder: .init(), completion: completion)

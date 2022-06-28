@@ -45,6 +45,7 @@
 		ED194CBC2859EB7500C9E5D3 /* StorageUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CBB2859EB7500C9E5D3 /* StorageUploader.swift */; };
 		ED194CBE285A007C00C9E5D3 /* InputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CBD285A007C00C9E5D3 /* InputTextView.swift */; };
 		ED204B22285DB16F0016FDCA /* UILabel+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED204B21285DB16F0016FDCA /* UILabel+Ext.swift */; };
+		ED5D192A286A11750054AC56 /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5D1929286A11750054AC56 /* SettingsController.swift */; };
 		ED626A872862B09E003BB636 /* ProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED626A862862B09E003BB636 /* ProfileCell.swift */; };
 		ED626A8A2862B41C003BB636 /* JoinedEventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED626A892862B41C003BB636 /* JoinedEventCell.swift */; };
 		ED626A8C2862B892003BB636 /* EventPhotosCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED626A8B2862B892003BB636 /* EventPhotosCell.swift */; };
@@ -144,6 +145,7 @@
 		ED194CBB2859EB7500C9E5D3 /* StorageUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageUploader.swift; sourceTree = "<group>"; };
 		ED194CBD285A007C00C9E5D3 /* InputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextView.swift; sourceTree = "<group>"; };
 		ED204B21285DB16F0016FDCA /* UILabel+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Ext.swift"; sourceTree = "<group>"; };
+		ED5D1929286A11750054AC56 /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
 		ED626A862862B09E003BB636 /* ProfileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCell.swift; sourceTree = "<group>"; };
 		ED626A892862B41C003BB636 /* JoinedEventCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinedEventCell.swift; sourceTree = "<group>"; };
 		ED626A8B2862B892003BB636 /* EventPhotosCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventPhotosCell.swift; sourceTree = "<group>"; };
@@ -274,6 +276,7 @@
 		ED0A484D285877B5004661BB /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				ED5D1928286A115C0054AC56 /* Settings */,
 				ED26DAEE285F0EEE0094B546 /* Chat */,
 				ED0A485228587884004661BB /* MainTabBarController.swift */,
 				ED847A0E285CDDD100F33C7F /* Authentication */,
@@ -457,6 +460,14 @@
 			children = (
 			);
 			path = Chat;
+			sourceTree = "<group>";
+		};
+		ED5D1928286A115C0054AC56 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				ED5D1929286A11750054AC56 /* SettingsController.swift */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 		ED626A882862B3FD003BB636 /* Profile */ = {
@@ -775,6 +786,7 @@
 				ED81C3D7285D93D3004C12EA /* Firebase+Ext.swift in Sources */,
 				ED83392E285ADC4B00236814 /* DetailDescriptionCell.swift in Sources */,
 				ED0A485728587A7C004661BB /* ExploreController.swift in Sources */,
+				ED5D192A286A11750054AC56 /* SettingsController.swift in Sources */,
 				EDF3E2A8285AC563000E2218 /* EventDetailController.swift in Sources */,
 				EDF3E2AB285ACA91000E2218 /* DetailInfoCell.swift in Sources */,
 				ED847A1A285CE0BE00F33C7F /* AuthButton.swift in Sources */,

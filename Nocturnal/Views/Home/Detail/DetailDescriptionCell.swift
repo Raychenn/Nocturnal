@@ -27,12 +27,12 @@ class DetailDescriptionCell: UITableViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 20, weight: .semibold)
-        label.numberOfLines = 5
+        label.numberOfLines = 0
         let tap = UITapGestureRecognizer(target: self, action: #selector(didTapDescriptionLabel))
         label.addGestureRecognizer(tap)
         label.isUserInteractionEnabled = true
         label.lineBreakMode = .byTruncatingTail
-        label.backgroundColor = .red
+//        label.backgroundColor = .red
         label.text = "loading"
         return label
     }()
@@ -74,16 +74,18 @@ class DetailDescriptionCell: UITableViewCell {
         contentView.addSubview(decriptionContentLabel)
         decriptionContentLabel.anchor(top: descriptionTitleLabel.bottomAnchor,
                                       left: contentView.leftAnchor,
+                                      bottom: contentView.bottomAnchor,
                                       right: contentView.rightAnchor,
                                       paddingTop: 8,
                                       paddingLeft: 8,
+                                      paddingBottom: 8,
                                       paddingRight: 8)
         
 //        descriptionLabelHeightConst = decriptionContentLabel.heightAnchor.constraint(equalToConstant: 100)
 //        descriptionLabelHeightConst.isActive = true
 //        decriptionContentLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20).isActive = true
-        contentView.addSubview(readMoreLabel)
-        readMoreLabel.anchor(top: decriptionContentLabel.bottomAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 8, paddingBottom: 20, paddingRight: 8)
+//        contentView.addSubview(readMoreLabel)
+//        readMoreLabel.anchor(top: decriptionContentLabel.bottomAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 8, paddingBottom: 20, paddingRight: 8)
     }
     
     func configureCell(with event: Event) {

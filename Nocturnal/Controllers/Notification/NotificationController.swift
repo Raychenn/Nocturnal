@@ -14,6 +14,9 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     
     private lazy var tableView: UITableView = {
         let table = UITableView()
+        table.rowHeight = UITableView.automaticDimension
+        table.contentInset = .init(top: 10, left: 0, bottom: 10, right: 0)
+        table.allowsSelection = false
         table.register(NotificationCell.self, forCellReuseIdentifier: NotificationCell.identifier)
         return table
     }()
@@ -130,6 +133,7 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
    // MARK: - Helpers
     
     private func setupUI() {
+        navigationController?.navigationBar.isHidden = true
         tableView.dataSource = self
         tableView.delegate = self
         view.backgroundColor = .white
@@ -148,14 +152,18 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     
     // MARK: - UITableViewDataSource
     
+    func numberOfSections(in tableView: UITableView) -> Int {
+        events.count
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return events.count
+        return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let notificationCell = tableView.dequeueReusableCell(withIdentifier: NotificationCell.identifier, for: indexPath) as? NotificationCell else { return UITableViewCell() }
         
-        let notification = notifications[indexPath.row]
+        let notification = notifications[indexPath.section]
         let event = events[indexPath.row]
         
         if applicants.count == 0 {
@@ -170,6 +178,18 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
         }
         
         return notificationCell
+    }
+    
+    // MARK: - UITablViewDelegate
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        cell.contentView.layer.masksToBounds = true
+        let radius = cell.contentView.layer.cornerRadius
+        cell.layer.shadowPath = UIBezierPath(roundedRect: cell.bounds, cornerRadius: radius).cgPath
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        50
     }
 }
 

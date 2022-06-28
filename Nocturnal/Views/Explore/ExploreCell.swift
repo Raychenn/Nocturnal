@@ -14,7 +14,7 @@ class ExploreCell: UICollectionViewCell {
     
     private let eventImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
         imageView.backgroundColor = .lightGray
         imageView.clipsToBounds = true
         return imageView

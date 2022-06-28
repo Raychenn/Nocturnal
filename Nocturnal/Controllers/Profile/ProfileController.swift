@@ -20,6 +20,7 @@ class ProfileController: UIViewController {
         table.contentInsetAdjustmentBehavior = .never
         table.register(ProfileCell.self, forCellReuseIdentifier: ProfileCell.identifier)
         table.register(ProfileHeader.self, forHeaderFooterViewReuseIdentifier: ProfileHeader.identifier)
+        table.rowHeight = 500
         let footerView = UIView()
         footerView.backgroundColor = .white
         table.tableFooterView = footerView

@@ -15,11 +15,31 @@ struct UserService {
     
     // MARK: - Deletion
     func deleteJoinedEvent(eventId: String, completion: FirestoreCompletion) {
-        collection_users.document(uid).updateData(["joinedEventsId": FieldValue.arrayRemove([eventId])], completion: completion)
+        collection_users.whereField("joinedEventsId", arrayContains: eventId).getDocuments { snapshot, error in
+            guard let snapshot = snapshot, error == nil else {
+                print("Fail to delet joined event \(error!)")
+                return
+            }
+
+            snapshot.documents.forEach { document in
+                document.reference.updateData(["joinedEventsId": FieldValue.arrayRemove([eventId])], completion: completion)
+            }
+        }
     }
     
     func deleteRequestedEvent(eventId: String, completion: FirestoreCompletion) {
-        collection_users.document(uid).updateData(["requestedEventsId": FieldValue.arrayRemove([eventId])], completion: completion)
+        print("eventId in deleteRequestedEvent \(eventId)")
+        collection_users.whereField("requestedEventsId", arrayContains: eventId).getDocuments { snapshot, error in
+            guard let snapshot = snapshot, error == nil else {
+                print("Fail to delet joined event \(error!)")
+                return
+            }
+
+            snapshot.documents.forEach { document in
+                document.reference.updateData(["requestedEventsId": FieldValue.arrayRemove([eventId])], completion: completion)
+            }
+        }
+//        collection_users.document(uid).updateData(["requestedEventsId": FieldValue.arrayRemove([eventId])], completion: completion)
     }
     
     func removeUserFromEvent(uid: String, joinedEventId: String, completion: FirestoreCompletion) {

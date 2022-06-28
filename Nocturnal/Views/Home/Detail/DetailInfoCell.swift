@@ -15,6 +15,7 @@ protocol DetailInfoCellDelegate: AnyObject {
     func playMusic(cell: DetailInfoCell, musicURL: String)
     func openChatRoom(cell: DetailInfoCell)
     func tappedHostProfile(cell: DetailInfoCell)
+    func deleteEvent(cell: DetailInfoCell)
 }
 
 class DetailInfoCell: UITableViewCell {
@@ -37,14 +38,15 @@ class DetailInfoCell: UITableViewCell {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.image = UIImage(systemName: "calendar")
-        imageView.setDimensions(height: 30, width: 30)
+        imageView.setDimensions(height: 20, width: 20)
+        imageView.tintColor = .lightGray
         return imageView
     }()
     
     private let dateLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .medium)
-        label.textColor = .white
+//        label.font = .systemFont(ofSize: 15, weight: .medium)
+        label.textColor = .lightGray
         label.text = "Jun 4 . 7:00 PM"
         return label
     }()
@@ -53,15 +55,16 @@ class DetailInfoCell: UITableViewCell {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.image = UIImage(systemName: "mappin")
-        imageView.setDimensions(height: 30, width: 30)
+        imageView.setDimensions(height: 20, width: 20)
+        imageView.tintColor = .lightGray
         return imageView
     }()
     
     private let addressLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
-        label.textColor = .white
-        label.font = .systemFont(ofSize: 15, weight: .medium)
+        label.textColor = .lightGray
+//        label.font = .systemFont(ofSize: 15, weight: .medium)
         label.text = "Loading Address"
         return label
     }()
@@ -70,14 +73,15 @@ class DetailInfoCell: UITableViewCell {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.image = UIImage(systemName: "scribble")
-        imageView.setDimensions(height: 30, width: 30)
+        imageView.setDimensions(height: 20, width: 20)
+        imageView.tintColor = .lightGray
         return imageView
     }()
     
     private let styleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .white
-        label.font = .systemFont(ofSize: 15, weight: .medium)
+        label.textColor = .lightGray
+//        label.font = .systemFont(ofSize: 15, weight: .medium)
         label.text = "Event Style: Loading"
         return label
     }()
@@ -86,14 +90,15 @@ class DetailInfoCell: UITableViewCell {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.image = UIImage(systemName: "dollarsign.circle")
-        imageView.setDimensions(height: 30, width: 30)
+        imageView.setDimensions(height: 20, width: 20)
+        imageView.tintColor = .lightGray
         return imageView
     }()
     
     private let feeLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .white
-        label.font = .systemFont(ofSize: 15, weight: .medium)
+        label.textColor = .lightGray
+//        label.font = .systemFont(ofSize: 15, weight: .medium)
         label.text = "$15.50"
         return label
     }()
@@ -113,7 +118,7 @@ class DetailInfoCell: UITableViewCell {
         let label = UILabel()
         label.font = .systemFont(ofSize: 15, weight: .medium)
         label.text = "Host: Ray Chen"
-        label.textColor = .white
+        label.textColor = .lightGray
         return label
     }()
     
@@ -121,7 +126,7 @@ class DetailInfoCell: UITableViewCell {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 25)
         button.setImage( UIImage(systemName: "message.fill", withConfiguration: config), for: .normal)
-        button.tintColor = .white
+        button.tintColor = .lightGray
         button.addTarget(self, action: #selector(didTapChatButton), for: .touchUpInside)
         return button
     }()
@@ -130,7 +135,8 @@ class DetailInfoCell: UITableViewCell {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.image = UIImage(systemName: "person")
-        imageView.setDimensions(height: 30, width: 30)
+        imageView.setDimensions(height: 20, width: 20)
+        imageView.tintColor = .lightGray
         return imageView
     }()
     
@@ -138,7 +144,7 @@ class DetailInfoCell: UITableViewCell {
         let label = UILabel()
         label.font = .systemFont(ofSize: 15, weight: .medium)
         label.text = "Joined Members: 7"
-        label.textColor = .white
+        label.textColor = .lightGray
         return label
     }()
     
@@ -169,6 +175,18 @@ class DetailInfoCell: UITableViewCell {
         button.addTarget(self, action: #selector(didPlayMusicButton), for: .touchUpInside)
         button.setDimensions(height: 50, width: 50)
         return button
+    }()
+    
+    private lazy var deleteImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapDeleteImageView))
+        imageView.addGestureRecognizer(tap)
+        let largeConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .bold)
+        imageView.image = UIImage(systemName: "ellipsis", withConfiguration: largeConfig)
+        imageView.tintColor = .white
+        imageView.setDimensions(height: 30, width: 30)
+        return imageView
     }()
     
     // MARK: - Life Cycle
@@ -204,12 +222,15 @@ class DetailInfoCell: UITableViewCell {
     }
     
     @objc func didTapUserProfile() {
-        guard let event = event else { return }
         delegate?.tappedHostProfile(cell: self)
     }
     
     @objc func didTapChatButton() {
         delegate?.openChatRoom(cell: self)
+    }
+    
+    @objc func didTapDeleteImageView() {
+        delegate?.deleteEvent(cell: self)
     }
     
     // MARK: - Heleprs
@@ -238,6 +259,7 @@ class DetailInfoCell: UITableViewCell {
         feeLabel.text = "$\(String(event.fee))"
         joinedMembersLabel.text = "Joined Members: \(event.participants.count)"
         chatButton.isHidden = uid == event.hostID
+        deleteImageView.isHidden = uid != event.hostID
     }
     
     private func setupCellUI() {
@@ -248,8 +270,13 @@ class DetailInfoCell: UITableViewCell {
                           paddingTop: 10,
                           paddingLeft: 8,
                           paddingRight: 8)
-        
         titleLabel.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
+        
+        contentView.addSubview(deleteImageView)
+        deleteImageView.anchor(top: contentView.topAnchor,
+                            right: contentView.rightAnchor,
+                            paddingTop: 10,
+                            paddingRight: 10)
         
         let dateStack = UIStackView(arrangedSubviews: [dateImageView, dateLabel])
         dateStack.axis = .horizontal
@@ -274,13 +301,14 @@ class DetailInfoCell: UITableViewCell {
         joinedMemberStack.spacing = 8
         
         let parentVStack = UIStackView(arrangedSubviews: [dateStack,
-                                                          addressStack,
                                                           styleStack,
                                                           feeStack,
-                                                          joinedMemberStack
+                                                          joinedMemberStack,
+                                                          addressStack
                                                           ])
         parentVStack.axis = .vertical
         parentVStack.spacing = 8
+        parentVStack.distribution = .fillProportionally
         contentView.addSubview(parentVStack)
         parentVStack.anchor(top: titleLabel.bottomAnchor,
                             left: contentView.leftAnchor,
@@ -290,16 +318,15 @@ class DetailInfoCell: UITableViewCell {
                             paddingRight: 8)
         
         contentView.addSubview(hostProfileImageView)
-        hostProfileImageView.anchor(top: parentVStack.bottomAnchor, left: contentView.leftAnchor, bottom: contentView.bottomAnchor, paddingTop: 10, paddingLeft: 8)
-        
+        hostProfileImageView.anchor(top: parentVStack.bottomAnchor, left: contentView.leftAnchor, bottom: contentView.bottomAnchor, paddingTop: 10, paddingLeft: 8, paddingBottom: 10)
+
         contentView.addSubview(hostNameLabel)
         hostNameLabel.centerY(inView: hostProfileImageView)
-        hostNameLabel.anchor(left: hostProfileImageView.rightAnchor, paddingLeft: 8)
-        
+        hostNameLabel.anchor(left: hostProfileImageView.rightAnchor, paddingLeft: 25)
+
         contentView.addSubview(chatButton)
-        chatButton.centerY(inView: hostNameLabel)
-        chatButton.anchor(left: hostNameLabel.rightAnchor, paddingLeft: 8)
-        
+        chatButton.anchor(top: parentVStack.bottomAnchor, left: hostProfileImageView.rightAnchor, paddingTop: 0, paddingLeft: 2)
+
         contentView.addSubview(playMusicButton)
         playMusicButton.centerY(inView: hostProfileImageView)
         playMusicButton.anchor(right: contentView.rightAnchor, paddingRight: 8)

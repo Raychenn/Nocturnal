@@ -11,6 +11,7 @@ protocol ProfileCellDelegate: AnyObject {
     func didTapEditProfile(cell: ProfileCell)
     func didTapOpenConversation(cell: ProfileCell)
     func didTapSelectedEvent(cell: ProfileCell, event: Event)
+    func didTapSetting(cell: ProfileCell)
 }
 
 class ProfileCell: UITableViewCell {
@@ -127,6 +128,16 @@ class ProfileCell: UITableViewCell {
         return button
     }()
     
+    private lazy var settingsButton: UIButton = {
+        let button = UIButton()
+         button.setImage(UIImage(named: "settings")?.withRenderingMode(.alwaysTemplate), for: .normal)
+         button.tintColor = .black
+         button.addTarget(self, action: #selector(didTapSettingsButton), for: .touchUpInside)
+         return button
+     }()
+    
+    let collectionViewStack = UIStackView()
+    
     private var joinedEventsURL: [String] = [] {
         didSet {
             collectionView.reloadData()
@@ -139,7 +150,20 @@ class ProfileCell: UITableViewCell {
         }
     }
     
-    var joinedEvents: [Event] = []
+    var joinedEvents: [Event] = [] {
+        didSet {
+            print("joinedEvents.count \(joinedEvents.count)")
+            if joinedEvents.count == 0 {
+                collectionViewStack.removeArrangedSubview(collectionView)
+                collectionViewStack.isHidden = true
+               
+            } else {
+                collectionViewStack.addArrangedSubview(collectionView)
+                collectionViewStack.isHidden = false
+       
+            }
+        }
+    }
 
     // MARK: - Life Cycle
     
@@ -177,6 +201,10 @@ class ProfileCell: UITableViewCell {
     @objc func didTapConversationButton() {
         delegate?.didTapOpenConversation(cell: self)
     }
+    
+    @objc func didTapSettingsButton() {
+        delegate?.didTapSetting(cell: self)
+    }
    
     // MARK: - Helpers
     
@@ -186,12 +214,10 @@ class ProfileCell: UITableViewCell {
         print("gender descrip \(gender.description)")
         genderImageView.image = UIImage(named: "Male")
         zodiaContentImageView.image = UIImage(named: calculateZodiac())?.withRenderingMode(.alwaysTemplate)
-        ageTitleLabel.text = "Age"
         ageContentLabel.text = "\(calculateAge()) years old"
         usernameLabel.text = user.name
         print(user.country)
         let country = Country(rawValue: user.country) ?? .unspecified
-        print("country is \(country)")
         if country == .unspecified {
             let character: Character = "🌍"
             
@@ -202,27 +228,6 @@ class ProfileCell: UITableViewCell {
         }
 
         self.joinedEventsURL = joinedEventsURL
-        
-    }
-    
-    func setupPersonalInfoUI() {
-        let countryStack = UIStackView(arrangedSubviews: [countryTitleLabel, countryLabel])
-        countryStack.axis = .horizontal
-        countryStack.spacing = 5
-        
-        let genderStack = UIStackView(arrangedSubviews: [genderLabel, genderImageView])
-        genderStack.axis = .horizontal
-        genderStack.spacing = 5
-        
-        let zodiacStack = UIStackView(arrangedSubviews: [zodiacLabel, zodiaContentImageView])
-        zodiacStack.axis = .horizontal
-        zodiacStack.spacing = 5
-        
-        let ageStack = UIStackView(arrangedSubviews: [ageTitleLabel, ageContentLabel])
-        ageStack.axis = .horizontal
-        ageStack.spacing = 5
-        
-        [countryStack, genderStack, zodiacStack, ageStack].forEach({ contentView.addSubview($0) })
     }
     
     func setupCellUI() {
@@ -277,6 +282,11 @@ class ProfileCell: UITableViewCell {
         conversationButton.anchor(left: editProfileButton.rightAnchor, right: contentView.rightAnchor, paddingLeft: 12, paddingRight: 15)
         conversationButton.setDimensions(height: 25, width: 25)
         
+        contentView.addSubview(settingsButton)
+        settingsButton.centerY(inView: usernameLabel)
+        settingsButton.setDimensions(height: 25, width: 25)
+        settingsButton.anchor(right: editProfileButton.leftAnchor, paddingRight: 12)
+        
         contentView.addSubview(bioTitleLabel)
         bioTitleLabel.anchor(top: ageStack.bottomAnchor, left: usernameLabel.leftAnchor, paddingTop: 10)
 
@@ -290,8 +300,12 @@ class ProfileCell: UITableViewCell {
         contentView.addSubview(joinedEventsTitleLabel)
         joinedEventsTitleLabel.anchor(top: bioLabel.bottomAnchor, left: contentView.leftAnchor, paddingTop: 10, paddingLeft: 10)
 
-        contentView.addSubview(collectionView)
-        collectionView.anchor(top: joinedEventsTitleLabel.bottomAnchor, left: usernameLabel.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 10, paddingBottom: 10, height: 150)
+        collectionViewStack.addArrangedSubview(collectionView)
+        contentView.addSubview(collectionViewStack)
+        collectionViewStack.anchor(top: joinedEventsTitleLabel.bottomAnchor, left: usernameLabel.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 10)
+        
+//        contentView.addSubview(collectionView)
+//        collectionView.anchor(top: joinedEventsTitleLabel.bottomAnchor, left: usernameLabel.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 10, paddingBottom: 10, height: 150)
     }
     
     func calculateAge() -> Int {

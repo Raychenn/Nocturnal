@@ -145,6 +145,11 @@ extension ProfileController: UITableViewDelegate {
 
 // MARK: - ProfileCellDelegate
 extension ProfileController: ProfileCellDelegate {
+    
+    func didTapSetting(cell: ProfileCell) {
+        let settingsVC = SettingsController()
+        navigationController?.pushViewController(settingsVC, animated: true)
+    }
 
     func didTapEditProfile(cell: ProfileCell) {
         let editProfileVC = EditProfileController(user: currentUser)

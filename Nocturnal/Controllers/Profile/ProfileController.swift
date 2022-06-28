@@ -17,6 +17,7 @@ class ProfileController: UIViewController {
         table.delegate = self
         table.allowsSelection = false
         table.backgroundColor = .black
+        table.showsVerticalScrollIndicator = false
         table.contentInsetAdjustmentBehavior = .never
         table.register(ProfileCell.self, forCellReuseIdentifier: ProfileCell.identifier)
         table.register(ProfileHeader.self, forHeaderFooterViewReuseIdentifier: ProfileHeader.identifier)
@@ -82,7 +83,7 @@ class ProfileController: UIViewController {
     }
     
     private func fetchUser() {
-        UserService.shared.fetchUser(uid: uid) { result in
+        UserService.shared.fetchUser(uid: currentUser.id ?? "") { result in
             switch result {
             case .success(let user):
                 self.currentUser = user
@@ -125,10 +126,9 @@ extension ProfileController: UITableViewDelegate {
         guard let profileHeader = tableView.dequeueReusableHeaderFooterView(withIdentifier: ProfileHeader.identifier) as? ProfileHeader else { return UIView() }
         
         let gradientView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 400))
-        print("gradientView frameeee \(profileHeader.profileImageView.frame)")
         gradient.frame = gradientView.frame
         gradient.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
-        gradient.locations = [0.0, 1.0]
+        gradient.locations = [0.0, 1.3]
         gradientView.layer.insertSublayer(gradient, at: 0)
         profileHeader.profileImageView.addSubview(gradientView)
         profileHeader.bringSubviewToFront(gradientView)
@@ -148,6 +148,7 @@ extension ProfileController: ProfileCellDelegate {
     
     func didTapSetting(cell: ProfileCell) {
         let settingsVC = SettingsController()
+//        settingsVC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(settingsVC, animated: true)
     }
 

@@ -111,16 +111,14 @@ extension EditProfileController: UITableViewDelegate {
         
         editHeader.delegate = self
         
-//        let gradientView = UIView(frame: editHeader.profileImageView.frame)
-//        print("gradientView frame \(gradientView)")
-//        let gradient = CAGradientLayer()
-//        gradient.frame = gradientView.frame
-//        gradient.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
-//        gradient.locations = [0.0, 1.0]
-//        gradientView.layer.insertSublayer(gradient, at: 0)
-//        editHeader.profileImageView.addSubview(gradientView)
-//        editHeader.bringSubviewToFront(gradientView)
-//        editHeader.layoutIfNeeded()
+        let gradientView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 350))
+        let gradient = CAGradientLayer()
+        gradient.frame = gradientView.frame
+        gradient.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
+        gradient.locations = [0.0, 1.3]
+        gradientView.layer.insertSublayer(gradient, at: 0)
+        editHeader.profileImageView.addSubview(gradientView)
+        editHeader.bringSubviewToFront(gradientView)
         return editHeader
     }
     

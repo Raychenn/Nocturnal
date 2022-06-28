@@ -18,6 +18,7 @@ struct NotificationService {
     func deleteNotifications(eventId: String, completion: FirestoreCompletion) {
         collection_notification.getDocuments { snapshot, error in
             guard let snapshot = snapshot, error == nil else {
+                print("Snapshot nil")
                 print("Fail to deleteNotifications1 \(error!)")
                 return
             }
@@ -28,6 +29,9 @@ struct NotificationService {
                     guard let snapshot = snapshot, error == nil else {
                         print("Fail to deleteNotifications1 \(error!)")
                         return
+                    }
+                    if snapshot.documents.count == 0 {
+                        completion?(nil)
                     }
                     snapshot.documents.forEach { document in
                         document.reference.delete(completion: completion)

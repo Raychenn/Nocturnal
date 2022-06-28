@@ -43,6 +43,8 @@ class DetailDescriptionCell: UITableViewCell {
          label.font = .systemFont(ofSize: 15, weight: .semibold)
          return label
     }()
+    
+//    var discriptionLabelHeightConst: NSLayoutConstraint!
             
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -80,7 +82,8 @@ class DetailDescriptionCell: UITableViewCell {
                                       paddingLeft: 8,
                                       paddingBottom: 8,
                                       paddingRight: 8)
-        
+//        discriptionLabelHeightConst = decriptionContentLabel.heightAnchor.constraint(equalToConstant: 50)
+//        discriptionLabelHeightConst.isActive = true
 //        descriptionLabelHeightConst = decriptionContentLabel.heightAnchor.constraint(equalToConstant: 100)
 //        descriptionLabelHeightConst.isActive = true
 //        decriptionContentLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20).isActive = true

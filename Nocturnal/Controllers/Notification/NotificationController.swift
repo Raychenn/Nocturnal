@@ -15,7 +15,9 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     private lazy var tableView: UITableView = {
         let table = UITableView()
         table.rowHeight = UITableView.automaticDimension
-        table.contentInset = .init(top: 10, left: 0, bottom: 10, right: 0)
+        table.separatorColor = UIColor.clear
+        table.tableFooterView = UIView()
+        table.contentInset = .init(top: 20, left: 0, bottom: 20, right: 0)
         table.allowsSelection = false
         table.register(NotificationCell.self, forCellReuseIdentifier: NotificationCell.identifier)
         return table
@@ -189,7 +191,7 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        50
+        100
     }
 }
 

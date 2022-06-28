@@ -24,7 +24,7 @@ class ProfileCell: UITableViewCell {
        let label = UILabel()
         label.font = .systemFont(ofSize: 18)
         label.textColor = .lightGray
-        label.text = "Gender"
+        label.text = "Gender: "
         return label
     }()
     
@@ -136,34 +136,48 @@ class ProfileCell: UITableViewCell {
          return button
      }()
     
+    private let noJoinedEventsLabel: UILabel = {
+       let label = UILabel()
+        label.text = "No Joined Events"
+        label.textColor = .white
+        label.font = .systemFont(ofSize: 20, weight: .bold)
+        return label
+    }()
+    
+//    private let bubbleInfoView
+    
     let collectionViewStack = UIStackView()
     
     private var joinedEventsURL: [String] = [] {
         didSet {
+            if joinedEventsURL.count == 0 {
+                noJoinedEventsLabel.isHidden = false
+            } else {
+                noJoinedEventsLabel.isHidden = true
+            }
+            
             collectionView.reloadData()
         }
     }
     
     var user: User? {
         didSet {
+            guard let user = user else { return }
+            if user.id != uid {
+                editProfileButton.isHidden = true
+                settingsButton.isHidden = true
+                conversationButton.isHidden = true
+            } else {
+                editProfileButton.isHidden = false
+                settingsButton.isHidden = false
+                conversationButton.isHidden = false
+            }
+            
             fetchEvents()
         }
     }
     
-    var joinedEvents: [Event] = [] {
-        didSet {
-            print("joinedEvents.count \(joinedEvents.count)")
-            if joinedEvents.count == 0 {
-                collectionViewStack.removeArrangedSubview(collectionView)
-                collectionViewStack.isHidden = true
-               
-            } else {
-                collectionViewStack.addArrangedSubview(collectionView)
-                collectionViewStack.isHidden = false
-       
-            }
-        }
-    }
+    var joinedEvents: [Event] = []
 
     // MARK: - Life Cycle
     
@@ -208,7 +222,7 @@ class ProfileCell: UITableViewCell {
    
     // MARK: - Helpers
     
-    func configureCell(with user: User, joinedEventsURL: [String]) {
+    func configureCell(with user: User, joinedEventsURL: [String]) {    
         let gender = Gender(rawValue: user.gender) ?? .male
         genderLabel.text = "Gender"
         print("gender descrip \(gender.description)")
@@ -228,6 +242,8 @@ class ProfileCell: UITableViewCell {
         }
 
         self.joinedEventsURL = joinedEventsURL
+        settingsButton.isHidden = user.id ?? "" == uid ? false: true
+        editProfileButton.isHidden = user.id ?? "" == uid ? false: true
     }
     
     func setupCellUI() {
@@ -243,7 +259,6 @@ class ProfileCell: UITableViewCell {
         let genderStack = UIStackView(arrangedSubviews: [genderLabel, genderImageView])
         genderStack.axis = .horizontal
         genderStack.spacing = 5
-        
         let zodiacStack = UIStackView(arrangedSubviews: [zodiacLabel, zodiaContentImageView])
         zodiacStack.axis = .horizontal
         zodiacStack.spacing = 5
@@ -300,9 +315,13 @@ class ProfileCell: UITableViewCell {
         contentView.addSubview(joinedEventsTitleLabel)
         joinedEventsTitleLabel.anchor(top: bioLabel.bottomAnchor, left: contentView.leftAnchor, paddingTop: 10, paddingLeft: 10)
 
-        collectionViewStack.addArrangedSubview(collectionView)
-        contentView.addSubview(collectionViewStack)
-        collectionViewStack.anchor(top: joinedEventsTitleLabel.bottomAnchor, left: usernameLabel.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 10)
+//        collectionViewStack.addArrangedSubview(collectionView)
+        contentView.addSubview(collectionView)
+        collectionView.anchor(top: joinedEventsTitleLabel.bottomAnchor, left: usernameLabel.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 10)
+        
+        contentView.addSubview(noJoinedEventsLabel)
+        noJoinedEventsLabel.centerY(inView: collectionView)
+        noJoinedEventsLabel.centerX(inView: collectionView)
         
 //        contentView.addSubview(collectionView)
 //        collectionView.anchor(top: joinedEventsTitleLabel.bottomAnchor, left: usernameLabel.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 10, paddingBottom: 10, height: 150)

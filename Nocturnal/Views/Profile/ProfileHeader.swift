@@ -43,7 +43,8 @@ class ProfileHeader: UITableViewHeaderFooterView {
     // MARK: - Helpers
     
     func configureHeader(user: User) {
-        
+        guard let profileUrl = URL(string: user.profileImageURL) else { return }
+        profileImageView.kf.setImage(with: profileUrl)
     }
 
     func setupUI() {

@@ -318,7 +318,7 @@ class DetailInfoCell: UITableViewCell {
                             paddingRight: 8)
         
         contentView.addSubview(hostProfileImageView)
-        hostProfileImageView.anchor(top: parentVStack.bottomAnchor, left: contentView.leftAnchor, bottom: contentView.bottomAnchor, paddingTop: 10, paddingLeft: 8, paddingBottom: 10)
+        hostProfileImageView.anchor(top: parentVStack.bottomAnchor, left: contentView.leftAnchor, bottom: contentView.bottomAnchor, paddingTop: 30, paddingLeft: 8, paddingBottom: 10)
 
         contentView.addSubview(hostNameLabel)
         hostNameLabel.centerY(inView: hostProfileImageView)

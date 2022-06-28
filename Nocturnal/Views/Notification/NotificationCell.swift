@@ -60,6 +60,7 @@ class NotificationCell: UITableViewCell {
        let button = UIButton()
         button.setTitle("Accept", for: .normal)
         button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 8
         button.backgroundColor = .deepBlue
         button.addTarget(self, action: #selector(didTapPermissionButton), for: .touchUpInside)
         return button
@@ -143,6 +144,7 @@ class NotificationCell: UITableViewCell {
             eventImageView.isHidden = false
         }
         permissionButton.setTitle(notification.isRequestPermitted ? "Deny": "Accept", for: .normal)
+        permissionButton.backgroundColor = notification.isRequestPermitted ? .red: .deepBlue
         if type == .joinEventRequest {
             applicantId = notification.applicantId
             eventImageView.isHidden = true

@@ -37,6 +37,10 @@
 		ED0E5821286069BC00064C02 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED0E5820286069BC00064C02 /* GoogleService-Info.plist */; };
 		ED0E58232860758F00064C02 /* MessageInputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0E58222860758F00064C02 /* MessageInputAccessoryView.swift */; };
 		ED0E582528609AEE00064C02 /* MessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0E582428609AEE00064C02 /* MessageCell.swift */; };
+		ED156076286AFE750089121D /* SettingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED156075286AFE750089121D /* SettingCell.swift */; };
+		ED156078286B084C0089121D /* DeleteAccountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED156077286B084C0089121D /* DeleteAccountCell.swift */; };
+		ED15607A286B08610089121D /* BlockedUserListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED156079286B08610089121D /* BlockedUserListCell.swift */; };
+		ED15607C286B087E0089121D /* SignoutCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED15607B286B087E0089121D /* SignoutCell.swift */; };
 		ED191D0F2865873E009A10CC /* String+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED191D0E2865873E009A10CC /* String+Ext.swift */; };
 		ED194CB12859DF0700C9E5D3 /* MusicSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB02859DF0700C9E5D3 /* MusicSample.swift */; };
 		ED194CB62859E5D100C9E5D3 /* EventService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB52859E5D100C9E5D3 /* EventService.swift */; };
@@ -137,6 +141,10 @@
 		ED0E5820286069BC00064C02 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ED0E58222860758F00064C02 /* MessageInputAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageInputAccessoryView.swift; sourceTree = "<group>"; };
 		ED0E582428609AEE00064C02 /* MessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCell.swift; sourceTree = "<group>"; };
+		ED156075286AFE750089121D /* SettingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingCell.swift; sourceTree = "<group>"; };
+		ED156077286B084C0089121D /* DeleteAccountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteAccountCell.swift; sourceTree = "<group>"; };
+		ED156079286B08610089121D /* BlockedUserListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedUserListCell.swift; sourceTree = "<group>"; };
+		ED15607B286B087E0089121D /* SignoutCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignoutCell.swift; sourceTree = "<group>"; };
 		ED191D0E2865873E009A10CC /* String+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Ext.swift"; sourceTree = "<group>"; };
 		ED194CB02859DF0700C9E5D3 /* MusicSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicSample.swift; sourceTree = "<group>"; };
 		ED194CB52859E5D100C9E5D3 /* EventService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventService.swift; sourceTree = "<group>"; };
@@ -421,6 +429,17 @@
 			path = Home;
 			sourceTree = "<group>";
 		};
+		ED156074286AFE6A0089121D /* Setting */ = {
+			isa = PBXGroup;
+			children = (
+				ED156075286AFE750089121D /* SettingCell.swift */,
+				ED156077286B084C0089121D /* DeleteAccountCell.swift */,
+				ED156079286B08610089121D /* BlockedUserListCell.swift */,
+				ED15607B286B087E0089121D /* SignoutCell.swift */,
+			);
+			path = Setting;
+			sourceTree = "<group>";
+		};
 		ED194CB42859E51000C9E5D3 /* FirebaseAPI */ = {
 			isa = PBXGroup;
 			children = (
@@ -473,6 +492,7 @@
 		ED626A882862B3FD003BB636 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				ED156074286AFE6A0089121D /* Setting */,
 				ED0422DE28644F82005C20EE /* Edit */,
 				ED626A862862B09E003BB636 /* ProfileCell.swift */,
 				ED626A892862B41C003BB636 /* JoinedEventCell.swift */,
@@ -718,6 +738,8 @@
 				ED0A485328587884004661BB /* MainTabBarController.swift in Sources */,
 				ED0B425228597CCC000680C2 /* AddEventController.swift in Sources */,
 				ED194CB62859E5D100C9E5D3 /* EventService.swift in Sources */,
+				ED156076286AFE750089121D /* SettingCell.swift in Sources */,
+				ED15607C286B087E0089121D /* SignoutCell.swift in Sources */,
 				EDC663F428619F22007FEF82 /* SearchResultController.swift in Sources */,
 				EDF3E2AD285ACAE5000E2218 /* UICollectionView+Ext.swift in Sources */,
 				ED0B424028588697000680C2 /* UITableView+Ext.swift in Sources */,
@@ -739,6 +761,7 @@
 				ED191D0F2865873E009A10CC /* String+Ext.swift in Sources */,
 				ED83392C285AD57600236814 /* DetailHeader.swift in Sources */,
 				ED0B424928588845000680C2 /* UIButton+Ext.swift in Sources */,
+				ED156078286B084C0089121D /* DeleteAccountCell.swift in Sources */,
 				ED81C3DE285DA50D004C12EA /* NotificationCell.swift in Sources */,
 				ED0A485B28587C0C004661BB /* NotificationController.swift in Sources */,
 				ED0A483A285873DB004661BB /* AppDelegate.swift in Sources */,
@@ -767,6 +790,7 @@
 				ED204B22285DB16F0016FDCA /* UILabel+Ext.swift in Sources */,
 				EDC663ED28615D8D007FEF82 /* ConversationCell.swift in Sources */,
 				ED626A8E2862BA97003BB636 /* ProfileHeader.swift in Sources */,
+				ED15607A286B08610089121D /* BlockedUserListCell.swift in Sources */,
 				EDEF690B286750BC00F944BF /* HomeEventCell.swift in Sources */,
 				ED847A14285CDF9C00F33C7F /* RegistrationController.swift in Sources */,
 				ED847A02285B7FCA00F33C7F /* MKPlacemark+Ext.swift in Sources */,

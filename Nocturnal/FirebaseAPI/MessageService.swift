@@ -65,6 +65,29 @@ struct MessegeService {
         }
     }
     
+    func fetchAllMessages(forUser user: User, completion: @escaping (Result<[Message], Error>) -> Void) {
+        let query = collection_messages.document(uid).collection(user.id ?? "").order(by: "sentTime", descending: false)
+        query.getDocuments { snapshot, error in
+            guard let snapshot = snapshot, error == nil else {
+                completion(.failure(error!))
+                return
+            }
+            
+            var messages: [Message] = []
+            
+            snapshot.documents.forEach { document in
+                do {
+                    let message = try document.data(as: Message.self)
+                    messages.append(message)
+                } catch {
+                    print("Fail to decode message \(error)")
+                }
+            }
+            
+            completion(.success(messages))
+        }
+    }
+    
     func fetchConversations(completion: @escaping (Result<[Conversation], Error>) -> Void) {
         var conversations: [Conversation] = []
         

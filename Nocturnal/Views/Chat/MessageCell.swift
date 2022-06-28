@@ -74,12 +74,15 @@ class MessageCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureFromCell() {
+    func configureFromCell(user: User) {
+        guard let profileUrl = URL(string: user.profileImageURL) else { return }
+        
         guard let message = message else { return }
         bubbleLeftAnchor.isActive = true
         bubbleRightAnchor.isActive = false
         bubbleContainer.backgroundColor = .purple
         profileImageView.isHidden = false
+        profileImageView.kf.setImage(with: profileUrl)
         textView.text = message.text
     }
     

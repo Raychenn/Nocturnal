@@ -38,7 +38,7 @@ class HomeController: UIViewController {
     var events: [Event] = [] {
         didSet {
             var hostsId: [String] = []
-            events.forEach({ hostsId.append($0.hostID)})
+            events.forEach({hostsId.append($0.hostID)})
             fetchHosts(hostsId: hostsId)
         }
     }
@@ -151,6 +151,7 @@ extension HomeController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+//        print("events.count \(events.count)")
         return events.count
     }
     
@@ -161,7 +162,7 @@ extension HomeController: UICollectionViewDataSource {
         // should have 2 types of config | loggedin user vs no user
         let event = events[indexPath.item]
         let host = evnetHosts[indexPath.item]
-        
+
         eventCell.configureCell(event: event, host: host)
         
         return eventCell

@@ -35,6 +35,7 @@ class EventDetailController: UIViewController {
     
     private lazy var tableView: UITableView = {
         let table = UITableView()
+        table.showsVerticalScrollIndicator = false
         table.contentInsetAdjustmentBehavior = .never
         table.sectionHeaderTopPadding = 0
         table.dataSource = self
@@ -66,7 +67,7 @@ class EventDetailController: UIViewController {
     private lazy var backButton: UIButton = {
         let button = UIButton()
         button.setImage( UIImage(systemName: "chevron.left"), for: .normal)
-        button.tintColor = .black
+        button.tintColor = .white
         button.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
         return button
     }()
@@ -324,7 +325,11 @@ extension EventDetailController: UITableViewDataSource {
 extension EventDetailController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+//        guard let cell = tableView.cellForRow(at: indexPath) as? DetailDescriptionCell else {return}
+//        tableView.beginUpdates()
+//        cell.decriptionContentLabel.numberOfLines = 0
+//        cell.discriptionLabelHeightConst.isActive = false
+//        tableView.endUpdates()
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
@@ -372,30 +377,32 @@ extension EventDetailController: DetailInfoCellDelegate {
             print("start deleting ...")
             let eventId = self.event.id ?? ""
             print("eventId \(eventId)")
-            EventService.shared.deleteEvent(eventId: eventId) { error in
+            
+            print("start deleteJoinedEvent")
+            UserService.shared.deleteJoinedEvent(eventId: eventId) { error in
                 if let error = error {
-                    print("Fail to delete event \(error)")
+                    print("Fail to delete JoinedEvent for user \(error)")
                     return
                 }
-                print("deleteEvent done")
-                UserService.shared.deleteJoinedEvent(eventId: eventId) { error in
+                print("deleteJoinedEvent done")
+                UserService.shared.deleteRequestedEvent(eventId: eventId) { error in
                     if let error = error {
-                        print("Fail to delete JoinedEvent for user \(error)")
+                        print("Fail to delete RequestedEvent for user \(error)")
                         return
                     }
-                    print("deleteJoinedEvent done")
-                    UserService.shared.deleteRequestedEvent(eventId: eventId) { error in
+                    print("deleteRequestedEvent done")
+                    NotificationService.shared.deleteNotifications(eventId: eventId) { error in
                         if let error = error {
-                            print("Fail to delete RequestedEvent for user \(error)")
+                            print("Fail to delete Notifications3 \(error)")
                             return
                         }
-                        print("deleteRequestedEvent done")
-                        NotificationService.shared.deleteNotifications(eventId: eventId) { error in
+                        print("delet notfications done")
+                        EventService.shared.deleteEvent(eventId: eventId) { error in
                             if let error = error {
-                                print("Fail to delete Notifications3 \(error)")
+                                print("Fail to delete event \(error)")
                                 return
                             }
-                            
+                            print("Successfully delete event")
                             self.navigationController?.popViewController(animated: true)
                         }
                     }
@@ -414,6 +421,7 @@ extension EventDetailController: DetailInfoCellDelegate {
             print("NO host")
             return
         }
+        print("host name \(host.name)")
         let profileVC = ProfileController(user: host)
         let nav = UINavigationController(rootViewController: profileVC)
         present(nav, animated: true)
@@ -460,10 +468,8 @@ extension EventDetailController: DetailDescriptionCellDelegate {
 //        cell.decriptionContentLabel.numberOfLines = numberOfLines
 //        let newTitle = numberOfLines == 0 ? "Less" : "More"
 //        cell.readMoreButton.setTitle(newTitle, for: .normal)
-        cell.decriptionContentLabel.numberOfLines = 0
-        cell.readMoreLabel.isHidden = true
-        
-        UIView.animate(withDuration: 0.5) { cell.contentView.layoutIfNeeded() }
+
+//        UIView.animate(withDuration: 0.5) { cell.contentView.layoutIfNeeded() }
 //        UIView.transition(with: cell.decriptionContentLabel, duration: 0.5, options: .curveLinear, animations: {
 //                cell.layoutIfNeeded()
 //            })

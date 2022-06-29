@@ -87,6 +87,7 @@ class ProfileController: UIViewController {
         UserService.shared.fetchUser(uid: currentUser.id ?? "") { result in
             switch result {
             case .success(let user):
+                print("current user name in profile \(user.name)")
                 self.currentUser = user
                 self.collectionView.reloadData()
             case .failure(let error):

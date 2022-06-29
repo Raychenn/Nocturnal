@@ -11,7 +11,9 @@ class SettingsController: UIViewController {
     
     enum SettingType: CaseIterable {
         case privacy
-        case service
+        case rate
+        case feedback
+        case eula
         case delete
         case blockedList
         case signout
@@ -20,8 +22,12 @@ class SettingsController: UIViewController {
             switch self {
             case .privacy:
                 return "Privacy policy"
-            case .service:
-                return "Terms of serivce"
+            case .rate:
+                return "Rate Our App"
+            case .feedback:
+                return "Send us feedback"
+            case .eula:
+                return "EULA"
             case .delete:
                 return "Delete account"
             case .blockedList:
@@ -32,7 +38,7 @@ class SettingsController: UIViewController {
         }
     }
     
-    let settings: [SettingType] = [.privacy, .service, .delete, .blockedList, .signout]
+    let settings: [SettingType] = [.privacy, .rate, .feedback, .eula, .delete, .blockedList, .signout]
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -40,7 +46,8 @@ class SettingsController: UIViewController {
         layout.sectionInset = .init(top: 20, left: 0, bottom: 20, right: 0)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.register(SettingCell.self, forCellWithReuseIdentifier: SettingCell.id)
+        collectionView.register(SettingCell.self, forCellWithReuseIdentifier: SettingCell.identifier)
+        collectionView.register(SettingProfileCell.self, forCellWithReuseIdentifier: SettingProfileCell.identifier)
         collectionView.dataSource = self
         collectionView.delegate = self
         return collectionView
@@ -64,7 +71,6 @@ class SettingsController: UIViewController {
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
-        
     }
     
 }
@@ -72,31 +78,43 @@ class SettingsController: UIViewController {
 extension SettingsController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        SettingType.allCases.count
+        SettingType.allCases.count + 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let settingCell = collectionView.dequeueReusableCell(withReuseIdentifier: SettingCell.id, for: indexPath) as? SettingCell else { return UICollectionViewCell() }
+
+        guard let profileCell = collectionView.dequeueReusableCell(withReuseIdentifier: SettingProfileCell.identifier, for: indexPath) as? SettingCell else { return UICollectionViewCell() }
+
+        return profileCell
         
-        let setting = settings[indexPath.item].description
-        
-        settingCell.configureCell(title: setting)
-        return settingCell
+//        if indexPath.item == 0 {
+//            guard let profileCell = collectionView.dequeueReusableCell(withReuseIdentifier: SettingProfileCell.identifier, for: indexPath) as? SettingCell else { return UICollectionViewCell() }
+//
+//            return profileCell
+//        } else {
+//            guard let settingCell = collectionView.dequeueReusableCell(withReuseIdentifier: SettingCell.identifier, for: indexPath) as? SettingCell else { return UICollectionViewCell() }
+//            
+//            let setting = settings[indexPath.item].description
+//            settingCell.configureCell(title: setting)
+//            return settingCell
+//        }
     }
 }
 
 extension SettingsController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let selectedSetting = settings[indexPath.item]
         
-      
     }
 }
 
 extension SettingsController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.size.width - 40, height: 100)
+        if indexPath.item == 0 {
+            return CGSize(width: view.frame.size.width - 40, height: 100)
+        } else {
+            return CGSize(width: view.frame.size.width - 40, height: 50)
+        }        
     }
 }

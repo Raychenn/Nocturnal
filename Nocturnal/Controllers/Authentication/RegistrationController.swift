@@ -116,7 +116,6 @@ class RegistrationController: UIViewController {
                     print("Error signing user up \(String(describing: error))")
                     return
                 }
-                
                 self.signUpButton.configuration?.showsActivityIndicator = false
                 self.dismiss(animated: true)
                 print("successfully register user with firestore")

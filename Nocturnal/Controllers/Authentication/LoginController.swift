@@ -6,10 +6,14 @@
 //
 
 import UIKit
+import CryptoKit
+import AuthenticationServices
+import FirebaseAuth
+
 
 class LoginController: UIViewController {
     // MARK: - Properties
-            
+        
     private let iconImageView: UIImageView = {
        let img = UIImageView()
         img.contentMode = .scaleAspectFill
@@ -40,6 +44,13 @@ class LoginController: UIViewController {
         return button
     }()
     
+    private lazy var signinWithAppleButton: ASAuthorizationAppleIDButton = {
+        let button = ASAuthorizationAppleIDButton(authorizationButtonType: .signIn, authorizationButtonStyle: .black)
+        button.setDimensions(height: 50, width: 12)
+        button.addTarget(self, action: #selector(handleLoginWithApple), for: .touchUpInside)
+        return button
+    }()
+    
     private lazy var forgotPasswordButton: UIButton = {
         let button = UIButton(type: .system)
         
@@ -55,6 +66,8 @@ class LoginController: UIViewController {
         button.addTarget(self, action: #selector(handleShowSignUp), for: .touchUpInside)
         return button
     }()
+    
+    var currentNonce: String?
     
     // MARK: - life cycle
     override func viewDidLoad() {
@@ -97,11 +110,35 @@ class LoginController: UIViewController {
                 return
             }
             
-            self.loginButton.configuration?.showsActivityIndicator = false
+            var keyWindow: UIWindow? {
+                // Get connected scenes
+                return UIApplication.shared.connectedScenes
+                    // Keep only active scenes, onscreen and visible to the user
+                    .filter { $0.activationState == .foregroundActive }
+                    // Keep only the first `UIWindowScene`
+                    .first(where: { $0 is UIWindowScene })
+                    // Get its associated windows
+                    .flatMap({ $0 as? UIWindowScene })?.windows
+                    // Finally, keep only the key window
+                    .first(where: \.isKeyWindow)
+            }
+
+            guard let tab = keyWindow?.rootViewController as? MainTabBarController else {
+                print("no tab bar controller")
+                return
+            }
             
+            tab.authenticateUserAndConfigureUI()
+            
+            self.loginButton.configuration?.showsActivityIndicator = false
             print("successfully logged user in")
             self.dismiss(animated: true)
         }
+    }
+    
+    @objc func handleLoginWithApple() {
+        print("log in apple")
+        startSignInWithAppleFlow()
     }
     
     @objc func forgotPasswordButtonTapped() {
@@ -120,7 +157,7 @@ class LoginController: UIViewController {
         iconImageView.setDimensions(height: 80, width: 120)
         iconImageView.anchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: 32)
         
-        let stack = UIStackView(arrangedSubviews: [emailTextField, passwordTextField, loginButton, forgotPasswordButton])
+        let stack = UIStackView(arrangedSubviews: [emailTextField, passwordTextField, loginButton, signinWithAppleButton, forgotPasswordButton])
         stack.axis = .vertical
         stack.spacing = 20
         stack.distribution = .fillEqually
@@ -145,4 +182,155 @@ class LoginController: UIViewController {
         emailTextField.addTarget(self, action: #selector(textDidChange), for: .editingChanged)
         passwordTextField.addTarget(self, action: #selector(textDidChange), for: .editingChanged)
     }
+    
+    // MARK: - Apple sign in
+    
+    private func randomNonceString(length: Int = 32) -> String {
+        precondition(length > 0)
+        let charset: Array<Character> =
+            Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+        var result = ""
+        var remainingLength = length
+        
+        while remainingLength > 0 {
+            let randoms: [UInt8] = (0 ..< 16).map { _ in
+                var random: UInt8 = 0
+                let errorCode = SecRandomCopyBytes(kSecRandomDefault, 1, &random)
+                if errorCode != errSecSuccess {
+                    fatalError("Unable to generate nonce. SecRandomCopyBytes failed with OSStatus \(errorCode)")
+                }
+                return random
+            }
+            
+            randoms.forEach { random in
+                if remainingLength == 0 {
+                    return
+                }
+                
+                if random < charset.count {
+                    result.append(charset[Int(random)])
+                    remainingLength -= 1
+                }
+            }
+        }
+        
+        return result
+    }
+
+    private func sha256(_ input: String) -> String {
+        let inputData = Data(input.utf8)
+        let hashedData = SHA256.hash(data: inputData)
+        let hashString = hashedData.compactMap {
+            return String(format: "%02x", $0)
+        }.joined()
+        
+        return hashString
+    }
+    
+    func startSignInWithAppleFlow() {
+      let nonce = randomNonceString()
+      currentNonce = nonce
+      let appleIDProvider = ASAuthorizationAppleIDProvider()
+      let request = appleIDProvider.createRequest()
+        request.requestedScopes = [.fullName, .email]
+      request.nonce = sha256(nonce)
+
+      let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+      authorizationController.delegate = self
+      authorizationController.presentationContextProvider = self
+      authorizationController.performRequests()
+    }
+}
+
+// MARK: - Apple Login
+extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        return self.view.window!
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
+          guard let nonce = currentNonce else {
+            fatalError("Invalid state: A login callback was received, but no login request was sent.")
+          }
+          guard let appleIDToken = appleIDCredential.identityToken else {
+            print("Unable to fetch identity token")
+            return
+          }
+          guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
+            print("Unable to serialize token string from data: \(appleIDToken.debugDescription)")
+            return
+          }
+            
+          // Initialize a Firebase credential.
+          let credential = OAuthProvider.credential(withProviderID: "apple.com",
+                                                    idToken: idTokenString,
+                                                    rawNonce: nonce)
+          // Sign in with Firebase.
+          Auth.auth().signIn(with: credential) { (authResult, error) in
+              if error != nil {
+              // Error. If error.code == .MissingOrInvalidNonce, make sure
+              // you're sending the SHA256-hashed nonce as a hex string with
+              // your request to Apple.
+                  print(error!.localizedDescription)
+              return
+            }
+              
+              var keyWindow: UIWindow? {
+                  // Get connected scenes
+                  return UIApplication.shared.connectedScenes
+                      // Keep only active scenes, onscreen and visible to the user
+                      .filter { $0.activationState == .foregroundActive }
+                      // Keep only the first `UIWindowScene`
+                      .first(where: { $0 is UIWindowScene })
+                      // Get its associated windows
+                      .flatMap({ $0 as? UIWindowScene })?.windows
+                      // Finally, keep only the key window
+                      .first(where: \.isKeyWindow)
+              }
+
+              guard let tab = keyWindow?.rootViewController as? MainTabBarController else {
+                  print("no tab bar controller")
+                  return
+              }
+              
+              let uid = authResult?.user.uid ?? ""
+
+              UserService.shared.checkIfUserExist(uid: uid) { [weak self] result in
+                  guard let self = self else { return }
+                  switch result {
+                  case .success(let isExisted):
+                      if isExisted {
+                          // go to main tab bar controller and fetch user data
+                          tab.authenticateUserAndConfigureUI()
+                          self.dismiss(animated: true)
+                      } else {
+                        // Create new user
+                          let firstname = appleIDCredential.fullName?.givenName ?? "Unkown"
+                          let familyname = appleIDCredential.fullName?.familyName ?? "Unkown family name"
+                          let username = "\(firstname) \(familyname)"
+                            let email = authResult?.user.email ?? ""
+                          AuthService.shared.uploadNewUser(withId: uid, name: username, email: email) { error in
+                              guard error == nil else {
+                                  print("Fail to upload new user \(String(describing: error))")
+                                  return
+                              }
+                              print("did Sign in appleeee")
+                              tab.authenticateUserAndConfigureUI()
+                              self.dismiss(animated: true)
+                          }
+                      }
+                  case .failure(let error):
+                      print("Fail to if check user is existed \(error)")
+                  }
+              }
+            // ...
+          }
+        }
+      }
+      func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        // Handle error.
+        print("Sign in with Apple errored: \(error)")
+      }
 }

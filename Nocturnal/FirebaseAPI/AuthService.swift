@@ -35,12 +35,6 @@ struct AuthService {
                 }
                 
                 guard let uid = authResult?.user.uid else { return }
-                // change here to Codable structure
-//                let data: [String: Any] = ["email": credentials.email,
-//                                           "fullName": credentials.fullName,
-//                                           "profileImageUrl": downloadedImgUrl,
-//                                           "uid": uid
-//                ]
                  
                 let newUserDocument = collection_users.document(uid)
                  
@@ -50,6 +44,17 @@ struct AuthService {
                      print("Error Encoding user \(error)")
                  }
             }
+    }
+    
+    func uploadNewUser(withId uid: String, name: String, email: String, completion: @escaping (Error?) -> Void) {
+        let newUserDocument = collection_users.document(uid)
+        let newUser = User(id: uid, name: name, email: email, country: "", profileImageURL: "", birthday: Timestamp(date: Date()), gender: 2, numberOfHostedEvents: 0, bio: "", joinedEventsId: [], blockedUsersId: [], requestedEventsId: [])
+        
+         do {
+             try newUserDocument.setData(from: newUser, encoder: .init(), completion: completion)
+         } catch {
+             print("Error Encoding user \(error)")
+         }
     }
     
 //    static func resetPasswrod(withEamil email: String, completion: SendPasswordResetCallback?) {

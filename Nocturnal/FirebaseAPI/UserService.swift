@@ -14,6 +14,21 @@ struct UserService {
     static let shared = UserService()
     
     // MARK: - Deletion
+    func checkIfUserExist(uid: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+        collection_users.document(uid).getDocument { snapshot, error in
+            guard let snapshot = snapshot, error == nil else {
+                completion(.failure(error!))
+                return
+            }
+
+            if snapshot.exists {
+                completion(.success(true))
+            } else {
+                completion(.success(false))
+            }
+        }
+    }
+    
     func deleteJoinedEvent(eventId: String, completion: FirestoreCompletion) {
         collection_users.whereField("joinedEventsId", arrayContains: eventId).getDocuments { snapshot, error in
             guard let snapshot = snapshot, error == nil else {

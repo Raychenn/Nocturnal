@@ -35,28 +35,26 @@ class HomeController: UIViewController {
         return button
     }()
         
-    var events: [Event] = [] {
+    var events: [Event] = [] 
+    
+    var evnetHosts: [User] = [] {
         didSet {
-            var hostsId: [String] = []
-            events.forEach({hostsId.append($0.hostID)})
-            fetchHosts(hostsId: hostsId)
+            collectionView.reloadData()
         }
     }
-    
-    var evnetHosts: [User] = []
     
     // MARK: - Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        fetchAllEvents()
         setupUI()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // fetch all events from firestore
-        fetchAllEvents()
+        fetchHostsWhenLoggedin()
     }
     
     // MARK: - API
@@ -67,6 +65,7 @@ class HomeController: UIViewController {
             switch result {
             case .success(let events):
                 self.events = events
+                self.fetchHostsWhenLoggedin()
             case .failure(let error):
                 print("error fetching all events \(error)")
             }
@@ -86,6 +85,15 @@ class HomeController: UIViewController {
         }
     }
     
+    private func fetchHostsWhenLoggedin() {
+        if Auth.auth().currentUser != nil {
+            // logged in, start fetching user data
+            var hostsId: [String] = []
+            events.forEach({hostsId.append($0.hostID)})
+            fetchHosts(hostsId: hostsId)
+        }
+    }
+    
     // MARK: - Selectors
     
     @objc func didTapShowEventButton() {
@@ -96,6 +104,7 @@ class HomeController: UIViewController {
     @objc func handleLogout() {
         do {
             try Auth.auth().signOut()
+            print("successfully sign out")
         } catch {
             print("Fail to log out \(error)")
         }
@@ -160,10 +169,16 @@ extension HomeController: UICollectionViewDataSource {
         guard let eventCell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeEventCell.identifier, for: indexPath) as? HomeEventCell else { return UICollectionViewCell() }
         
         // should have 2 types of config | loggedin user vs no user
-        let event = events[indexPath.item]
-        let host = evnetHosts[indexPath.item]
+        if Auth.auth().currentUser == nil {
+            let event = events[indexPath.item]
 
-        eventCell.configureCell(event: event, host: host)
+            eventCell.configureCell(event: event)
+        } else {
+            let event = events[indexPath.item]
+            let host = evnetHosts[indexPath.item]
+
+            eventCell.configureCellForLoggedInUser(event: event, host: host)
+        }
         
         return eventCell
     }
@@ -189,3 +204,4 @@ extension HomeController: UICollectionViewDelegateFlowLayout {
         return CGSize(width: view.frame.size.width - 40, height: 350)
     }
 }
+

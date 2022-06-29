@@ -15,6 +15,7 @@ class ProfileHeader: UICollectionReusableView {
      let profileImageView: UIImageView = {
        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
+         imageView.clipsToBounds = true
         imageView.backgroundColor = .lightBlue
         imageView.image = UIImage(named: "profileImage")
         return imageView

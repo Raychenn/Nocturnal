@@ -25,7 +25,7 @@ class ConversationsController: UIViewController {
     // MARK: - Life Cycle
     
     override func viewDidLoad() {
-        fetchConversations()
+//        fetchConversations()
         setupUI()
     }
     
@@ -41,7 +41,6 @@ class ConversationsController: UIViewController {
         MessegeService.shared.fetchConversations { result in
             switch result {
             case .success(let conversations):
-                print("convos \(conversations)")
                 self.conversations = conversations
                 self.tableView.reloadData()
             case .failure(let error):
@@ -80,9 +79,7 @@ extension ConversationsController: UITableViewDataSource {
         guard let convoell = tableView.dequeueReusableCell(withIdentifier: ConversationCell.identifier, for: indexPath) as? ConversationCell else { return UITableViewCell() }
         
         let conversation = conversations[indexPath.row]
-        
-        convoell.conversation = conversation
-        convoell.configureCell()
+        convoell.configureCell(conversation: conversation)
         return convoell
     }
 }

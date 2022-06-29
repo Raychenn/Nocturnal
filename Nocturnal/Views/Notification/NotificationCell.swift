@@ -122,7 +122,7 @@ class NotificationCell: UITableViewCell {
         print("notification isRequestPermitted \(notification.isRequestPermitted)")
         
         permissionButton.setTitle(notification.isRequestPermitted ? "Deny": "Accept", for: .normal)
-        
+        permissionButton.backgroundColor = notification.isRequestPermitted ? .red: .deepBlue
         if notification.isRequestPermitted {
             delegate?.cell(self, wantsToAccept: applicantId)
         } else {

@@ -9,6 +9,7 @@ import UIKit
 
 protocol MessageInputAccessoryViewDelegate: AnyObject {
     func messageInputView(_ inputView: MessageInputAccessoryView, wantsToSend message: String)
+    func handleSentImage(_ inputView: MessageInputAccessoryView)
 }
 
 class MessageInputAccessoryView: UIView {
@@ -35,6 +36,16 @@ class MessageInputAccessoryView: UIView {
         return button
     }()
     
+    private lazy var uploadImageView: UIImageView = {
+       let imageView = UIImageView()
+        imageView.image = UIImage(systemName: "photo")
+        imageView.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapUploadImageView))
+        imageView.addGestureRecognizer(tap)
+        imageView.tintColor = .darkGray
+        return imageView
+    }()
+    
     // MARK: - life cycle
     
     override init(frame: CGRect) {
@@ -50,8 +61,12 @@ class MessageInputAccessoryView: UIView {
         sendButton.anchor(top: topAnchor, right: rightAnchor, paddingTop: 4, paddingRight: 8)
         sendButton.setDimensions(height: 40, width: 50)
         
+        addSubview(uploadImageView)
+        uploadImageView.anchor(top: topAnchor, left: leftAnchor, paddingTop: 12, paddingLeft: 4)
+        uploadImageView.setDimensions(height: 35, width: 35)
+        
         addSubview(messageTextView)
-        messageTextView.anchor(top: topAnchor, left: leftAnchor, bottom: safeAreaLayoutGuide.bottomAnchor, right: sendButton.leftAnchor, paddingTop: 12, paddingLeft: 4, paddingBottom: 8, paddingRight: 8)
+        messageTextView.anchor(top: topAnchor, left: uploadImageView.rightAnchor, bottom: safeAreaLayoutGuide.bottomAnchor, right: sendButton.leftAnchor, paddingTop: 12, paddingLeft: 4, paddingBottom: 8, paddingRight: 8)
         
         let divider = UIView()
         addSubview(divider)
@@ -70,6 +85,10 @@ class MessageInputAccessoryView: UIView {
         guard let messageTexts = messageTextView.text, messageTexts != "" else { return }
         
         delegate?.messageInputView(self, wantsToSend: messageTexts)
+    }
+    
+    @objc func didTapUploadImageView() {
+        delegate?.handleSentImage(self)
     }
     
     override var intrinsicContentSize: CGSize {

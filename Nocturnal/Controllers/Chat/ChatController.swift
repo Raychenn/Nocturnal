@@ -176,6 +176,13 @@ extension ChatController: UICollectionViewDelegateFlowLayout {
 // MARK: - MessageInputAccessoryViewDelegate
 extension ChatController: MessageInputAccessoryViewDelegate {
     
+    func handleSentImage(_ inputView: MessageInputAccessoryView) {
+        print("did tap handleSentImage")
+        let imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        present(imagePicker, animated: true)
+    }
+    
     func messageInputView(_ inputView: MessageInputAccessoryView, wantsToSend message: String) {
         messageInputView.clearCommentTextView()
         
@@ -190,5 +197,19 @@ extension ChatController: MessageInputAccessoryViewDelegate {
             }
             print("Successfully sending message")
         }
+    }
+}
+
+// MARK: - UIImagePickerControllerDelegate, UINavigationControllerDelegate
+extension ChatController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        
+        guard let selectedPhoto = info[.editedImage] as? UIImage else { return }
+        
+        // upload image to firebase
+        
+        
+        self.dismiss(animated: true, completion: nil)
     }
 }

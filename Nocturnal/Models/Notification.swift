@@ -16,7 +16,7 @@ enum NotificationType: Int {
     var description: String {
         switch self {
         case .joinEventRequest:
-            return "Send you a request"
+            return "Sent you a request"
         case .successJoinedEventResponse:
             return "Has accepted your request"
         case .failureJoinedEventResponse:

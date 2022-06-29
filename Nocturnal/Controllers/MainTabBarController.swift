@@ -91,7 +91,7 @@ class MainTabBarController: UITabBarController {
          
 //        let profileController = ProfileContoller(user: user)
         let profile = templateNavigationViewController(unselectedImage: UIImage(systemName: "person")!, selectedImage: UIImage(systemName: "person.fill")!, rootViewController: ProfileController(user: currentUser))
-        
+    
         viewControllers = [home, explore, stats, notification, profile]
         tabBar.tintColor = .black
         tabBar.isTranslucent = false

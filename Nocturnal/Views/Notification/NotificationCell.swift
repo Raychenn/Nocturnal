@@ -60,6 +60,7 @@ class NotificationCell: UITableViewCell {
        let button = UIButton()
         button.setTitle("Accept", for: .normal)
         button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 8
         button.backgroundColor = .deepBlue
         button.addTarget(self, action: #selector(didTapPermissionButton), for: .touchUpInside)
         return button
@@ -78,6 +79,12 @@ class NotificationCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 10))
     }
     
     override func prepareForReuse() {
@@ -115,7 +122,7 @@ class NotificationCell: UITableViewCell {
         print("notification isRequestPermitted \(notification.isRequestPermitted)")
         
         permissionButton.setTitle(notification.isRequestPermitted ? "Deny": "Accept", for: .normal)
-        
+        permissionButton.backgroundColor = notification.isRequestPermitted ? .red: .deepBlue
         if notification.isRequestPermitted {
             delegate?.cell(self, wantsToAccept: applicantId)
         } else {
@@ -131,17 +138,19 @@ class NotificationCell: UITableViewCell {
         if type == .failureJoinedEventResponse || type == .successJoinedEventResponse {
             permissionButton.isHidden = true
             eventImageView.isHidden = false
+            titleLabel.attributedText(firstPart: user.name, secondPart: "\(type.description)")
         } else {
             permissionButton.isHidden = false
             eventImageView.isHidden = false
         }
         permissionButton.setTitle(notification.isRequestPermitted ? "Deny": "Accept", for: .normal)
+        permissionButton.backgroundColor = notification.isRequestPermitted ? .red: .deepBlue
         if type == .joinEventRequest {
             applicantId = notification.applicantId
             eventImageView.isHidden = true
+            titleLabel.attributedText(firstPart: user.name, secondPart: "\(type.description) to join \(event.title)")
         }
         
-        titleLabel.attributedText(firstPart: user.name, secondPart: "\(type.description)")
         timeLabel.text = "\(Date.dateTimeFormatter.string(from: notification.sentTime.dateValue()))"
         guard let profileUrl = URL(string: user.profileImageURL), let eventUrl = URL(string: event.eventImageURL) else {
             print("no profileImageURL")
@@ -153,6 +162,16 @@ class NotificationCell: UITableViewCell {
     }
     
     private func setupCellUI() {
+        // add shadow on cell
+        backgroundColor = .clear
+        layer.masksToBounds = false
+        layer.shadowOpacity = 0.2
+        layer.shadowRadius = 12
+        layer.shadowOffset = CGSize(width: 5, height: 5)
+        layer.shadowColor = UIColor.white.cgColor
+        contentView.backgroundColor = .black
+        contentView.layer.cornerRadius = 8
+        
         [profileImageView,
          eventImageView,
          titleLabel,
@@ -181,6 +200,7 @@ class NotificationCell: UITableViewCell {
                          left: profileImageView.rightAnchor,
                          bottom: contentView.bottomAnchor,
                          paddingTop: 8, paddingLeft: 8, paddingBottom: 8)
+        
         permissionButton.centerY(inView: profileImageView)
         permissionButton.setDimensions(height: 32, width: 88)
         permissionButton.anchor(right: contentView.rightAnchor, paddingRight: 8)

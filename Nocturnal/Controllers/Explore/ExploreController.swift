@@ -147,7 +147,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     
     func generateRandomHeight(eventCount: Int) {
         for _ in 0...eventCount - 1 {
-            self.randomHeights.append(CGFloat(Int.random(in: 200...400)))
+            self.randomHeights.append(CGFloat(Int.random(in: 150...400)))
         }
     }
     

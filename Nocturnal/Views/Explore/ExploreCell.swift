@@ -22,7 +22,7 @@ class ExploreCell: UICollectionViewCell {
     
     private let eventNameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 20, weight: .medium)
+        label.font = .systemFont(ofSize: 15, weight: .medium)
         label.text = "The beginng's Guide to create Animated"
         label.textColor = .white
         label.numberOfLines = 0
@@ -32,12 +32,18 @@ class ExploreCell: UICollectionViewCell {
     
     private let eventTimeLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .medium)
+        label.font = .systemFont(ofSize: 12, weight: .medium)
         label.textColor = .lightGray
         label.numberOfLines = 0
         label.text = "Jun 4 . 7:00 PM"
         return label
 
+    }()
+    
+    private let bottonBackgroundView: UIView = {
+       let view = UIView()
+        view.backgroundColor = UIColor.hexStringToUIColor(hex: "#1C242F")
+        return view
     }()
     
     // MARK: - Life Cycle
@@ -46,6 +52,13 @@ class ExploreCell: UICollectionViewCell {
         super.init(frame: frame)
         
         setupCellUI()
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        layer.cornerRadius = 15
+        layer.masksToBounds = true
     }
     
     required init?(coder: NSCoder) {
@@ -67,17 +80,23 @@ class ExploreCell: UICollectionViewCell {
     
     private func setupCellUI() {
         addSubview(eventImageView)
-        eventImageView.fillSuperview()
-        eventImageView.layer.cornerRadius = 15
+        eventImageView.anchor(top: topAnchor, left: leftAnchor, right: rightAnchor)
+       
+        addSubview(bottonBackgroundView)
+        bottonBackgroundView.anchor(top: eventImageView.bottomAnchor,
+                                    left: leftAnchor,
+                                    bottom: bottomAnchor,
+                                    right: rightAnchor,
+                                    height: 60)
         
-        eventImageView.addSubview(eventNameLabel)
-        eventNameLabel.centerX(inView: eventImageView)
-        eventNameLabel.anchor(bottom: eventImageView.bottomAnchor,
-                              right: eventImageView.rightAnchor,
-                              paddingBottom: 25, paddingRight: 8)
-        
-        eventImageView.addSubview(eventTimeLabel)
-        eventTimeLabel.centerX(inView: eventImageView)
-        eventTimeLabel.anchor(bottom: eventImageView.bottomAnchor, paddingBottom: 10)
+        bottonBackgroundView.addSubview(eventNameLabel)
+        eventNameLabel.centerX(inView: bottonBackgroundView)
+
+        bottonBackgroundView.addSubview(eventTimeLabel)
+        eventTimeLabel.centerX(inView: bottonBackgroundView)
+        eventTimeLabel.anchor(top: eventNameLabel.bottomAnchor,
+                              bottom: bottonBackgroundView.bottomAnchor,
+                              paddingTop: 1,
+                              paddingBottom: 10)
     }
 }

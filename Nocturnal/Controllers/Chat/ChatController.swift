@@ -38,6 +38,8 @@ class ChatController: UICollectionViewController {
     private var messages: [Message] = []
     
     private var user: User
+    
+    private var chatPartner: User?
         
     // MARK: - Properties
     
@@ -57,7 +59,7 @@ class ChatController: UICollectionViewController {
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = .init(top: 16, left: 0, bottom: 16, right: 0)
         super.init(collectionViewLayout: layout)
-        addMessagesListener()
+        fetchAllMessages()
     }
 
     required init?(coder: NSCoder) {
@@ -86,6 +88,33 @@ class ChatController: UICollectionViewController {
             }
         }
     }
+    
+    private func fetchAllMessages() {
+        MessegeService.shared.fetchAllMessages(forUser: user) { result in
+            switch result {
+            case .success(let messages):
+                self.messages = messages
+                self.fetchUser()
+            case .failure(let error):
+                print("Fail to fetch messaes \(error)")
+            }
+        }
+    }
+    
+    private func fetchUser() {
+        let chatPartnerId = messages.first(where: { $0.fromId != uid })?.fromId ?? ""
+        UserService.shared.fetchUser(uid: chatPartnerId) { result in
+            switch result {
+            case .success(let user):
+                self.chatPartner = user
+                self.addMessagesListener()
+                self.collectionView.reloadData()
+            case .failure(let error):
+                print("Fail to fetch user \(error)")
+            }
+        }
+    }
+    
     // MARK: - Helpers
     
     private func setupUI() {
@@ -102,13 +131,17 @@ class ChatController: UICollectionViewController {
     // MARK: - CollectionView DataSource
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print("messages.count \(messages.count)")
        return messages.count
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let messageCell = collectionView.dequeueReusableCell(withReuseIdentifier: MessageCell.identifier, for: indexPath) as? MessageCell else { return UICollectionViewCell() }
       
+        guard let user = chatPartner else {
+            print("no chat partner")
+            return UICollectionViewCell()
+        }
+        
         let message = messages[indexPath.item]
         
         messageCell.message = message
@@ -116,7 +149,7 @@ class ChatController: UICollectionViewController {
         if message.fromId == uid {
             messageCell.configureToCell()
         } else {
-            messageCell.configureFromCell()
+            messageCell.configureFromCell(user: user)
         }
         return messageCell
     }
@@ -143,6 +176,13 @@ extension ChatController: UICollectionViewDelegateFlowLayout {
 // MARK: - MessageInputAccessoryViewDelegate
 extension ChatController: MessageInputAccessoryViewDelegate {
     
+    func handleSentImage(_ inputView: MessageInputAccessoryView) {
+        print("did tap handleSentImage")
+        let imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        present(imagePicker, animated: true)
+    }
+    
     func messageInputView(_ inputView: MessageInputAccessoryView, wantsToSend message: String) {
         messageInputView.clearCommentTextView()
         
@@ -157,5 +197,19 @@ extension ChatController: MessageInputAccessoryViewDelegate {
             }
             print("Successfully sending message")
         }
+    }
+}
+
+// MARK: - UIImagePickerControllerDelegate, UINavigationControllerDelegate
+extension ChatController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        
+        guard let selectedPhoto = info[.editedImage] as? UIImage else { return }
+        
+        // upload image to firebase
+        
+        
+        self.dismiss(animated: true, completion: nil)
     }
 }

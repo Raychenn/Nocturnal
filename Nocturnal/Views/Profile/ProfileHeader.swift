@@ -7,10 +7,18 @@
 
 import UIKit
 import FirebaseFirestore
+import FirebaseAuth
+
+protocol ProfileHeaderDelegate: AnyObject {
+    func profileHeader(_ header: ProfileHeader, wantsToBlockUserWith id: String)
+    func profileHeader(_ header: ProfileHeader, wantsToUnblockUserWith id: String)
+}
 
 class ProfileHeader: UICollectionReusableView {
     
     // MARK: - Propeties
+    
+    weak var delegate: ProfileHeaderDelegate?
         
      let profileImageView: UIImageView = {
        let imageView = UIImageView()
@@ -20,6 +28,19 @@ class ProfileHeader: UICollectionReusableView {
         imageView.image = UIImage(named: "profileImage")
         return imageView
     }()
+    
+    private lazy var blockUserButton: UIButton = {
+       let button = UIButton()
+        let config = UIImage.SymbolConfiguration(pointSize: 25)
+        button.setImage(UIImage(systemName: "eye", withConfiguration: config), for: .normal)
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(didTapBackUser), for: .touchUpInside)
+        return button
+    }()
+    
+    var shouldBlockUser = false
+    
+    var user: User?
         
     // MARK: - Life Cycle
     
@@ -37,15 +58,47 @@ class ProfileHeader: UICollectionReusableView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Selector
+    
+    @objc func didTapBackUser() {
+        guard let user = user else {
+            print("no user in profile header")
+            return
+        }
+        
+        self.shouldBlockUser = !shouldBlockUser
+
+        blockUserButton.setImage( shouldBlockUser ? UIImage(systemName: "eye.slash"): UIImage(systemName: "eye"), for: .normal)
+        
+        if shouldBlockUser {
+            delegate?.profileHeader(self, wantsToBlockUserWith: user.id ?? "")
+
+        } else {
+            delegate?.profileHeader(self, wantsToUnblockUserWith: user.id ?? "")
+        }
+    }
+    
     // MARK: - Helpers
     
     func configureHeader(user: User) {
         guard let profileUrl = URL(string: user.profileImageURL) else { return }
         profileImageView.kf.setImage(with: profileUrl)
+        
+        guard let currentUserId = Auth.auth().currentUser?.uid, let userId = user.id else {
+            print("no current user id")
+            return
+        }
+        
+        blockUserButton.isHidden = currentUserId == userId ? true: false
+        blockUserButton.setImage( shouldBlockUser ? UIImage(systemName: "eye.slash"): UIImage(systemName: "eye"), for: .normal)
+        
     }
 
     func setupUI() {
         addSubview(profileImageView)
         profileImageView.fillSuperview()
+        
+        addSubview(blockUserButton)
+        blockUserButton.anchor(bottom: bottomAnchor, right: rightAnchor, paddingBottom: 30, paddingRight: 30)
     }
 }

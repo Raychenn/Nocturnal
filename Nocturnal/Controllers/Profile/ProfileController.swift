@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class ProfileController: UIViewController {
 
@@ -38,6 +39,8 @@ class ProfileController: UIViewController {
     }
     
     let gradient = CAGradientLayer()
+    
+    private var isBlocked = false
     
     // MARK: - Life Cycle
     
@@ -84,14 +87,41 @@ class ProfileController: UIViewController {
     }
     
     private func fetchUser() {
-        UserService.shared.fetchUser(uid: currentUser.id ?? "") { result in
+        UserService.shared.fetchUser(uid: currentUser.id ?? "") { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success(let user):
                 print("current user name in profile \(user.name)")
                 self.currentUser = user
-                self.collectionView.reloadData()
+                self.checkIfIsBlockedUser { isBlocked in
+                    self.isBlocked = isBlocked
+                    self.collectionView.reloadData()
+                }
             case .failure(let error):
                 print("Fail to fetch user \(error)")
+            }
+        }
+    }
+    
+    private func checkIfIsBlockedUser(completion: @escaping (Bool) -> Void) {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("no current user id in checkIfIsBlockedUser")
+            return
+        }
+        
+        UserService.shared.fetchUser(uid: userId) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let user):
+                user.blockedUsersId.forEach { blockedId in
+                    if blockedId == self.currentUser.id ?? "" {
+                        completion(true)
+                    } else {
+                        completion(false)
+                    }
+                }
+            case .failure(let error):
+                print("Fail to fetch user in checkIfIsBlockedUser \(error)")
             }
         }
     }
@@ -144,7 +174,10 @@ extension ProfileController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         guard let profileHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: ProfileHeader.identifier, for: indexPath) as? ProfileHeader else { return UICollectionReusableView() }
         
+        profileHeader.user = currentUser
+        profileHeader.shouldBlockUser = isBlocked
         profileHeader.configureHeader(user: currentUser)
+
         let gradientView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 400))
         gradient.frame = gradientView.frame
         gradient.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
@@ -152,7 +185,7 @@ extension ProfileController: UICollectionViewDelegate {
         gradientView.layer.insertSublayer(gradient, at: 0)
         profileHeader.profileImageView.addSubview(gradientView)
         profileHeader.bringSubviewToFront(gradientView)
-        
+        profileHeader.delegate = self
         return profileHeader
     }
     
@@ -208,5 +241,34 @@ extension ProfileController: JoinedEventCellDelegate {
         detailController.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(detailController, animated: true)
 
+    }
+}
+
+extension ProfileController: ProfileHeaderDelegate {
+    
+    func profileHeader(_ header: ProfileHeader, wantsToBlockUserWith id: String) {
+        print("block user")
+
+        UserService.shared.addUserToBlockedList(blockedUid: id) { error in
+            if let error = error {
+                print("Fail to block user \(error)")
+                return
+            }
+            
+            print("Succussfully blocked user and pop up alert here..")
+        }
+    }
+    
+    func profileHeader(_ header: ProfileHeader, wantsToUnblockUserWith id: String) {
+        print("unblock user")
+
+        UserService.shared.removeUserFromblockedList(blockedUid: id) { error in
+            if let error = error {
+                print("Fail to block user \(error)")
+                return
+            }
+            
+            print("Succussfully unblocked user and pop up alert here..")
+        }
     }
 }

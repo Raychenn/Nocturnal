@@ -40,7 +40,9 @@
 		ED1560A4286B43C50089121D /* BioCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1560A3286B43C50089121D /* BioCell.swift */; };
 		ED1560A7286BF4AD0089121D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED1560A6286BF4AD0089121D /* GoogleService-Info.plist */; };
 		ED1560A9286C4C7B0089121D /* UIWindow+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1560A8286C4C7B0089121D /* UIWindow+Ext.swift */; };
-		ED1560AB286C7EB50089121D /* SettingProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1560AA286C7EB50089121D /* SettingProfileCell.swift */; };
+		ED1560AB286C7EB50089121D /* DeleteAccountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1560AA286C7EB50089121D /* DeleteAccountCell.swift */; };
+		ED1560AD286CA0AA0089121D /* SettingHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1560AC286CA0AA0089121D /* SettingHeader.swift */; };
+		ED1560B1286D46D10089121D /* BlockedUsersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1560B0286D46D10089121D /* BlockedUsersController.swift */; };
 		ED191D0F2865873E009A10CC /* String+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED191D0E2865873E009A10CC /* String+Ext.swift */; };
 		ED194CB12859DF0700C9E5D3 /* MusicSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB02859DF0700C9E5D3 /* MusicSample.swift */; };
 		ED194CB62859E5D100C9E5D3 /* EventService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB52859E5D100C9E5D3 /* EventService.swift */; };
@@ -145,7 +147,9 @@
 		ED1560A5286BF3020089121D /* Nocturnal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Nocturnal.entitlements; sourceTree = "<group>"; };
 		ED1560A6286BF4AD0089121D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ED1560A8286C4C7B0089121D /* UIWindow+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWindow+Ext.swift"; sourceTree = "<group>"; };
-		ED1560AA286C7EB50089121D /* SettingProfileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingProfileCell.swift; sourceTree = "<group>"; };
+		ED1560AA286C7EB50089121D /* DeleteAccountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteAccountCell.swift; sourceTree = "<group>"; };
+		ED1560AC286CA0AA0089121D /* SettingHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingHeader.swift; sourceTree = "<group>"; };
+		ED1560B0286D46D10089121D /* BlockedUsersController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedUsersController.swift; sourceTree = "<group>"; };
 		ED191D0E2865873E009A10CC /* String+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Ext.swift"; sourceTree = "<group>"; };
 		ED194CB02859DF0700C9E5D3 /* MusicSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicSample.swift; sourceTree = "<group>"; };
 		ED194CB52859E5D100C9E5D3 /* EventService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventService.swift; sourceTree = "<group>"; };
@@ -436,7 +440,8 @@
 			isa = PBXGroup;
 			children = (
 				ED156075286AFE750089121D /* SettingCell.swift */,
-				ED1560AA286C7EB50089121D /* SettingProfileCell.swift */,
+				ED1560AA286C7EB50089121D /* DeleteAccountCell.swift */,
+				ED1560AC286CA0AA0089121D /* SettingHeader.swift */,
 			);
 			path = Setting;
 			sourceTree = "<group>";
@@ -486,6 +491,7 @@
 			isa = PBXGroup;
 			children = (
 				ED5D1929286A11750054AC56 /* SettingsController.swift */,
+				ED1560B0286D46D10089121D /* BlockedUsersController.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -737,8 +743,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED0B424B285888D6000680C2 /* UIView+Ext.swift in Sources */,
+				ED1560B1286D46D10089121D /* BlockedUsersController.swift in Sources */,
 				ED0A485328587884004661BB /* MainTabBarController.swift in Sources */,
-				ED1560AB286C7EB50089121D /* SettingProfileCell.swift in Sources */,
+				ED1560AB286C7EB50089121D /* DeleteAccountCell.swift in Sources */,
 				ED0B425228597CCC000680C2 /* AddEventController.swift in Sources */,
 				ED194CB62859E5D100C9E5D3 /* EventService.swift in Sources */,
 				ED156076286AFE750089121D /* SettingCell.swift in Sources */,
@@ -759,6 +766,7 @@
 				ED194CBC2859EB7500C9E5D3 /* StorageUploader.swift in Sources */,
 				ED847A18285CDFEA00F33C7F /* AuthService.swift in Sources */,
 				EDC663EB28614FB8007FEF82 /* ConservasationsController.swift in Sources */,
+				ED1560AD286CA0AA0089121D /* SettingHeader.swift in Sources */,
 				ED0A483E285873DB004661BB /* ViewController.swift in Sources */,
 				ED191D0F2865873E009A10CC /* String+Ext.swift in Sources */,
 				ED83392C285AD57600236814 /* DetailHeader.swift in Sources */,

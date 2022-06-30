@@ -29,7 +29,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         let seg = NTSegmentedControl()
         seg.translatesAutoresizingMaskIntoConstraints = false
         seg.borderWidth = 0
-        seg.commaSeparatedButtonTitles = "Today, Tomorrow, This week"
+        seg.commaSeparatedButtonTitles = "All, Today, Tomorrow, This week"
         seg.textColor = .white
         seg.selectorColor = .primaryBlue
         seg.addTarget(self, action: #selector(dateSegmentValueChange), for: .valueChanged)
@@ -99,8 +99,12 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     @objc func dateSegmentValueChange(sender: NTSegmentedControl) {
         
         switch sender.selectedButtonIndex {
-            // filter todays event
+            
         case 0:
+            print("get all events")
+            resetEvents()
+            collectionView.reloadData()
+        case 1:
             resetEvents()
             let calendar = Calendar.current
             
@@ -110,7 +114,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
             
             self.events = filteredEvents
             collectionView.reloadData()
-        case 1:
+        case 2:
             resetEvents()
             let tomorrow = Calendar(identifier: .gregorian).date(byAdding: .day, value: 1, to: Date()) ?? Date()
             
@@ -123,7 +127,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
              })
             self.events = filteredEvents
             collectionView.reloadData()
-        case 2:
+        case 3:
             resetEvents()
             let today = Date()
             let dateAfterSevenDays = Calendar(identifier: .gregorian).date(byAdding: .day, value: 7, to: Date()) ?? Date()

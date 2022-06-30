@@ -330,7 +330,22 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
         }
       }
       func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-        // Handle error.
-        print("Sign in with Apple errored: \(error)")
+          
+          switch error {
+          case ASAuthorizationError.canceled:
+              break
+          case ASAuthorizationError.failed:
+              break
+          case ASAuthorizationError.invalidResponse:
+              break
+          case ASAuthorizationError.notHandled:
+              break
+          case ASAuthorizationError.unknown:
+              break
+          default:
+              break
+          }
+                      
+          print("didCompleteWithError: \(error.localizedDescription)")
       }
 }

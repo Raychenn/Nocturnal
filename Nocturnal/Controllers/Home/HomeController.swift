@@ -12,6 +12,8 @@ class HomeController: UIViewController {
     
     // MARK: - Properties
     
+    let refreshControl = UIRefreshControl()
+    
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 40, left: 0, bottom: 0, right: 0)
@@ -21,6 +23,8 @@ class HomeController: UIViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.backgroundColor = .black
+        collectionView.refreshControl = refreshControl
+        collectionView.refreshControl?.addTarget(self, action: #selector(refreshData), for: .valueChanged)
         collectionView.register(HomeEventCell.self, forCellWithReuseIdentifier: HomeEventCell.identifier)
         return collectionView
     }()
@@ -37,13 +41,9 @@ class HomeController: UIViewController {
     
     var currentUser: User
         
-    var events: [Event] = [] 
+    var events: [Event] = []
     
-    var evnetHosts: [User] = [] {
-        didSet {
-            collectionView.reloadData()
-        }
-    }
+    var evnetHosts: [User] = []
     
     // MARK: - Life Cycle
     
@@ -58,26 +58,51 @@ class HomeController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        fetchAllEvents()
         setupUI()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // fetch all events from firestore
-        fetchHostsWhenLoggedin()
+        print("viewWillAppear called")
+        fetchCurrentUser { [weak self] in
+            guard let self = self else {return}
+            self.fetchAllEvents()
+        }
     }
         
     // MARK: - API
     
+    private func fetchCurrentUser(completion: @escaping () -> Void) {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        UserService.shared.fetchUser(uid: userId) { result in
+            switch result {
+            case .success(let user):
+                self.currentUser = user
+                completion()
+            case .failure(let error):
+                print("Fail to fetch user in home \(error)")
+            }
+        }
+    }
+    
     private func fetchAllEvents() {
+        refreshControl.beginRefreshing()
+        
         EventService.shared.fetchAllEvents { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let events):
-                self.filterEventsFromBlockedUsers(events: events) { filteredEvents in
-                    self.events = filteredEvents
+                if self.currentUser.blockedUsersId.count == 0 {
+                    self.events = events
+                    print("all events count \(events.count)")
                     self.fetchHostsWhenLoggedin()
+                } else {
+                    self.filterEventsFromBlockedUsers(events: events) { filteredEvents in
+                        self.events = filteredEvents
+                        print("filteredEvents count \(filteredEvents.count)")
+                        self.fetchHostsWhenLoggedin()
+                    }
                 }
             case .failure(let error):
                 print("error fetching all events \(error)")
@@ -85,13 +110,14 @@ class HomeController: UIViewController {
         }
     }
     
-    private func fetchHosts(hostsId: [String]) {
+    private func fetchHosts(hostsId: [String], completion: @escaping () -> Void) {
         UserService.shared.fetchUsers(uids: hostsId) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let hosts):
                 self.evnetHosts = hosts
                 self.collectionView.reloadData()
+                completion()
             case .failure(let error):
                 print("error fetching event hosts \(error)")
             }
@@ -103,32 +129,31 @@ class HomeController: UIViewController {
             // logged in, start fetching user data
             var hostsId: [String] = []
             events.forEach({hostsId.append($0.hostID)})
-            fetchHosts(hostsId: hostsId)
+            fetchHosts(hostsId: hostsId) { [weak self] in
+                guard let self = self else { return }
+                self.refreshControl.endRefreshing()
+            }
         }
     }
     
     // MARK: - Selectors
+    @objc func refreshData() {
+        fetchCurrentUser { [weak self] in
+            guard let self = self else {return}
+            self.fetchAllEvents()
+        }
+    }
     
     @objc func didTapShowEventButton() {
         let addEventVC = AddEventController()
         navigationController?.pushViewController(addEventVC, animated: true)
     }
     
-    @objc func handleLogout() {
-        do {
-            try Auth.auth().signOut()
-            print("successfully sign out")
-        } catch {
-            print("Fail to log out \(error)")
-        }
-       
-       checkIfUserIsLoggedIn()
-    }
-    
     // MARK: - Helpers
     
     func setupUI() {
         configureChatNavBar(withTitle: "Home", backgroundColor: UIColor.hexStringToUIColor(hex: "#1C242F"), preferLargeTitles: true)
+        navigationController?.navigationBar.prefersLargeTitles = false
         navigationItem.title = "Home"
         view.addSubview(collectionView)
         NSLayoutConstraint.activate([
@@ -148,10 +173,10 @@ class HomeController: UIViewController {
         addEventButton.layer.cornerRadius = 60/2
         addEventButton.layer.masksToBounds = true
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Log Out", style: .plain, target: self, action: #selector(handleLogout))
     }
     
     func filterEventsFromBlockedUsers(events: [Event], completion: @escaping ([Event]) -> Void) {
+        
         var result: [Event] = []
         
         currentUser.blockedUsersId.forEach { blockedId in
@@ -161,19 +186,7 @@ class HomeController: UIViewController {
                 }
             }
         }
-        
         completion(result)
-    }
-    
-    func checkIfUserIsLoggedIn() {
-        if Auth.auth().currentUser == nil {
-            DispatchQueue.main.async {
-                let loginController = LoginController()
-                let nav = UINavigationController(rootViewController: loginController)
-//                nav.modalPresentationStyle = .fullScreen
-                self.present(nav, animated: true, completion: nil)
-            }
-        }
     }
 }
 
@@ -186,7 +199,6 @@ extension HomeController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        print("events.count \(events.count)")
         return events.count
     }
     

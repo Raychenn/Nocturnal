@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseFirestore
 
 class MainTabBarController: UITabBarController {
 
@@ -14,44 +15,46 @@ class MainTabBarController: UITabBarController {
     
     var currentUser: User?
     
+    let defaultUser = User(id: "guest", name: "", email: "", country: "", profileImageURL: "", birthday: Timestamp(date: Date()), gender: 2, numberOfHostedEvents: 0, bio: "", joinedEventsId: [], blockedUsersId: [], requestedEventsId: [])
+    
     // MARK: - Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.checkIfUserIsLoggedIn()
-        
-        fetchCurrentUser { [weak self] user in
-            guard let self = self else { return }
-            self.currentUser = user
-            self.configureViewControllers()
-            self.configureTabBarStyle()
-            self.configureNavigationBarUI()
-            self.checkIfUserIsLoggedIn()
-        }
+        self.configureTabBarStyle()
+        self.configureNavigationBarUI()
+        self.authenticateUserAndConfigureUI()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
     }
     
     // MARK: - API
     
-    func checkIfUserIsLoggedIn() {
+    func authenticateUserAndConfigureUI() {
 //        try? Auth.auth().signOut()
+        
         if Auth.auth().currentUser == nil {
+            self.configureViewControllers(with: defaultUser)
             DispatchQueue.main.async {
                 let loginController = LoginController()
-                // after log in completes, we delegate the action of fetching/updating user function back to MainTabBarController so that all other controllers will also take effects
                 let nav = UINavigationController(rootViewController: loginController)
-                nav.modalPresentationStyle = .fullScreen
                 self.present(nav, animated: true, completion: nil)
+            }
+        } else {
+            // user is logged in
+            fetchCurrentUser { [weak self] user in
+                guard let self = self else { return }
+                self.currentUser = user
+                print("user logged in current user name is \(self.currentUser?.name)")
+                self.configureViewControllers(with: user)
             }
         }
     }
     
     private func fetchCurrentUser(completion: @escaping (User) -> Void) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
         UserService.shared.fetchUser(uid: uid) { result in
             switch result {
             case .success(let user):
@@ -72,29 +75,23 @@ class MainTabBarController: UITabBarController {
         tabBar.standardAppearance = appearance
     }
     
-    func configureViewControllers() {
-        guard let currentUser = currentUser else {
-            print("Current user nil")
-            return
-        }
-        // conform to delegate
+    func configureViewControllers(with user: User) {
+        tabBar.tintColor = .black
+        tabBar.isTranslucent = false
         self.delegate = self
         
         view.backgroundColor = .white
-        let home = templateNavigationViewController(unselectedImage: UIImage(systemName: "house")!, selectedImage: UIImage(systemName: "house.fill")!, rootViewController: HomeController())
+        let home = templateNavigationViewController(unselectedImage: UIImage(systemName: "house")!, selectedImage: UIImage(systemName: "house.fill")!, rootViewController: HomeController(currentUser: user))
         
         let explore = templateNavigationViewController(unselectedImage: UIImage(systemName: "magnifyingglass")!, selectedImage: UIImage(systemName: "magnifyingglass")!, rootViewController: ExploreController())
         
-        let stats = templateNavigationViewController(unselectedImage: UIImage(systemName: "clock")!, selectedImage: UIImage(systemName: "clock.fill")!, rootViewController: StatsController(user: currentUser))
+        let stats = templateNavigationViewController(unselectedImage: UIImage(systemName: "clock")!, selectedImage: UIImage(systemName: "clock.fill")!, rootViewController: StatsController(user: user))
         
-        let notification = templateNavigationViewController(unselectedImage: UIImage(systemName: "heart")!, selectedImage: UIImage(systemName: "heart.fill")!, rootViewController: NotificationController())
+        let notification = templateNavigationViewController(unselectedImage: UIImage(systemName: "heart")!, selectedImage: UIImage(systemName: "heart.fill")!, rootViewController: NotificationController(user: user))
          
-//        let profileController = ProfileContoller(user: user)
-        let profile = templateNavigationViewController(unselectedImage: UIImage(systemName: "person")!, selectedImage: UIImage(systemName: "person.fill")!, rootViewController: ProfileController(user: currentUser))
+        let profile = templateNavigationViewController(unselectedImage: UIImage(systemName: "person")!, selectedImage: UIImage(systemName: "person.fill")!, rootViewController: ProfileController(user: user))
     
         viewControllers = [home, explore, stats, notification, profile]
-        tabBar.tintColor = .black
-        tabBar.isTranslucent = false
     }
     
     func templateNavigationViewController(unselectedImage: UIImage, selectedImage: UIImage, rootViewController: UIViewController) -> UINavigationController {
@@ -121,6 +118,12 @@ extension MainTabBarController: UITabBarControllerDelegate {
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
         
         let index = viewControllers?.firstIndex(of: viewController)
-        return true
+
+        if Auth.auth().currentUser != nil || index == 0 || index == 1 {
+            return true
+        } else {
+            authenticateUserAndConfigureUI()
+            return false
+        }
     }
 }

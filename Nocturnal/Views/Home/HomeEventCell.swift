@@ -99,7 +99,16 @@ class HomeEventCell: UICollectionViewCell {
     
     // MARK: - Heleprs
     
-    func configureCell(event: Event, host: User) {
+    func configureCell(event: Event) {
+        guard let url = URL(string: event.eventImageURL) else { return }
+        eventImageView.kf.setImage(with: url)
+        dateLabel.text = Date.dateFormatter.string(from: event.startingDate.dateValue())
+        eventNameLabel.text = event.title
+        feeLabel.text = "$\(event.fee)"
+        hostNameLabel.text = "Unkown User"
+    }
+    
+    func configureCellForLoggedInUser(event: Event, host: User) {
         guard let url = URL(string: event.eventImageURL) else { return }
         guard let profileUrl = URL(string: host.profileImageURL) else { return }
         eventImageView.kf.setImage(with: url)

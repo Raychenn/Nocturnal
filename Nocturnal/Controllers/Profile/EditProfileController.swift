@@ -41,6 +41,8 @@ class EditProfileController: UIViewController {
     
     var updatedImage: UIImage?
     
+    let gradient = CAGradientLayer()
+    
     // MARK: - Life
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -108,11 +110,9 @@ extension EditProfileController: UITableViewDelegate {
         guard let editHeader = tableView.dequeueReusableHeaderFooterView(withIdentifier: EditProfileHeader.identifier) as? EditProfileHeader else { return UIView() }
         
         editHeader.configureHeader(imageURL: currentUser.profileImageURL)
-        
         editHeader.delegate = self
-        
+        gradient.removeFromSuperlayer()
         let gradientView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 350))
-        let gradient = CAGradientLayer()
         gradient.frame = gradientView.frame
         gradient.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
         gradient.locations = [0.0, 1.3]
@@ -131,11 +131,8 @@ extension EditProfileController: EditProfileCellDelegate {
     
     func didTapSave(cell: EditProfileCell, editedData: EditProfileCellModel) {
         print("didTapSave")
-        guard let currentImage = self.currentImage else {
-            print("current image nil")
-            return
-        }
-        
+        let currentImage = self.currentImage ?? UIImage()
+         
         // update user data in firestore
         let genderString = editedData.gender
         var gender: Gender = .unspecified

@@ -9,6 +9,7 @@ import UIKit
 import AVFoundation
 import CoreLocation
 import FirebaseFirestore
+import FirebaseAuth
 
 class EventDetailController: UIViewController {
     
@@ -170,6 +171,7 @@ class EventDetailController: UIViewController {
     
     // MARK: - Helpers
     private func setupUI() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
         setupJoinButtonState()
         navigationController?.navigationBar.isHidden = true
         tabBarController?.tabBar.isHidden = true

@@ -7,17 +7,29 @@
 
 import UIKit
 
-class SettingCell: UICollectionViewCell {
+class SettingCell: UITableViewCell {
+    
+    // MARK: - Properties
+    
+    private let symbolImageView: UIImageView = {
+        let imageView = UIImageView()
+         imageView.contentMode = .scaleAspectFill
+         imageView.clipsToBounds = true
+        imageView.tintColor = .lightGray
+        imageView.setDimensions(height: 25, width: 25)
+         return imageView
+    }()
     
     private let titleLabel: UILabel = {
        let label = UILabel()
-        label.font = .systemFont(ofSize: 30, weight: .bold)
+        label.font = .systemFont(ofSize: 15, weight: .semibold)
+        label.textColor = .white
         label.text = "Privacy policy"
         return label
     }()
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupCellUI()
     }
     
@@ -25,23 +37,30 @@ class SettingCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureCell(title: String) {
+    func configureCell(title: String, symbolName: String) {
         titleLabel.text = title
+        let config = UIImage.SymbolConfiguration(pointSize: 25)
+        symbolImageView.image = UIImage(systemName: symbolName, withConfiguration: config)
     }
     
     private func setupCellUI() {
-        backgroundColor = .clear
-        layer.masksToBounds = false
-        layer.shadowOpacity = 0.3
-        layer.shadowRadius = 12
-        layer.shadowOffset = CGSize(width: 5, height: 5)
-        layer.shadowColor = UIColor.white.cgColor
-        contentView.backgroundColor = .black
-        contentView.layer.cornerRadius = 8
+//        backgroundColor = .clear
+//        layer.masksToBounds = false
+//        layer.shadowOpacity = 0.3
+//        layer.shadowRadius = 12
+//        layer.shadowOffset = CGSize(width: 5, height: 5)
+//        layer.shadowColor = UIColor.white.cgColor
+//        contentView.backgroundColor = .black
+//        contentView.layer.cornerRadius = 8
+        contentView.backgroundColor = UIColor.hexStringToUIColor(hex: "#1C242F")
+        
+        addSubview(symbolImageView)
+        symbolImageView.centerY(inView: self)
+        symbolImageView.anchor(left: leftAnchor, paddingLeft: 10)
         
         addSubview(titleLabel)
-        titleLabel.centerY(inView: self)
-        titleLabel.centerX(inView: self)
+        titleLabel.centerY(inView: symbolImageView)
+        titleLabel.anchor(left: symbolImageView.rightAnchor, paddingLeft: 10)
     }
     
 }

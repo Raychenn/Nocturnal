@@ -8,12 +8,39 @@
 import Foundation
 import FirebaseFirestore
 import FirebaseFirestoreSwift
+import FirebaseAuth
 
 struct UserService {
     
     static let shared = UserService()
     
+    // MARK: - Blocking Service
+    func addUserToBlockedList(blockedUid: String, completion: FirestoreCompletion) {
+        guard let currentUserId = Auth.auth().currentUser?.uid else { return }
+        collection_users.document(currentUserId).updateData(["blockedUsersId": FieldValue.arrayUnion([blockedUid])], completion: completion)
+    }
+    
+    func removeUserFromblockedList(blockedUid: String, completion: FirestoreCompletion) {
+        guard let currentUserId = Auth.auth().currentUser?.uid else { return }
+        collection_users.document(currentUserId).updateData(["blockedUsersId": FieldValue.arrayRemove([blockedUid])], completion: completion)
+    }
+    
     // MARK: - Deletion
+    func checkIfUserExist(uid: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+        collection_users.document(uid).getDocument { snapshot, error in
+            guard let snapshot = snapshot, error == nil else {
+                completion(.failure(error!))
+                return
+            }
+
+            if snapshot.exists {
+                completion(.success(true))
+            } else {
+                completion(.success(false))
+            }
+        }
+    }
+    
     func deleteJoinedEvent(eventId: String, completion: FirestoreCompletion) {
         collection_users.whereField("joinedEventsId", arrayContains: eventId).getDocuments { snapshot, error in
             guard let snapshot = snapshot, error == nil else {

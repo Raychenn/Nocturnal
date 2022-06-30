@@ -98,19 +98,20 @@ struct MessegeService {
                 completion(.failure(error!))
                 return
             }
+            let group = DispatchGroup()
             
             snapshot.documentChanges.forEach { change in
                 if change.type == .added {
-                    
                     do {
                         let message = try change.document.data(as: Message.self)
-                        
+                        group.enter()
                         UserService.shared.fetchUser(uid: message.chatPartnerId) { result in
+                            group.leave()
                             switch result {
                             case .success(let user):
+//                                print("chatPartner name in api \(user.name)")
                                 let conversation = Conversation(user: user, message: message)
                                 conversations.append(conversation)
-                                completion(.success(conversations))
                             case .failure(let error):
                                 completion(.failure(error))
                             }
@@ -120,6 +121,10 @@ struct MessegeService {
                     }
                 }
             }
+            group.notify(queue: .main) {
+                completion(.success(conversations))
+            }
+            
         }
     }
 }

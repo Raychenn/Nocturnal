@@ -12,12 +12,6 @@ class ConversationCell: UITableViewCell {
     
     // MARK: - Properties
     
-    var conversation: Conversation? {
-        didSet {
-            configureCell()
-        }
-    }
-    
     private let profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -81,13 +75,11 @@ class ConversationCell: UITableViewCell {
         timestampLabel.anchor(top: topAnchor, right: rightAnchor, paddingTop: 20, paddingRight: 12)
     }
     
-    func configureCell() {
-        guard let conversation = conversation, let profileURL = URL(string: conversation.user.profileImageURL) else {
-            print("conversation nil")
-            return
+    func configureCell(conversation: Conversation) {
+        if let profileURL = URL(string: conversation.user.profileImageURL) {
+            profileImageView.kf.setImage(with: profileURL, placeholder: UIImage(systemName: "person.fill"))
         }
         
-        profileImageView.kf.setImage(with: profileURL)
         timestampLabel.text = Date.dateTimeFormatter.string(from: conversation.message.sentTime.dateValue())
         usernameLabel.text = conversation.user.name
         messageLabel.text = conversation.message.text

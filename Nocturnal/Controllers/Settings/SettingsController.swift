@@ -4,15 +4,17 @@
 //
 //  Created by Boray Chen on 2022/6/28.
 //
-
 import UIKit
 
 class SettingsController: UIViewController {
     
+    // MARK: - Properties
+    
     enum SettingType: CaseIterable {
         case privacy
-        case service
-        case delete
+        case rate
+        case feedback
+        case eula
         case blockedList
         case signout
         
@@ -20,83 +22,140 @@ class SettingsController: UIViewController {
             switch self {
             case .privacy:
                 return "Privacy policy"
-            case .service:
-                return "Terms of serivce"
-            case .delete:
-                return "Delete account"
+            case .rate:
+                return "Rate Our App"
+            case .feedback:
+                return "Send us feedback"
+            case .eula:
+                return "EULA"
             case .blockedList:
                 return "Blocked users"
             case .signout:
                 return "Sign out"
             }
         }
+        
+        var iconName: String {
+            switch self {
+            case .privacy:
+                return "checkerboard.shield"   
+            case .rate:
+                return "star.fill"
+            case .feedback:
+                return "square.and.pencil"
+            case .eula:
+                return "pentagon.lefthalf.filled"
+            case .blockedList:
+                return "eye.slash"
+            case .signout:
+                return "rectangle.portrait.and.arrow.right"
+            }
+        }
     }
     
-    let settings: [SettingType] = [.privacy, .service, .delete, .blockedList, .signout]
+    let settings: [SettingType] = [.privacy, .rate, .feedback, .eula, .blockedList, .signout]
     
-    private lazy var collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.minimumLineSpacing = 20
-        layout.sectionInset = .init(top: 20, left: 0, bottom: 20, right: 0)
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.register(SettingCell.self, forCellWithReuseIdentifier: SettingCell.id)
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        return collectionView
+    private lazy var tableView: UITableView = {
+        let table = UITableView(frame: .zero, style: .grouped)
+        table.contentInsetAdjustmentBehavior = .never
+        table.register(SettingCell.self, forCellReuseIdentifier: SettingCell.identifier)
+        table.register(DeleteAccountCell.self, forCellReuseIdentifier: DeleteAccountCell.identifier)
+        table.register(SettingHeader.self, forHeaderFooterViewReuseIdentifier: SettingHeader.identifier)
+        table.dataSource = self
+        table.delegate = self
+        table.backgroundColor = UIColor.hexStringToUIColor(hex: "#3F4E4F")
+        return table
     }()
+    
+    private lazy var backButton
+    
+    // MARK: - Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupUI()
     }
-    
+        
     private func setupUI() {
-        navigationController?.navigationBar.isHidden = false
+        navigationController?.navigationBar.isHidden = true
         view.backgroundColor = .white
-        view.addSubview(collectionView)
-        navigationItem.title = "Settings"
-        
-        NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ])
-        
+        view.addSubview(tableView)
+        tableView.fillSuperview()
     }
     
 }
 
-extension SettingsController: UICollectionViewDataSource {
+// MARK: - UITableViewDataSource
+extension SettingsController: UITableViewDataSource {
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        SettingType.allCases.count
+    func numberOfSections(in tableView: UITableView) -> Int {
+        2
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let settingCell = collectionView.dequeueReusableCell(withReuseIdentifier: SettingCell.id, for: indexPath) as? SettingCell else { return UICollectionViewCell() }
-        
-        let setting = settings[indexPath.item].description
-        
-        settingCell.configureCell(title: setting)
-        return settingCell
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return section == 0 ? settings.count: 1
     }
-}
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-extension SettingsController: UICollectionViewDelegate {
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let selectedSetting = settings[indexPath.item]
-        
-      
-    }
-}
+        if indexPath.section == 0 {
+            guard let settingCell = tableView.dequeueReusableCell(withIdentifier: SettingCell.identifier, for: indexPath) as? SettingCell else { return UITableViewCell() }
+            
+            let setting = settings[indexPath.row]
+            settingCell.configureCell(title: setting.description, symbolName: setting.iconName)
+            settingCell.accessoryType = .disclosureIndicator
 
-extension SettingsController: UICollectionViewDelegateFlowLayout {
+            return settingCell
+            
+        } else {
+            guard let deleteCell = tableView.dequeueReusableCell(withIdentifier: DeleteAccountCell.identifier, for: indexPath) as? DeleteAccountCell else { return UITableViewCell() }
+            
+            return deleteCell
+        }
+    }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.size.width - 40, height: 100)
+}
+// MARK: - UITableViewDelegate
+extension SettingsController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        if indexPath.section == 0 {
+            let selectedSetting = settings[indexPath.row]
+            
+            switch selectedSetting {
+            case .privacy:
+                break
+            case .rate:
+                break
+            case .feedback:
+                break
+            case .eula:
+                break
+            case .blockedList:
+                let blockedListVC = BlockedUsersController()
+                navigationController?.pushViewController(blockedListVC, animated: true)
+            case .signout:
+                break
+            }
+        } else {
+            
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        if section == 0 {
+            guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: SettingHeader.identifier) as? SettingHeader else { return UIView() }
+            
+            return header
+        }
+        
+        return UIView()
+    }
+   
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return section == 0 ? 270: 15
     }
 }

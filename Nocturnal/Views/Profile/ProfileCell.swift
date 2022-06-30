@@ -155,7 +155,6 @@ class ProfileCell: UICollectionViewCell {
     func configureCell(with user: User) {
         let gender = Gender(rawValue: user.gender) ?? .male
         genderLabel.text = "Gender"
-        print("gender descrip \(gender.description)")
         genderImageView.image = UIImage(named: "Male")
         zodiaContentImageView.image = UIImage(named: calculateZodiac())?.withRenderingMode(.alwaysTemplate)
         ageContentLabel.text = "\(calculateAge()) years old"

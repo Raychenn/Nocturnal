@@ -34,31 +34,40 @@ class HomeController: UIViewController {
         button.addTarget(self, action: #selector(didTapShowEventButton), for: .touchUpInside)
         return button
     }()
+    
+    var currentUser: User
         
-    var events: [Event] = [] {
+    var events: [Event] = [] 
+    
+    var evnetHosts: [User] = [] {
         didSet {
-            var hostsId: [String] = []
-            events.forEach({hostsId.append($0.hostID)})
-            fetchHosts(hostsId: hostsId)
+            collectionView.reloadData()
         }
     }
     
-    var evnetHosts: [User] = []
-    
     // MARK: - Life Cycle
+    
+    init(currentUser: User) {
+        self.currentUser = currentUser
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        fetchAllEvents()
         setupUI()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // fetch all events from firestore
-        fetchAllEvents()
+        fetchHostsWhenLoggedin()
     }
-    
+        
     // MARK: - API
     
     private func fetchAllEvents() {
@@ -66,7 +75,10 @@ class HomeController: UIViewController {
             guard let self = self else { return }
             switch result {
             case .success(let events):
-                self.events = events
+                self.filterEventsFromBlockedUsers(events: events) { filteredEvents in
+                    self.events = filteredEvents
+                    self.fetchHostsWhenLoggedin()
+                }
             case .failure(let error):
                 print("error fetching all events \(error)")
             }
@@ -86,6 +98,15 @@ class HomeController: UIViewController {
         }
     }
     
+    private func fetchHostsWhenLoggedin() {
+        if Auth.auth().currentUser != nil {
+            // logged in, start fetching user data
+            var hostsId: [String] = []
+            events.forEach({hostsId.append($0.hostID)})
+            fetchHosts(hostsId: hostsId)
+        }
+    }
+    
     // MARK: - Selectors
     
     @objc func didTapShowEventButton() {
@@ -96,6 +117,7 @@ class HomeController: UIViewController {
     @objc func handleLogout() {
         do {
             try Auth.auth().signOut()
+            print("successfully sign out")
         } catch {
             print("Fail to log out \(error)")
         }
@@ -129,13 +151,26 @@ class HomeController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Log Out", style: .plain, target: self, action: #selector(handleLogout))
     }
     
+    func filterEventsFromBlockedUsers(events: [Event], completion: @escaping ([Event]) -> Void) {
+        var result: [Event] = []
+        
+        currentUser.blockedUsersId.forEach { blockedId in
+            events.forEach { event in
+                if blockedId != event.hostID {
+                    result.append(event)
+                }
+            }
+        }
+        
+        completion(result)
+    }
+    
     func checkIfUserIsLoggedIn() {
         if Auth.auth().currentUser == nil {
             DispatchQueue.main.async {
                 let loginController = LoginController()
-                // after log in completes, we delegate the action of fetching/updating user function back to MainTabBarController so that all other controllers will also take effects
                 let nav = UINavigationController(rootViewController: loginController)
-                nav.modalPresentationStyle = .fullScreen
+//                nav.modalPresentationStyle = .fullScreen
                 self.present(nav, animated: true, completion: nil)
             }
         }
@@ -160,10 +195,16 @@ extension HomeController: UICollectionViewDataSource {
         guard let eventCell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeEventCell.identifier, for: indexPath) as? HomeEventCell else { return UICollectionViewCell() }
         
         // should have 2 types of config | loggedin user vs no user
-        let event = events[indexPath.item]
-        let host = evnetHosts[indexPath.item]
+        if Auth.auth().currentUser == nil {
+            let event = events[indexPath.item]
 
-        eventCell.configureCell(event: event, host: host)
+            eventCell.configureCell(event: event)
+        } else {
+            let event = events[indexPath.item]
+            let host = evnetHosts[indexPath.item]
+
+            eventCell.configureCellForLoggedInUser(event: event, host: host)
+        }
         
         return eventCell
     }
@@ -174,10 +215,18 @@ extension HomeController: UICollectionViewDataSource {
 extension HomeController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let selectedEvent = events[indexPath.item]
-        let detailVC = EventDetailController(event: selectedEvent)
-        detailVC.hidesBottomBarWhenPushed = true
-        navigationController?.pushViewController(detailVC, animated: true)
+        if Auth.auth().currentUser == nil {
+            DispatchQueue.main.async {
+                let loginController = LoginController()
+                let nav = UINavigationController(rootViewController: loginController)
+                self.present(nav, animated: true, completion: nil)
+            }
+        } else {
+            let selectedEvent = events[indexPath.item]
+            let detailVC = EventDetailController(event: selectedEvent)
+            detailVC.hidesBottomBarWhenPushed = true
+            navigationController?.pushViewController(detailVC, animated: true)
+        }
     }
 }
 

@@ -9,6 +9,15 @@ import UIKit
 
 extension UIViewController {
     
+    var isModal: Bool {
+
+        let presentingIsModal = presentingViewController != nil
+        let presentingIsNavigation = navigationController?.presentingViewController?.presentedViewController == navigationController
+        let presentingIsTabBar = tabBarController?.presentingViewController is UITabBarController
+
+        return presentingIsModal || presentingIsNavigation || presentingIsTabBar
+    }
+    
     func configureChatNavBar(withTitle: String, backgroundColor: UIColor? = UIColor.black, preferLargeTitles: Bool) {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
@@ -55,7 +64,7 @@ extension UIViewController {
         
         present(alert, animated: true)
     }
-    
+
     func presentLoadingView(shouldPresent: Bool, message: String? = nil) {
         let loadingView = UIView()
         let indicator = UIActivityIndicatorView()

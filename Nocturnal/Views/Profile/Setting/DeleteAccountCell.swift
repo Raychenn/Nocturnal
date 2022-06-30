@@ -1,42 +1,51 @@
 //
-//  DeleteAccountCell.swift
+//  SettingProfileCell.swift
 //  Nocturnal
 //
-//  Created by Boray Chen on 2022/6/28.
+//  Created by Boray Chen on 2022/6/29.
 //
 
 import UIKit
 
-class DeleteAccountCell: UICollectionViewCell {
+class DeleteAccountCell: UITableViewCell {
     
-    private let deleteAccountLabel: UILabel = {
+    private let deleteImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.image = UIImage(systemName: "trash")
+        imageView.tintColor = .red
+        return imageView
+    }()
+    
+    private let deleteLabel: UILabel = {
        let label = UILabel()
-        label.font = .systemFont(ofSize: 30, weight: .bold)
-        label.text = "Delete account"
+        label.text = "Delete Account"
+        label.textColor = .white
+        label.font = .systemFont(ofSize: 20, weight: .bold)
         return label
     }()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setupCellUI()
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        setupUI()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupCellUI() {
-        backgroundColor = .clear
-        layer.masksToBounds = false
-        layer.shadowOpacity = 0.3
-        layer.shadowRadius = 12
-        layer.shadowOffset = CGSize(width: 5, height: 5)
-        layer.shadowColor = UIColor.white.cgColor
-        contentView.backgroundColor = .black
-        contentView.layer.cornerRadius = 8
+    private func setupUI() {
+        contentView.backgroundColor = UIColor.hexStringToUIColor(hex: "#1C242F")
         
-        addSubview(deleteAccountLabel)
-        deleteAccountLabel.centerY(inView: self)
-        deleteAccountLabel.centerX(inView: self)
+        addSubview(deleteImageView)
+        deleteImageView.centerY(inView: self)
+        deleteImageView.anchor(left: leftAnchor, paddingLeft: 10)
+        
+        addSubview(deleteLabel)
+        deleteLabel.centerY(inView: deleteImageView)
+        deleteLabel.anchor(left: deleteImageView.rightAnchor, paddingLeft: 10)
     }
+    
 }

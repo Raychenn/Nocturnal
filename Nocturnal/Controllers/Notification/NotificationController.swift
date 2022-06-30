@@ -23,16 +23,16 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
         return table
     }()
     
+    private let currentUser: User
+    
     var hosts: [User] = [] {
         didSet {
-            print("did set hosts \(hosts)")
             tableView.reloadData()
         }
     }
     
     var applicants: [User] = [] {
         didSet {
-            print("did set applicants \(applicants)")
             tableView.reloadData()
         }
     }
@@ -49,17 +49,28 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
         setupUI()
     }
     
+    init(user: User) {
+        self.currentUser = user
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        fetchNotifications()
     }
     
     // MARK: - API
     
     private func fetchNotifications() {
-        NotificationService.shared.fetchNotifications(uid: uid) { result in
+        NotificationService.shared.fetchNotifications(uid: currentUser.id ?? "") { result in
             switch result {
             case .success(let notifications):
                 self.notifications = self.getFilteredNotifications(notifications: notifications)
+                print("notifications count \(self.notifications.count)")
                 self.fetchEvents { [weak self] events in
                     guard let self = self else { return }
                     self.events = events

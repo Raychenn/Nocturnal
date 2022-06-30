@@ -34,14 +34,15 @@
 		ED0B424F28588A61000680C2 /* UITextField+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0B424E28588A61000680C2 /* UITextField+Ext.swift */; };
 		ED0B425228597CCC000680C2 /* AddEventController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0B425128597CCC000680C2 /* AddEventController.swift */; };
 		ED0B425828598718000680C2 /* UploadEventInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0B425728598718000680C2 /* UploadEventInfoCell.swift */; };
-		ED0E5821286069BC00064C02 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED0E5820286069BC00064C02 /* GoogleService-Info.plist */; };
 		ED0E58232860758F00064C02 /* MessageInputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0E58222860758F00064C02 /* MessageInputAccessoryView.swift */; };
 		ED0E582528609AEE00064C02 /* MessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0E582428609AEE00064C02 /* MessageCell.swift */; };
 		ED156076286AFE750089121D /* SettingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED156075286AFE750089121D /* SettingCell.swift */; };
-		ED156078286B084C0089121D /* DeleteAccountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED156077286B084C0089121D /* DeleteAccountCell.swift */; };
-		ED15607A286B08610089121D /* BlockedUserListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED156079286B08610089121D /* BlockedUserListCell.swift */; };
-		ED15607C286B087E0089121D /* SignoutCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED15607B286B087E0089121D /* SignoutCell.swift */; };
 		ED1560A4286B43C50089121D /* BioCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1560A3286B43C50089121D /* BioCell.swift */; };
+		ED1560A7286BF4AD0089121D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED1560A6286BF4AD0089121D /* GoogleService-Info.plist */; };
+		ED1560A9286C4C7B0089121D /* UIWindow+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1560A8286C4C7B0089121D /* UIWindow+Ext.swift */; };
+		ED1560AB286C7EB50089121D /* DeleteAccountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1560AA286C7EB50089121D /* DeleteAccountCell.swift */; };
+		ED1560AD286CA0AA0089121D /* SettingHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1560AC286CA0AA0089121D /* SettingHeader.swift */; };
+		ED1560B1286D46D10089121D /* BlockedUsersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1560B0286D46D10089121D /* BlockedUsersController.swift */; };
 		ED191D0F2865873E009A10CC /* String+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED191D0E2865873E009A10CC /* String+Ext.swift */; };
 		ED194CB12859DF0700C9E5D3 /* MusicSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB02859DF0700C9E5D3 /* MusicSample.swift */; };
 		ED194CB62859E5D100C9E5D3 /* EventService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB52859E5D100C9E5D3 /* EventService.swift */; };
@@ -139,14 +140,16 @@
 		ED0B424E28588A61000680C2 /* UITextField+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextField+Ext.swift"; sourceTree = "<group>"; };
 		ED0B425128597CCC000680C2 /* AddEventController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventController.swift; sourceTree = "<group>"; };
 		ED0B425728598718000680C2 /* UploadEventInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadEventInfoCell.swift; sourceTree = "<group>"; };
-		ED0E5820286069BC00064C02 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ED0E58222860758F00064C02 /* MessageInputAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageInputAccessoryView.swift; sourceTree = "<group>"; };
 		ED0E582428609AEE00064C02 /* MessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCell.swift; sourceTree = "<group>"; };
 		ED156075286AFE750089121D /* SettingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingCell.swift; sourceTree = "<group>"; };
-		ED156077286B084C0089121D /* DeleteAccountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteAccountCell.swift; sourceTree = "<group>"; };
-		ED156079286B08610089121D /* BlockedUserListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedUserListCell.swift; sourceTree = "<group>"; };
-		ED15607B286B087E0089121D /* SignoutCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignoutCell.swift; sourceTree = "<group>"; };
 		ED1560A3286B43C50089121D /* BioCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BioCell.swift; sourceTree = "<group>"; };
+		ED1560A5286BF3020089121D /* Nocturnal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Nocturnal.entitlements; sourceTree = "<group>"; };
+		ED1560A6286BF4AD0089121D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		ED1560A8286C4C7B0089121D /* UIWindow+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWindow+Ext.swift"; sourceTree = "<group>"; };
+		ED1560AA286C7EB50089121D /* DeleteAccountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteAccountCell.swift; sourceTree = "<group>"; };
+		ED1560AC286CA0AA0089121D /* SettingHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingHeader.swift; sourceTree = "<group>"; };
+		ED1560B0286D46D10089121D /* BlockedUsersController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedUsersController.swift; sourceTree = "<group>"; };
 		ED191D0E2865873E009A10CC /* String+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Ext.swift"; sourceTree = "<group>"; };
 		ED194CB02859DF0700C9E5D3 /* MusicSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicSample.swift; sourceTree = "<group>"; };
 		ED194CB52859E5D100C9E5D3 /* EventService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventService.swift; sourceTree = "<group>"; };
@@ -264,6 +267,7 @@
 		ED0A4838285873DB004661BB /* Nocturnal */ = {
 			isa = PBXGroup;
 			children = (
+				ED1560A5286BF3020089121D /* Nocturnal.entitlements */,
 				ED194CB42859E51000C9E5D3 /* FirebaseAPI */,
 				ED0B425028588AE1000680C2 /* Third party wrapper */,
 				ED0A4851285877F7004661BB /* Resources */,
@@ -278,7 +282,7 @@
 				ED0A4842285873DC004661BB /* Assets.xcassets */,
 				ED0A4844285873DC004661BB /* LaunchScreen.storyboard */,
 				ED0A4847285873DC004661BB /* Info.plist */,
-				ED0E5820286069BC00064C02 /* GoogleService-Info.plist */,
+				ED1560A6286BF4AD0089121D /* GoogleService-Info.plist */,
 			);
 			path = Nocturnal;
 			sourceTree = "<group>";
@@ -286,9 +290,9 @@
 		ED0A484D285877B5004661BB /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				ED0A485228587884004661BB /* MainTabBarController.swift */,
 				ED5D1928286A115C0054AC56 /* Settings */,
 				ED26DAEE285F0EEE0094B546 /* Chat */,
-				ED0A485228587884004661BB /* MainTabBarController.swift */,
 				ED847A0E285CDDD100F33C7F /* Authentication */,
 				ED0A486228587C87004661BB /* Profile */,
 				ED0A486128587C7B004661BB /* Notification */,
@@ -342,6 +346,7 @@
 				ED81C3D6285D93D3004C12EA /* Firebase+Ext.swift */,
 				ED204B21285DB16F0016FDCA /* UILabel+Ext.swift */,
 				ED191D0E2865873E009A10CC /* String+Ext.swift */,
+				ED1560A8286C4C7B0089121D /* UIWindow+Ext.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -435,9 +440,8 @@
 			isa = PBXGroup;
 			children = (
 				ED156075286AFE750089121D /* SettingCell.swift */,
-				ED156077286B084C0089121D /* DeleteAccountCell.swift */,
-				ED156079286B08610089121D /* BlockedUserListCell.swift */,
-				ED15607B286B087E0089121D /* SignoutCell.swift */,
+				ED1560AA286C7EB50089121D /* DeleteAccountCell.swift */,
+				ED1560AC286CA0AA0089121D /* SettingHeader.swift */,
 			);
 			path = Setting;
 			sourceTree = "<group>";
@@ -487,6 +491,7 @@
 			isa = PBXGroup;
 			children = (
 				ED5D1929286A11750054AC56 /* SettingsController.swift */,
+				ED1560B0286D46D10089121D /* BlockedUsersController.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -660,9 +665,9 @@
 				ED0A4843285873DC004661BB /* Assets.xcassets in Resources */,
 				EDC3361B2859DC4100A6A95A /* allthat.mp3 in Resources */,
 				ED0A4841285873DB004661BB /* Main.storyboard in Resources */,
+				ED1560A7286BF4AD0089121D /* GoogleService-Info.plist in Resources */,
 				EDEF691628687D3E00F944BF /* yourstory.mp3 in Resources */,
 				EDC336172859DC4100A6A95A /* betterdays.mp3 in Resources */,
-				ED0E5821286069BC00064C02 /* GoogleService-Info.plist in Resources */,
 				EDC336192859DC4100A6A95A /* dreams.mp3 in Resources */,
 				EDEF691728687D3E00F944BF /* urbanhiphop.mp3 in Resources */,
 				EDEF691428687D3E00F944BF /* summertime.mp3 in Resources */,
@@ -738,11 +743,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED0B424B285888D6000680C2 /* UIView+Ext.swift in Sources */,
+				ED1560B1286D46D10089121D /* BlockedUsersController.swift in Sources */,
 				ED0A485328587884004661BB /* MainTabBarController.swift in Sources */,
+				ED1560AB286C7EB50089121D /* DeleteAccountCell.swift in Sources */,
 				ED0B425228597CCC000680C2 /* AddEventController.swift in Sources */,
 				ED194CB62859E5D100C9E5D3 /* EventService.swift in Sources */,
 				ED156076286AFE750089121D /* SettingCell.swift in Sources */,
-				ED15607C286B087E0089121D /* SignoutCell.swift in Sources */,
 				EDC663F428619F22007FEF82 /* SearchResultController.swift in Sources */,
 				EDF3E2AD285ACAE5000E2218 /* UICollectionView+Ext.swift in Sources */,
 				ED0B424028588697000680C2 /* UITableView+Ext.swift in Sources */,
@@ -760,11 +766,11 @@
 				ED194CBC2859EB7500C9E5D3 /* StorageUploader.swift in Sources */,
 				ED847A18285CDFEA00F33C7F /* AuthService.swift in Sources */,
 				EDC663EB28614FB8007FEF82 /* ConservasationsController.swift in Sources */,
+				ED1560AD286CA0AA0089121D /* SettingHeader.swift in Sources */,
 				ED0A483E285873DB004661BB /* ViewController.swift in Sources */,
 				ED191D0F2865873E009A10CC /* String+Ext.swift in Sources */,
 				ED83392C285AD57600236814 /* DetailHeader.swift in Sources */,
 				ED0B424928588845000680C2 /* UIButton+Ext.swift in Sources */,
-				ED156078286B084C0089121D /* DeleteAccountCell.swift in Sources */,
 				ED81C3DE285DA50D004C12EA /* NotificationCell.swift in Sources */,
 				ED0A485B28587C0C004661BB /* NotificationController.swift in Sources */,
 				ED0A483A285873DB004661BB /* AppDelegate.swift in Sources */,
@@ -793,7 +799,6 @@
 				ED204B22285DB16F0016FDCA /* UILabel+Ext.swift in Sources */,
 				EDC663ED28615D8D007FEF82 /* ConversationCell.swift in Sources */,
 				ED626A8E2862BA97003BB636 /* ProfileHeader.swift in Sources */,
-				ED15607A286B08610089121D /* BlockedUserListCell.swift in Sources */,
 				EDEF690B286750BC00F944BF /* HomeEventCell.swift in Sources */,
 				ED847A14285CDF9C00F33C7F /* RegistrationController.swift in Sources */,
 				ED847A02285B7FCA00F33C7F /* MKPlacemark+Ext.swift in Sources */,
@@ -808,6 +813,7 @@
 				EDD1031F2860142C00AECAD9 /* Message.swift in Sources */,
 				EDC663F028617465007FEF82 /* ExploreCell.swift in Sources */,
 				ED847A10285CDE1A00F33C7F /* LoginController.swift in Sources */,
+				ED1560A9286C4C7B0089121D /* UIWindow+Ext.swift in Sources */,
 				ED0B423C28588611000680C2 /* UIColor+Ext.swift in Sources */,
 				ED0A485528587A27004661BB /* HomeController.swift in Sources */,
 				ED626A902862DA20003BB636 /* EditProfileController.swift in Sources */,
@@ -963,6 +969,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Nocturnal/Nocturnal.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 8572WS27HD;
@@ -994,6 +1001,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Nocturnal/Nocturnal.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 8572WS27HD;

@@ -58,6 +58,7 @@ class EditProfileCell: UITableViewCell {
     private let bioInputTextView: InputTextView = {
        let textView = InputTextView()
         textView.placeholderText = "Bio"
+        textView.font = .systemFont(ofSize: 18)
         textView.textColor = .white
         textView.backgroundColor = .darkGray
         return textView
@@ -121,12 +122,12 @@ class EditProfileCell: UITableViewCell {
         
         switch gender {
         case .male:
-            genderField.text = gender.description
+            genderField.text = gender.getDescription
         case .female:
-            genderField.text = gender.description
+            genderField.text = gender.getDescription
             
         case .unspecified:
-            genderField.text = gender.description
+            genderField.text = gender.getDescription
         }
         
         datePicker.date = user.birthday.dateValue()
@@ -211,7 +212,7 @@ class EditProfileCell: UITableViewCell {
         self.data.email = emailField.text ?? currentUser.email
         self.data.country = countryField.text ?? currentUser.country
         self.data.birthday = Timestamp(date: selectedBirthday ?? Date())
-        self.data.gender = genderField.text ?? currentGender.description
+        self.data.gender = genderField.text ?? currentGender.getDescription
         self.data.bio = bioInputTextView.text ?? currentUser.bio
         
         delegate?.didTapSave(cell: self, editedData: data)
@@ -230,14 +231,14 @@ extension EditProfileCell: UIPickerViewDataSource, UIPickerViewDelegate {
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return countryField.isFirstResponder ? countries[row].rawValue: genders[row].description
+        return countryField.isFirstResponder ? countries[row].rawValue: genders[row].getDescription
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if countryField.isFirstResponder {
             countryField.text = countries[row].rawValue
         } else {
-            genderField.text = "\(genders[row].description)"
+            genderField.text = "\(genders[row].getDescription)"
         }
     }
 }

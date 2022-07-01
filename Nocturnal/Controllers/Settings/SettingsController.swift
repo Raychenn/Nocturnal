@@ -5,6 +5,7 @@
 //  Created by Boray Chen on 2022/6/28.
 //
 import UIKit
+import FirebaseAuth
 
 class SettingsController: UIViewController {
     
@@ -67,23 +68,91 @@ class SettingsController: UIViewController {
         return table
     }()
     
-    private lazy var backButton
+    private lazy var backButton: UIButton = {
+        let button = UIButton()
+        button.setImage( UIImage(systemName: "chevron.left"), for: .normal)
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
+        return button
+    }()
+    
+    private let user: User
     
     // MARK: - Life Cycle
+    
+    init(user: User) {
+        self.user = user
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupUI()
     }
-        
-    private func setupUI() {
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         navigationController?.navigationBar.isHidden = true
+    }
+    
+    // MARK: - API
+    
+    private func handleLogout() {
+        do {
+            try Auth.auth().signOut()
+            print("successfully sign out")
+        } catch {
+            print("Fail to log out \(error)")
+        }
+       
+       checkIfUserIsLoggedIn()
+    }
+    
+    private func checkIfUserIsLoggedIn() {
+        if Auth.auth().currentUser == nil {
+            DispatchQueue.main.async {
+                let loginController = LoginController()
+                let nav = UINavigationController(rootViewController: loginController)
+                nav.modalPresentationStyle = .fullScreen
+                self.present(nav, animated: true, completion: nil)
+            }
+        }
+    }
+        
+    // MARK: - Helpers
+    
+    private func setupUI() {
         view.backgroundColor = .white
         view.addSubview(tableView)
         tableView.fillSuperview()
+        view.addSubview(backButton)
+        backButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingTop: 8, paddingLeft: 8)
     }
     
+    private func presentLogoutController() {
+        let alert = UIAlertController(title: "Are you sure to log out?", message: "", preferredStyle: .actionSheet)
+        
+        let noAction = UIAlertAction(title: "NO", style: .default, handler: nil)
+        let yesAction = UIAlertAction(title: "YES", style: .destructive) { [weak self] _ in
+            guard let self = self else { return }
+            self.handleLogout()
+        }
+        
+        alert.addAction(noAction)
+        alert.addAction(yesAction)
+        self.present(alert, animated: true)
+    }
+    
+    // MARK: - Selectors
+    
+    @objc func didTapBackButton() {
+        navigationController?.popViewController(animated: true)
+    }
 }
 
 // MARK: - UITableViewDataSource
@@ -138,7 +207,7 @@ extension SettingsController: UITableViewDelegate {
                 let blockedListVC = BlockedUsersController()
                 navigationController?.pushViewController(blockedListVC, animated: true)
             case .signout:
-                break
+                presentLogoutController()
             }
         } else {
             
@@ -148,7 +217,7 @@ extension SettingsController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if section == 0 {
             guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: SettingHeader.identifier) as? SettingHeader else { return UIView() }
-            
+            header.configureHeader(user: user)
             return header
         }
         

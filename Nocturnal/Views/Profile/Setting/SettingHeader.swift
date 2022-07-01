@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 class SettingHeader: UITableViewHeaderFooterView {
     
@@ -61,6 +62,12 @@ class SettingHeader: UITableViewHeaderFooterView {
     }
     
     // MARK: - Helpers
+    
+    func configureHeader(user: User) {
+        guard let profileUrl = URL(string: user.profileImageURL) else { return }
+        profileImageView.kf.setImage(with: profileUrl)
+        nameLabel.text = user.name
+    }
     
     private func setupUI() {
         backgroundColor = UIColor.hexStringToUIColor(hex: "#1C242F")

@@ -174,6 +174,7 @@ extension EditProfileController: EditProfileCellDelegate {
                     case .success(let updatedUser):
                         self.currentUser = updatedUser
                         self.tableView.reloadData()
+                        self.navigationController?.popViewController(animated: true)
                     case .failure(let error):
                         print("Fail to fetch user \(error)")
                     }

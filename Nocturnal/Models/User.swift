@@ -43,18 +43,6 @@ enum Gender: Int, Codable {
         case .unspecified:
             return "Unspecified"
         }
-
-    }
-    
-    var description: String {
-        switch self {
-        case .male:
-            return "Male"
-        case .female:
-            return "Female"
-        case .unspecified:
-            return "Unspecified"
-        }
     }
 }
 

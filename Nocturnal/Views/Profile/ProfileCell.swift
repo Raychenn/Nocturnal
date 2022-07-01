@@ -153,9 +153,9 @@ class ProfileCell: UICollectionViewCell {
     // MARK: - Helpers
     
     func configureCell(with user: User) {
-        let gender = Gender(rawValue: user.gender) ?? .male
         genderLabel.text = "Gender"
-        genderImageView.image = UIImage(named: "Male")
+        let gender = Gender(rawValue: user.gender) ?? .male
+        genderImageView.image = UIImage(named: gender.getDescription)
         zodiaContentImageView.image = UIImage(named: calculateZodiac())?.withRenderingMode(.alwaysTemplate)
         ageContentLabel.text = "\(calculateAge()) years old"
         usernameLabel.text = user.name
@@ -172,7 +172,6 @@ class ProfileCell: UICollectionViewCell {
         settingsButton.isHidden = user.id ?? "" == uid ? false: true
         editProfileButton.isHidden = user.id ?? "" == uid ? false: true
     }
-    
     func setupCellUI() {
         backgroundColor = UIColor.darkGray
         layer.cornerRadius = 25

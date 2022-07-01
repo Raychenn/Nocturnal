@@ -75,8 +75,6 @@ class FullMapController: UIViewController {
         let annotation = MKPointAnnotation()
         annotation.coordinate = CLLocationCoordinate2D(latitude: destinationCoordinate.latitude,
                                                        longitude: destinationCoordinate.longitude)
-        let region = MKCoordinateRegion(center: destinationCoordinate, span: MKCoordinateSpan(latitudeDelta: 0.001, longitudeDelta: 0.001))
-//        mapView.setRegion(region, animated: true)
         
         mapView.addAnnotation(annotation)
         mapView.zoomToFit(annotations: [annotation])

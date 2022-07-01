@@ -43,9 +43,9 @@ class BioCell: UICollectionViewCell {
         
         contentView.addSubview(bioTitleLabel)
         bioTitleLabel.anchor(top: contentView.topAnchor, left: contentView.leftAnchor, paddingTop: 16, paddingLeft: 10)
-        bioTitleLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
+//        bioTitleLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
         contentView.addSubview(bioLabel)
-        bioLabel.anchor(top: bioTitleLabel.bottomAnchor, left: bioTitleLabel.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 8, paddingBottom: 5, paddingRight: 10)
+        bioLabel.anchor(top: bioTitleLabel.bottomAnchor, left: bioTitleLabel.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 8, paddingBottom: 15, paddingRight: 10)
     }
     
     func configureCell(bioText: String) {

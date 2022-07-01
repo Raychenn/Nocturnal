@@ -15,21 +15,36 @@ class RegistrationController: UIViewController {
     
     private lazy var plusPhotoButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "plus"), for: .normal)
+        button.setImage(UIImage(named: "plus_photo"), for: .normal)
         button.tintColor = .white
         button.addTarget(self, action: #selector(didTapplusPhotoButton), for: .touchUpInside)
         return button
     }()
     
-    private let emailTextField: UITextField = {
-       let textField = CustomTextField(placeholder: "Email")
+    private lazy var emailContainerView: InputContainerView = {
+       let containerView = InputContainerView(image: UIImage(named: "mail")!, textField: emailTextField)
+        
+        return containerView
+    }()
+     
+    private lazy var passwordContainerView: InputContainerView = {
+       let containerView = InputContainerView(image: UIImage(named: "lock")!, textField: passwordTextField)
 
-        return textField
+        return containerView
     }()
     
-    private let passwordTextField: UITextField = {
+    private lazy var fullnameContainerView: InputContainerView = {
+       let containerView = InputContainerView(image: UIImage(named: "person")!, textField: fullNameTextField)
+
+        return containerView
+    }()
+    
+    private let emailTextField: CustomTextField = {
+       let textField = CustomTextField(placeholder: "Email")
+        return textField
+    }()
+    private let passwordTextField: CustomTextField = {
        let textField = CustomTextField(placeholder: "Password")
-        
         textField.isSecureTextEntry = true
         
         return textField
@@ -40,6 +55,7 @@ class RegistrationController: UIViewController {
     private lazy var signUpButton: UIButton = {
         let button = AuthButton(type: .system)
         button.title = "Sign Up"
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         button.addTarget(self, action: #selector(handleSignUp), for: .touchUpInside)
         return button
     }()
@@ -135,7 +151,7 @@ class RegistrationController: UIViewController {
         plusPhotoButton.setDimensions(height: 140, width: 140)
         plusPhotoButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: 32)
         
-        let stack = UIStackView(arrangedSubviews: [emailTextField, passwordTextField, fullNameTextField, signUpButton])
+        let stack = UIStackView(arrangedSubviews: [emailContainerView, passwordContainerView, fullnameContainerView, signUpButton])
         stack.axis = .vertical
         stack.distribution = .fillEqually
         stack.spacing = 20

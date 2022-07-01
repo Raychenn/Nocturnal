@@ -45,6 +45,8 @@
 		ED1560B1286D46D10089121D /* BlockedUsersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1560B0286D46D10089121D /* BlockedUsersController.swift */; };
 		ED1560B3286D4B9A0089121D /* BlockListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1560B2286D4B9A0089121D /* BlockListCell.swift */; };
 		ED1560B6286D75B00089121D /* LottieWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1560B5286D75B00089121D /* LottieWrapper.swift */; };
+		ED180E5E286DE45C00FE57DE /* InputContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED180E5D286DE45C00FE57DE /* InputContainerView.swift */; };
+		ED180E61286DF54000FE57DE /* AddEventHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED180E60286DF54000FE57DE /* AddEventHeader.swift */; };
 		ED191D0F2865873E009A10CC /* String+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED191D0E2865873E009A10CC /* String+Ext.swift */; };
 		ED194CB12859DF0700C9E5D3 /* MusicSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB02859DF0700C9E5D3 /* MusicSample.swift */; };
 		ED194CB62859E5D100C9E5D3 /* EventService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB52859E5D100C9E5D3 /* EventService.swift */; };
@@ -152,6 +154,8 @@
 		ED1560B0286D46D10089121D /* BlockedUsersController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedUsersController.swift; sourceTree = "<group>"; };
 		ED1560B2286D4B9A0089121D /* BlockListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockListCell.swift; sourceTree = "<group>"; };
 		ED1560B5286D75B00089121D /* LottieWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieWrapper.swift; sourceTree = "<group>"; };
+		ED180E5D286DE45C00FE57DE /* InputContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputContainerView.swift; sourceTree = "<group>"; };
+		ED180E60286DF54000FE57DE /* AddEventHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventHeader.swift; sourceTree = "<group>"; };
 		ED191D0E2865873E009A10CC /* String+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Ext.swift"; sourceTree = "<group>"; };
 		ED194CB02859DF0700C9E5D3 /* MusicSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicSample.swift; sourceTree = "<group>"; };
 		ED194CB52859E5D100C9E5D3 /* EventService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventService.swift; sourceTree = "<group>"; };
@@ -415,6 +419,7 @@
 				EDD1032C28603F8800AECAD9 /* DateHeaderLabel.swift */,
 				ED0E58222860758F00064C02 /* MessageInputAccessoryView.swift */,
 				EDC663F128619407007FEF82 /* NTSegmentControl.swift */,
+				ED180E5D286DE45C00FE57DE /* InputContainerView.swift */,
 			);
 			path = CustomViews;
 			sourceTree = "<group>";
@@ -429,8 +434,8 @@
 		ED0B4254285986DC000680C2 /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				ED180E5F286DF4D800FE57DE /* Add Event */,
 				EDF3E2A9285ACA76000E2218 /* Detail */,
-				ED0B425728598718000680C2 /* UploadEventInfoCell.swift */,
 				EDEF690A286750BC00F944BF /* HomeEventCell.swift */,
 			);
 			path = Home;
@@ -453,6 +458,15 @@
 				ED1560B5286D75B00089121D /* LottieWrapper.swift */,
 			);
 			path = LottieWrapper;
+			sourceTree = "<group>";
+		};
+		ED180E5F286DF4D800FE57DE /* Add Event */ = {
+			isa = PBXGroup;
+			children = (
+				ED0B425728598718000680C2 /* UploadEventInfoCell.swift */,
+				ED180E60286DF54000FE57DE /* AddEventHeader.swift */,
+			);
+			path = "Add Event";
 			sourceTree = "<group>";
 		};
 		ED194CB42859E51000C9E5D3 /* FirebaseAPI */ = {
@@ -769,6 +783,7 @@
 				ED847A12285CDE7300F33C7F /* AuthTextField.swift in Sources */,
 				EDD1032B28603E3100AECAD9 /* ChatCell.swift in Sources */,
 				ED0E58232860758F00064C02 /* MessageInputAccessoryView.swift in Sources */,
+				ED180E61286DF54000FE57DE /* AddEventHeader.swift in Sources */,
 				ED8B1EF52860E2D8008A0ECB /* Conversation.swift in Sources */,
 				ED626A872862B09E003BB636 /* ProfileCell.swift in Sources */,
 				ED194CBC2859EB7500C9E5D3 /* StorageUploader.swift in Sources */,
@@ -829,6 +844,7 @@
 				ED83392E285ADC4B00236814 /* DetailDescriptionCell.swift in Sources */,
 				ED0A485728587A7C004661BB /* ExploreController.swift in Sources */,
 				ED5D192A286A11750054AC56 /* SettingsController.swift in Sources */,
+				ED180E5E286DE45C00FE57DE /* InputContainerView.swift in Sources */,
 				EDF3E2A8285AC563000E2218 /* EventDetailController.swift in Sources */,
 				EDF3E2AB285ACA91000E2218 /* DetailInfoCell.swift in Sources */,
 				ED847A1A285CE0BE00F33C7F /* AuthButton.swift in Sources */,

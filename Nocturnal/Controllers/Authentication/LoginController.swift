@@ -10,27 +10,35 @@ import CryptoKit
 import AuthenticationServices
 import FirebaseAuth
 
-
 class LoginController: UIViewController {
     // MARK: - Properties
         
     private let iconImageView: UIImageView = {
        let img = UIImageView()
         img.contentMode = .scaleAspectFill
-        img.image = UIImage(named: "Instagram_logo_white")
+        img.image = UIImage(named: "owl")
         
         return img
     }()
     
-    private let emailTextField: UITextField = {
-       let textField = CustomTextField(placeholder: "Email")
+    private lazy var emailContainerView: InputContainerView = {
+       let containerView = InputContainerView(image: UIImage(named: "mail")!, textField: emailTextField)
+        
+        return containerView
+    }()
+     
+    private lazy var passwordContainerView: InputContainerView = {
+       let containerView = InputContainerView(image: UIImage(named: "lock")!, textField: passwordTextField)
 
-        return textField
+        return containerView
     }()
     
-    private let passwordTextField: UITextField = {
+    private let emailTextField: CustomTextField = {
+       let textField = CustomTextField(placeholder: "Email")
+        return textField
+    }()
+    private let passwordTextField: CustomTextField = {
        let textField = CustomTextField(placeholder: "Password")
-        
         textField.isSecureTextEntry = true
         
         return textField
@@ -38,6 +46,8 @@ class LoginController: UIViewController {
     
     private lazy var loginButton: UIButton = {
         let button = AuthButton(type: .system)
+        button.setHeight(50)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         button.title = "Log In"
         button.addTarget(self, action: #selector(handleLogIn), for: .touchUpInside)
         
@@ -157,9 +167,9 @@ class LoginController: UIViewController {
         iconImageView.setDimensions(height: 80, width: 120)
         iconImageView.anchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: 32)
         
-        let stack = UIStackView(arrangedSubviews: [emailTextField, passwordTextField, loginButton, signinWithAppleButton, forgotPasswordButton])
+        let stack = UIStackView(arrangedSubviews: [emailContainerView, passwordContainerView, loginButton, signinWithAppleButton, forgotPasswordButton])
         stack.axis = .vertical
-        stack.spacing = 20
+        stack.spacing = 15
         stack.distribution = .fillEqually
         
         view.addSubview(stack)

@@ -73,7 +73,16 @@ class UploadEventInfoCell: UITableViewCell {
         return label
     }()
     
-    private lazy var eventFeeTextField = UITextField().makeAddEventTextField()
+    private lazy var eventFeeTextField: UITextField = {
+        let textfield = UITextField()
+         textfield.layer.borderWidth = 1.3
+         textfield.layer.borderColor = UIColor.lightGray.cgColor
+         textfield.layer.cornerRadius = 5
+         textfield.keyboardType = .numberPad
+         textfield.setHeight(50)
+         textfield.setLeftPaddingPoints(amount: 8)
+         return textfield
+    }()
     
     private let eventMusicLabel: UILabel = {
         let label = UILabel()
@@ -190,7 +199,7 @@ class UploadEventInfoCell: UITableViewCell {
     }
     
     private func setupCellUI() {
-        backgroundColor = UIColor.lightBlue
+        backgroundColor = UIColor.hexStringToUIColor(hex: "#1C242F")
         layer.cornerRadius = 20
         layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
         

@@ -20,27 +20,13 @@ class AddEventController: UIViewController {
     private var selectedDate: Date?
     
     private lazy var tableView: UITableView = {
-        let table = UITableView()
+        let table = UITableView(frame: .zero, style: .grouped)
         table.delegate = self
         table.dataSource = self
-        //        table.register(UploadEventImageCell.self, forCellReuseIdentifier: UploadEventImageCell.identifier)
         table.register(UploadEventInfoCell.self, forCellReuseIdentifier: UploadEventInfoCell.identifier)
+        table.register(AddEventHeader.self, forHeaderFooterViewReuseIdentifier: AddEventHeader.identifier)
         table.tableFooterView = UIView()
         return table
-    }()
-    
-    private lazy var newEventImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        imageView.setDimensions(height: 150, width: 150)
-        imageView.image = UIImage(systemName: "plus")
-        imageView.tintColor = .black
-        imageView.backgroundColor = .lightGray
-        imageView.isUserInteractionEnabled = true
-        let tap = UITapGestureRecognizer(target: self, action: #selector(didTapEventImageView))
-        imageView.addGestureRecognizer(tap)
-        
-        return imageView
     }()
     
     var userInputData: AddEventUserInputCellModel?
@@ -57,45 +43,27 @@ class AddEventController: UIViewController {
         setupUI()
     }
     
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        
-        newEventImageView.layer.cornerRadius = 150/2
-        newEventImageView.layer.masksToBounds = true
-    }
-    
-    // MARK: - Selectors
-    @objc func didTapEventImageView() {
-        let imagePickerController = UIImagePickerController()
-        imagePickerController.sourceType = .photoLibrary
-        imagePickerController.modalPresentationStyle = .popover
-        imagePickerController.delegate = self
-        imagePickerController.allowsEditing = true
-        self.present(imagePickerController, animated: true, completion: nil)
-    }
-    
     // MARK: - Helpers
     
     private func setupUI() {
         setupNavigationBar()
         view.backgroundColor = .white
-        view.addSubview(newEventImageView)
+//        view.addSubview(newEventImageView)
         view.addSubview(tableView)
         
-        newEventImageView.centerX(inView: view)
-        newEventImageView.anchor(top: view.safeAreaLayoutGuide.topAnchor,
-                                 paddingTop: 0)
+//        newEventImageView.centerX(inView: view)
+//        newEventImageView.anchor(top: view.safeAreaLayoutGuide.topAnchor,
+//                                 paddingTop: 0)
         
-        tableView.anchor(top: newEventImageView.bottomAnchor,
+        tableView.anchor(top: view.safeAreaLayoutGuide.topAnchor,
                          left: view.leftAnchor,
                          bottom: view.safeAreaLayoutGuide.bottomAnchor,
-                         right: view.rightAnchor, paddingTop: 8)
+                         right: view.rightAnchor, paddingTop: 0)
     }
     
     private func setupNavigationBar() {
         title = "Add Event"
         navigationController?.navigationBar.prefersLargeTitles = true
-        //        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(tappedDone))
         navigationController?.navigationBar.tintColor = .black
         //        tableView.contentInsetAdjustmentBehavior = .never
         //        tableView.setContentOffset(.init(x: 0, y: -2), animated: false)
@@ -124,6 +92,17 @@ extension AddEventController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension AddEventController: UITableViewDelegate {
     
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: AddEventHeader.identifier) as? AddEventHeader else { return UIView() }
+        
+        header.delegate = self
+        return header
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        150
+    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -144,11 +123,27 @@ extension AddEventController: UIImagePickerControllerDelegate, UINavigationContr
         
         guard let selectedProfileImage = info[.editedImage] as? UIImage else { return }
         self.selectedEventImage = selectedProfileImage
-        newEventImageView.image = self.selectedEventImage
-        dismiss(animated: true)
+        if let header = tableView.headerView(forSection: 0) as? AddEventHeader {
+            header.newEventImageView.image = self.selectedEventImage
+            dismiss(animated: true)
+        }
     }
 }
 
+// MARK: - AddEventHeaderDelegate
+extension AddEventController: AddEventHeaderDelegate {
+    
+    func uploadNewEventImageView(header: AddEventHeader) {
+        let imagePickerController = UIImagePickerController()
+        imagePickerController.sourceType = .photoLibrary
+        imagePickerController.modalPresentationStyle = .popover
+        imagePickerController.delegate = self
+        imagePickerController.allowsEditing = true
+        self.present(imagePickerController, animated: true, completion: nil)
+    }
+}
+
+// MARK: - UploadEventInfoCellDelegate
 extension AddEventController: UploadEventInfoCellDelegate {
     
     func didChangeUserData(_ cell: UploadEventInfoCell, data: AddEventUserInputCellModel) {
@@ -158,7 +153,6 @@ extension AddEventController: UploadEventInfoCellDelegate {
         cell.doneButton.isEnabled = true
         
     }
-    
     func uploadEvent(cell: UploadEventInfoCell) {
         
         guard let userInputData = userInputData else { return }

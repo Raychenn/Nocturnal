@@ -197,17 +197,21 @@ extension ProfileController: UICollectionViewDelegate {
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension ProfileController: UICollectionViewDelegateFlowLayout {
-    
+
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 50)
-        let estimatedSizeCell = BioCell(frame: frame)
-        estimatedSizeCell.layoutIfNeeded()
+        let approximatedWidthBioTextView = view.frame.width - 20
+        let size = CGSize(width: approximatedWidthBioTextView, height: 1000)
+        let estimatedFrame = NSString(string: currentUser.bio).boundingRect(with: size, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 18)], context: nil)
         
-        let targetSize = CGSize(width: view.frame.width, height: 1000)
-        let estimatedSize = estimatedSizeCell.systemLayoutSizeFitting(targetSize)
-        
+//        let frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 50)
+//        let estimatedSizeCell = BioCell(frame: frame)
+//        estimatedSizeCell.bioLabel.text = currentUser.bio
+//        estimatedSizeCell.layoutIfNeeded()
+//        let targetSize = CGSize(width: view.frame.width, height: 500)
+//        let estimatedSize = estimatedSizeCell.systemLayoutSizeFitting(targetSize)
+
         if indexPath.item == 1 {
-            return .init(width: view.frame.width - 20, height: estimatedSize.height)
+            return .init(width: view.frame.width - 20, height: estimatedFrame.height + 100)
         } else {
             return CGSize(width: view.frame.width - 20, height: 200)
         }
@@ -229,7 +233,7 @@ extension ProfileController: ProfileCellDelegate {
     }
     
     func didTapSetting(cell: ProfileCell) {
-        let settingVC = SettingsController()
+        let settingVC = SettingsController(user: currentUser)
         navigationController?.pushViewController(settingVC, animated: true)
     }
 }

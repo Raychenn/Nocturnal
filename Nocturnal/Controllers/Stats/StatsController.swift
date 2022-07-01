@@ -17,7 +17,18 @@ class StatsController: UIViewController, ChartViewDelegate {
     
     private lazy var barChartView = BarChartView(frame: .zero)
     
-    private var currentJoinedEvents: [Event] = []
+    private var currentJoinedEvents: [Event] = [] {
+        didSet {
+            if currentJoinedEvents.count == 0 {
+                
+            } else {
+                self.fetchEventStyles()
+                self.setupPieChart()
+                self.calculateCost()
+                self.setupBarChart()
+            }
+        }
+    }
     
     private var joinedEventStyles: [EventStyle] = []
     
@@ -58,10 +69,6 @@ class StatsController: UIViewController, ChartViewDelegate {
             switch result {
             case .success(let events):
                 self.currentJoinedEvents = events
-                self.fetchEventStyles()
-                self.setupPieChart()
-                self.calculateCost()
-                self.setupBarChart()
             case .failure(let error):
                 print("Fail to fetch events \(error)")
             }

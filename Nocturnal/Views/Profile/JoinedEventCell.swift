@@ -72,7 +72,8 @@ class JoinedEventCell: UICollectionViewCell {
     
     private func fetchEvents() {
         guard let user = user else { return }
-        EventService.shared.fetchEvents(fromEventIds: user.joinedEventsId) { result in
+        EventService.shared.fetchEvents(fromEventIds: user.joinedEventsId) { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success(let events):
                 self.joinedEvents = events

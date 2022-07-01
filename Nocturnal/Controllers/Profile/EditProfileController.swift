@@ -8,6 +8,7 @@
 import UIKit
 import FirebaseFirestore
 import Kingfisher
+import Lottie
 
 class EditProfileController: UIViewController {
     
@@ -43,6 +44,16 @@ class EditProfileController: UIViewController {
     
     let gradient = CAGradientLayer()
     
+    let loadingAnimationView: AnimationView = {
+       let view = AnimationView(name: "cheers")
+        view.loopMode = .loop
+        view.contentMode = .scaleAspectFill
+        view.animationSpeed = 1
+        view.backgroundColor = .clear
+        view.play()
+        return view
+    }()
+    
     // MARK: - Life
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -61,6 +72,20 @@ class EditProfileController: UIViewController {
     }
     
     // MARK: - Helpers
+    private func configureAnimationView() {
+        view.addSubview(loadingAnimationView)
+        loadingAnimationView.centerY(inView: view)
+        loadingAnimationView.centerX(inView: view)
+        loadingAnimationView.widthAnchor.constraint(equalToConstant: 150).isActive = true
+        loadingAnimationView.heightAnchor.constraint(equalTo: loadingAnimationView.widthAnchor).isActive = true
+    }
+    
+    private func stopAnimationView() {
+        loadingAnimationView.stop()
+        loadingAnimationView.alpha = 0
+        loadingAnimationView.removeFromSuperview()
+    }
+    
     func setupUI() {
         view.backgroundColor = .systemBackground
         view.addSubview(tableView)
@@ -148,7 +173,7 @@ extension EditProfileController: EditProfileCellDelegate {
         }
     
         let imageToUpload = updatedImage == nil ? currentImage: updatedImage ?? UIImage()
-        
+        configureAnimationView()
         StorageUploader.shared.uploadProfileImage(with: imageToUpload) { [weak self] downloadedImageURL in
             guard let self = self else { return }
             let user = User(name: "\(editedData.firstname) \(editedData.familyname)",
@@ -174,6 +199,7 @@ extension EditProfileController: EditProfileCellDelegate {
                     case .success(let updatedUser):
                         self.currentUser = updatedUser
                         self.tableView.reloadData()
+                        self.stopAnimationView()
                         self.navigationController?.popViewController(animated: true)
                     case .failure(let error):
                         print("Fail to fetch user \(error)")

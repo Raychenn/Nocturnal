@@ -7,10 +7,13 @@
 
 import UIKit
 import CHTCollectionViewWaterfallLayout
+import FirebaseAuth
 
 class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLayout {
     
     // MARK: - Properties
+    
+    let refreshControl = UIRefreshControl()
     
     private lazy var collectionView: UICollectionView = {
         
@@ -21,6 +24,8 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.dataSource = self
         collectionView.delegate = self
+        collectionView.refreshControl = refreshControl
+        collectionView.refreshControl?.addTarget(self, action: #selector(refreshData), for: .valueChanged)
         collectionView.register(ExploreCell.self, forCellWithReuseIdentifier: ExploreCell.identifier)
         return collectionView
     }()
@@ -62,7 +67,18 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     
     var originalAllEvents: [Event] = []
     
+    private let currentUser: User
+    
     // MARK: - Life Cycle
+    
+    init(user: User) {
+        self.currentUser = user
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -77,15 +93,30 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     
     // MARK: - API
     private func fetchEvents() {
-        EventService.shared.fetchAllEvents { result in
+        refreshControl.beginRefreshing()
+        EventService.shared.fetchAllEvents { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success(let events):
-                self.events = events
-                self.originalAllEvents = events
-                self.generateRandomHeight(eventCount: events.count)
-                self.collectionView.reloadData()
+                if Auth.auth().currentUser == nil {
+                    self.events = events
+                    self.originalAllEvents = events
+                    self.generateRandomHeight(eventCount: events.count)
+                    self.refreshControl.endRefreshing()
+                    self.collectionView.reloadData()
+                } else {
+                    self.filterEventsFromBlockedUsers(events: events) { [weak self] filteredEvents in
+                        guard let self = self else { return }
+                        print("filter events count \(filteredEvents)")
+                        self.events = filteredEvents
+                        self.originalAllEvents = filteredEvents
+                        self.generateRandomHeight(eventCount: filteredEvents.count)
+                        self.refreshControl.endRefreshing()
+                        self.collectionView.reloadData()
+                }
+            }
             case .failure(let error):
-                print("Fail to fetch events: \(error)")
+                self.presentErrorAlert(title: "Error", message: "Fail to fetch events: \(error.localizedDescription)", completion: nil)
             }
         }
     }
@@ -94,7 +125,25 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         self.events = originalAllEvents
     }
     
+    func filterEventsFromBlockedUsers(events: [Event], completion: @escaping ([Event]) -> Void) {
+        var result: [Event] = []
+    
+        currentUser.blockedUsersId.forEach { blockedId in
+            events.forEach { event in
+                    if blockedId != event.hostID {
+                        result.append(event)
+                    }
+                }
+            }
+
+        completion(result)
+    }
+    
     // MARK: - Selectors
+    
+    @objc func refreshData() {
+        fetchEvents()
+    }
     
     @objc func dateSegmentValueChange(sender: NTSegmentedControl) {
         
@@ -223,17 +272,26 @@ extension ExploreController: UICollectionViewDataSource {
 extension ExploreController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let event: Event
         
-        if isFiltering {
-            event = filtedEvents[indexPath.item]
+        if Auth.auth().currentUser == nil {
+            DispatchQueue.main.async {
+                let loginController = LoginController()
+                let nav = UINavigationController(rootViewController: loginController)
+                self.present(nav, animated: true, completion: nil)
+            }
         } else {
-            event = events[indexPath.item]
+            let event: Event
+            
+            if isFiltering {
+                event = filtedEvents[indexPath.item]
+            } else {
+                event = events[indexPath.item]
+            }
+            
+            let detailedVC = EventDetailController(event: event)
+            detailedVC.hidesBottomBarWhenPushed = true
+            navigationController?.pushViewController(detailedVC, animated: true)
         }
-        
-        let detailedVC = EventDetailController(event: event)
-        detailedVC.hidesBottomBarWhenPushed = true
-        navigationController?.pushViewController(detailedVC, animated: true)
     }
 }
 

@@ -28,7 +28,7 @@ struct StorageUploader {
             
             ref.downloadURL { url, error in
                 guard error == nil else {
-                    print("error downloading images")
+                    print("error downloading images \(String(describing: error))")
                     return
                 }
                 

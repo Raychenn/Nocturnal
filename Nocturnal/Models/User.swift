@@ -41,7 +41,7 @@ enum Gender: Int, Codable {
         case .female:
             return "Female"
         case .unspecified:
-            return "Unspecified"
+            return "UnspecifiedGender"
         }
     }
 }

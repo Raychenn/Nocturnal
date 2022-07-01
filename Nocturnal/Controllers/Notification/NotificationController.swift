@@ -45,7 +45,6 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        fetchNotifications()
         setupUI()
     }
     
@@ -66,6 +65,7 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     // MARK: - API
     
     private func fetchNotifications() {
+        presentLoadingView(shouldPresent: true)
         NotificationService.shared.fetchNotifications(uid: currentUser.id ?? "") { result in
             switch result {
             case .success(let notifications):
@@ -78,7 +78,7 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
                 }
                 
             case .failure(let error):
-                print("Fail to get notification \(error)")
+                self.presentErrorAlert(title: "Error", message: "Fail to get notification: \(error.localizedDescription)", completion: nil)
             }
         }
     }
@@ -92,7 +92,7 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
             case .success(let events):
                 completion(events)
             case .failure(let error):
-                print("Fail to fetch event \(error)")
+                self.presentErrorAlert(title: "Error", message: "Fail to fetch event: \(error.localizedDescription)", completion: nil)
             }
         }
     }
@@ -103,7 +103,7 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
             case .success(let users):
                 completion(users)
             case .failure(let error):
-                print("Fail to fetch hosts \(error)")
+                self.presentErrorAlert(title: "Error", message: "Fail to fetch hosts: \(error.localizedDescription)", completion: nil)
             }
         }
     }
@@ -114,7 +114,7 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
             case .success(let users):
                 completion(users)
             case .failure(let error):
-                print("Fail to fetch applicants \(error)")
+                self.presentErrorAlert(title: "Error", message: "Fail to fetch applicants: \(error.localizedDescription)", completion: nil)
             }
         }
     }
@@ -132,12 +132,14 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
                 fetchApplicants(uids: applicantsId) { [weak self] applicants in
                     guard let self = self else { return }
                     self.applicants = applicants
+                    self.presentLoadingView(shouldPresent: false)
                 }
             } else {
                 // fetch hosts
                 fetchHosts(uids: hostsId) { [weak self] hosts in
                     guard let self = self else { return }
                     self.hosts = hosts
+                    self.presentLoadingView(shouldPresent: false)
                 }
             }
         }
@@ -222,13 +224,17 @@ extension NotificationController: NotificationCellDelegate {
                                         sentTime: Timestamp(date: Date()),
                                         type: type, isRequestPermitted: true)
         
+        presentLoadingView(shouldPresent: true)
+        
         NotificationService.shared.postAceeptedNotification(to: selectedNotification.applicantId ,
-                                                          notification: notification) { error in
+                                                          notification: notification) { [weak self] error in
+            guard let self = self else { return }
             guard error == nil else {
                 print("Fail to postAcceptNotification \(String(describing: error))")
+                self.presentErrorAlert(title: "Error", message: "Fail to post accept notification: \(error!.localizedDescription)", completion: nil)
                 return
             }
-            
+            self.presentLoadingView(shouldPresent: false)
             print("Succesfully postAcceptNotification")
         }
     }
@@ -244,13 +250,17 @@ extension NotificationController: NotificationCellDelegate {
                                         hostId: selectedNotification.hostId,
                                         sentTime: Timestamp(date: Date()),
                                         type: type, isRequestPermitted: false)
-
-        NotificationService.shared.postDeniedNotification(to: selectedNotification.applicantId, notification: notification) { error in
+        
+        presentLoadingView(shouldPresent: true)
+        
+        NotificationService.shared.postDeniedNotification(to: selectedNotification.applicantId, notification: notification) { [weak self] error in
+            guard let self = self else { return }
             guard error == nil else {
-                print("Fail to postDeyNotification \(String(describing: error))")
+                self.presentErrorAlert(title: "Error", message: "Fail to post deny notification: \(error!.localizedDescription)", completion: nil)
+                print("Fail to post Deny Notification \(String(describing: error))")
                 return
             }
-            
+            self.presentLoadingView(shouldPresent: false)
             print("Succesfully postDeyNotification")
         }
     }

@@ -18,6 +18,19 @@ extension UIViewController {
         return presentingIsModal || presentingIsNavigation || presentingIsTabBar
     }
     
+    func presentErrorAlert(title: String? = "Something went wrong", message: String?, completion: (() -> Void)? = nil) {
+        
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+            guard let completion = completion else { return }
+            completion()
+        }
+
+        alert.addAction(okAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
     func configureChatNavBar(withTitle: String, backgroundColor: UIColor? = UIColor.black, preferLargeTitles: Bool) {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()

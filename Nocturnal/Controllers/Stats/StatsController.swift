@@ -7,6 +7,7 @@
 
 import UIKit
 import Charts
+import Lottie
 
 class StatsController: UIViewController, ChartViewDelegate {
 
@@ -20,8 +21,11 @@ class StatsController: UIViewController, ChartViewDelegate {
     private var currentJoinedEvents: [Event] = [] {
         didSet {
             if currentJoinedEvents.count == 0 {
-                
+                configureAnimationView()
+                configureEmptyWarningLabel()
             } else {
+                loadingAnimationView.stop()
+                emptyWarningLabel.removeFromSuperview()
                 self.fetchEventStyles()
                 self.setupPieChart()
                 self.calculateCost()
@@ -41,6 +45,25 @@ class StatsController: UIViewController, ChartViewDelegate {
     var kpopCounts: Double = 0
     var metalCounts: Double = 0
     var costs: [Double] = []
+    
+    private let loadingAnimationView: AnimationView = {
+       let view = AnimationView(name: "empty-box")
+        view.loopMode = .loop
+        view.contentMode = .scaleAspectFill
+        view.animationSpeed = 1
+        view.backgroundColor = .clear
+        view.play()
+        return view
+    }()
+    
+    private let emptyWarningLabel: UILabel = {
+       let label = UILabel()
+        label.text = "No Available Data yet"
+        label.font = .systemFont(ofSize: 30, weight: .bold)
+        label.textAlignment = .center
+        label.textColor = .white
+        return label
+    }()
     
     // MARK: - Life Cycle
     
@@ -76,6 +99,26 @@ class StatsController: UIViewController, ChartViewDelegate {
     }
     
     // MARK: - Helpers
+    
+    private func configureEmptyWarningLabel() {
+        view.addSubview(emptyWarningLabel)
+        emptyWarningLabel.centerX(inView: loadingAnimationView)
+        emptyWarningLabel.anchor(top: loadingAnimationView.bottomAnchor, paddingTop: 15)
+    }
+    
+    private func configureAnimationView() {
+        view.addSubview(loadingAnimationView)
+        loadingAnimationView.centerY(inView: view)
+        loadingAnimationView.centerX(inView: view)
+        loadingAnimationView.widthAnchor.constraint(equalToConstant: view.frame.size.width - 20).isActive = true
+        loadingAnimationView.heightAnchor.constraint(equalTo: loadingAnimationView.widthAnchor).isActive = true
+    }
+    
+    private func stopAnimationView() {
+        loadingAnimationView.stop()
+        loadingAnimationView.alpha = 0
+        loadingAnimationView.removeFromSuperview()
+    }
     
     func setupUI() {
         view.backgroundColor = .systemBackground

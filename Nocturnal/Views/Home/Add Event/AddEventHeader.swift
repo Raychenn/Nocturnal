@@ -35,7 +35,8 @@ class AddEventHeader: UITableViewHeaderFooterView {
         super.init(reuseIdentifier: reuseIdentifier)
         
         addSubview(newEventImageView)
-        newEventImageView.fillSuperview()
+        newEventImageView.centerX(inView: self)
+        newEventImageView.centerY(inView: self)
     }
     
     override func layoutSubviews() {

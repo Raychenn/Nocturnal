@@ -153,11 +153,11 @@ class ProfileCell: UICollectionViewCell {
     // MARK: - Helpers
     
     func configureCell(with user: User) {
-        genderLabel.text = "Gender"
         let gender = Gender(rawValue: user.gender) ?? .male
         genderImageView.image = UIImage(named: gender.getDescription)
         zodiaContentImageView.image = UIImage(named: calculateZodiac())?.withRenderingMode(.alwaysTemplate)
-        ageContentLabel.text = "\(calculateAge()) years old"
+        let age = calculateAge() == 0 ? "Unspecified": "\(calculateAge()) years old"
+        ageContentLabel.text = age
         usernameLabel.text = user.name
         let country = Country(rawValue: user.country) ?? .unspecified
         if country == .unspecified {

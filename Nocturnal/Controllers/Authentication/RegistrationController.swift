@@ -13,6 +13,8 @@ class RegistrationController: UIViewController {
     
     private var profileImage: UIImage?
     
+    let popupVC = PopupAlertController()
+    
     private lazy var plusPhotoButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(named: "plus_photo"), for: .normal)
@@ -52,7 +54,7 @@ class RegistrationController: UIViewController {
     
     private let fullNameTextField: UITextField = CustomTextField(placeholder: "Full Name")
         
-    private lazy var signUpButton: UIButton = {
+    private lazy var signUpButton: AuthButton = {
         let button = AuthButton(type: .system)
         button.title = "Sign Up"
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
@@ -72,25 +74,12 @@ class RegistrationController: UIViewController {
         super.viewDidLoad()
         
         confiureUI()
-        configureNotificationObserver()
     }
     
     // MARK: - selectors
     
     @objc func handleShowLogIn() {
         navigationController?.popViewController(animated: true)
-    }
-    
-    @objc func textDidChange(_ sender: UITextField) {
-        if sender == emailTextField {
-            
-        } else if sender == passwordTextField {
-            
-        } else if sender == fullNameTextField {
-            
-        } else {
-            
-        }
     }
     
     @objc func didTapplusPhotoButton() {
@@ -103,10 +92,19 @@ class RegistrationController: UIViewController {
     
     @objc func handleSignUp() {
         
-        guard let email = emailTextField.text else { return }
-        guard let password = passwordTextField.text else { return }
-        guard let fullName = fullNameTextField.text else { return }
-        guard let profileImage = self.profileImage else { return }
+        guard let email = emailTextField.text,
+              let password = passwordTextField.text,
+              let fullName = fullNameTextField.text,
+              let profileImage = self.profileImage,
+              !email.isEmpty, !password.isEmpty, !fullName.isEmpty else {
+            
+            popupVC.modalTransitionStyle = .crossDissolve
+            popupVC.modalPresentationStyle = .overCurrentContext
+            popupVC.delegate = self
+            signUpButton.buzz()
+            self.present(popupVC, animated: true)
+            return
+        }
         
         signUpButton.configuration?.showsActivityIndicator = true
         
@@ -164,13 +162,6 @@ class RegistrationController: UIViewController {
         alreadyHasAcouuntButton.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor)
         
     }
-    
-    private func configureNotificationObserver() {
-        
-        emailTextField.addTarget(self, action: #selector(textDidChange), for: .editingChanged)
-        passwordTextField.addTarget(self, action: #selector(textDidChange), for: .editingChanged)
-        fullNameTextField.addTarget(self, action: #selector(textDidChange), for: .editingChanged)
-    }
 }
 
 // MARK: - UIImagePickerControllerDelegate
@@ -190,4 +181,12 @@ extension RegistrationController: UIImagePickerControllerDelegate, UINavigationC
         profileImage = selectedPhoto
         self.dismiss(animated: true, completion: nil)
     }
+}
+
+extension RegistrationController: PopupAlertControllerDelegate {
+    
+    func handleDismissal() {
+        popupVC.dismiss(animated: true)
+    }
+
 }

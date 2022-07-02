@@ -52,6 +52,8 @@ class ChatCell: UITableViewCell {
     var leadingConst = NSLayoutConstraint()
 
     var trailingConst = NSLayoutConstraint()
+     
+    var messageLabelWidthConst = NSLayoutConstraint()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -73,12 +75,12 @@ class ChatCell: UITableViewCell {
             
             messageLabel.topAnchor.constraint(equalTo: topAnchor, constant: 16),
             messageLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -32),
-            messageLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 250),
+//            messageLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 250),
             
-            contentMessageView.topAnchor.constraint(equalTo: messageLabel.topAnchor, constant: -13),
-            contentMessageView.leadingAnchor.constraint(equalTo: messageLabel.leadingAnchor, constant: -13),
-            contentMessageView.bottomAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: 13),
-            contentMessageView.trailingAnchor.constraint(equalTo: messageLabel.trailingAnchor, constant: 13),
+            contentMessageView.topAnchor.constraint(equalTo: messageLabel.topAnchor, constant: 13),
+            contentMessageView.leadingAnchor.constraint(equalTo: messageLabel.leadingAnchor, constant: 13),
+            contentMessageView.bottomAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: -13),
+            contentMessageView.trailingAnchor.constraint(equalTo: messageLabel.trailingAnchor, constant: -13),
             
             bubbleImageView.topAnchor.constraint(equalTo: contentMessageView.topAnchor),
             bubbleImageView.leadingAnchor.constraint(equalTo: contentMessageView.leadingAnchor),
@@ -88,6 +90,9 @@ class ChatCell: UITableViewCell {
         
         leadingConst = messageLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 15)
         trailingConst = messageLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -32)
+        
+        messageLabelWidthConst = messageLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 250)
+        messageLabelWidthConst.isActive = true
         
         leadingConst.isActive = true
         trailingConst.isActive = false

@@ -116,7 +116,7 @@ class LoginController: UIViewController {
                 guard let self = self else { return }
                 if let error = error {
                     self.presentLoadingView(shouldPresent: false)
-                    self.presentErrorAlert(title: "Error", message: "Fail to log in: \(String(describing: error.localizedDescription))", completion: nil)
+                    self.presentErrorAlert(title: "Error", message: "\(String(describing: error.localizedDescription))", completion: nil)
                     return
                 } else {
                     var keyWindow: UIWindow? {
@@ -279,7 +279,7 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
               // you're sending the SHA256-hashed nonce as a hex string with
               // your request to Apple.
                   self.presentErrorAlert(title: "Error", message: "Fail to log in with Apple: \(String(describing: error!.localizedDescription))", completion: nil)
-              return
+              return        
             }
               
               var keyWindow: UIWindow? {

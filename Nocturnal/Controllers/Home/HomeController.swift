@@ -82,7 +82,7 @@ class HomeController: UIViewController {
                 UserService.shared.fetchUser(uid: userId) { result in
                     switch result {
                     case .success(let user):
-                        print("current user in home \(user)")
+                        print("current user in home \(user.name)")
                         self.currentUser = user
                         completion()
                     case .failure(let error):

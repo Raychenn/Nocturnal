@@ -13,7 +13,10 @@ struct Message: Codable {
     @DocumentID var id: String?
     let toId: String
     let fromId: String
-    let text: String
+    let text: String?
+    let imageUrl: String?
+    var imageHeight: CGFloat?
+    var imageWidth: CGFloat?
     let user: User?
     let sentTime: Timestamp
     // isFromCurrenUser = fromId == uid

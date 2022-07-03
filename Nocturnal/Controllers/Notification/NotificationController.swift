@@ -48,11 +48,7 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     
     var hosts: [User] = []
     
-    var applicants: [User] = [] {
-        didSet {
-            applicants.forEach({ print("applic name \($0.name)") })
-        }
-    }
+    var applicants: [User] = []
     
     var events: [Event] = [] 
     
@@ -138,7 +134,6 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     private func fetchEvents(completion: @escaping ([Event]) -> Void) {
         var eventsId: [String] = []
         notifications.forEach({ eventsId.append($0.eventId) })
-        notifications.forEach({ print("event id \($0.eventId)") })
         EventService.shared.fetchEvents(fromEventIds: eventsId) { result in
             switch result {
             case .success(let events):

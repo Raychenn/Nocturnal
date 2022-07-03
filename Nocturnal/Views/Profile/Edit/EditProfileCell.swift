@@ -214,7 +214,7 @@ class EditProfileCell: UITableViewCell {
             return
         }
         let currentGender = Gender(rawValue: currentUser.gender) ?? .unspecified
-        let inputName = firstnameField.text ?? currentUser.name
+        let inputName = "\(firstnameField.text ?? currentUser.name) \(familynameField.text ?? currentUser.name)"
         let firstname = String(inputName.split(separator: " ")[0])
         let familyname = String(inputName.split(separator: " ")[1])
         self.data.firstname = firstname

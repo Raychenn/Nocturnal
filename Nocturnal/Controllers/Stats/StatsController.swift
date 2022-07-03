@@ -27,8 +27,8 @@ class StatsController: UIViewController, ChartViewDelegate {
                 loadingAnimationView.stop()
                 emptyWarningLabel.removeFromSuperview()
                 self.fetchEventStyles()
-                self.setupPieChart()
                 self.calculateCost()
+                self.setupPieChart()
                 self.setupBarChart()
             }
         }
@@ -76,17 +76,18 @@ class StatsController: UIViewController, ChartViewDelegate {
     init(user: User) {
         self.user = user
         super.init(nibName: nil, bundle: nil)
+        self.fetchJoinedEvents()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
                 
-        presentLoadingView(shouldPresent: true)
-        fetchCurrentUser { [weak self] user in
-            guard let self = self else { return }
-            self.user = user
-            self.fetchJoinedEvents()
-        }
+//        presentLoadingView(shouldPresent: true)
+//        fetchCurrentUser { [weak self] user in
+//            guard let self = self else { return }
+//            self.user = user
+//            self.fetchJoinedEvents()
+//        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -103,6 +104,7 @@ class StatsController: UIViewController, ChartViewDelegate {
     // MARK: - API
     
     private func fetchJoinedEvents() {
+        presentLoadingView(shouldPresent: true)
         EventService.shared.fetchEvents(fromEventIds: user.joinedEventsId) { [weak self] result in
             guard let self = self else { return }
             
@@ -222,10 +224,6 @@ class StatsController: UIViewController, ChartViewDelegate {
         
         barChartView.anchor(top: pieChartView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 10, paddingLeft: 15, paddingRight: 15, height: 300)
 
-        // Configure Axis
-//        let xAxis = barChart.xAxis
-//        xAxis.labelFont = UIFont.systemFont(ofSize: 20, weight: .black)
-        
         var entries: [BarChartDataEntry] = []
         
         for index in 0..<joinedEventStyles.count {

@@ -445,10 +445,8 @@ extension EventDetailController: DetailInfoCellDelegate {
             print("NO host")
             return
         }
-        print("host name \(host.name)")
         let profileVC = ProfileController(user: host)
         let nav = UINavigationController(rootViewController: profileVC)
-//        nav.modalPresentationStyle = .fullScreen
         present(nav, animated: true)
     }
     
@@ -460,6 +458,7 @@ extension EventDetailController: DetailInfoCellDelegate {
                 let chatVC = ChatController(user: host)
                 self.navigationController?.pushViewController(chatVC, animated: true)
             case .failure(let error):
+                self.presentErrorAlert(title: "Error", message: "\(error.localizedDescription)", completion: nil)
                 print("Fail to fetch host \(error)")
             }
         }

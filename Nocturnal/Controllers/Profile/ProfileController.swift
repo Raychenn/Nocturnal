@@ -94,6 +94,7 @@ class ProfileController: UIViewController {
             case .success(let user):
                 print("current user name in profile \(user.name)")
                 self.currentUser = user
+                self.collectionView.reloadData()
                 self.checkIfIsBlockedUser { isBlocked in
                     self.isBlocked = isBlocked
                     self.collectionView.reloadData()
@@ -222,6 +223,7 @@ extension ProfileController: UICollectionViewDelegateFlowLayout {
 extension ProfileController: ProfileCellDelegate {
     func didTapEditProfile(cell: ProfileCell) {
         let editProfileVC = EditProfileController(user: currentUser)
+        editProfileVC.delegate = self
         navigationController?.pushViewController(editProfileVC, animated: true)
     }
     
@@ -248,6 +250,7 @@ extension ProfileController: JoinedEventCellDelegate {
     }
 }
 
+// MARK: - ProfileHeaderDelegate
 extension ProfileController: ProfileHeaderDelegate {
     
     func profileHeader(_ header: ProfileHeader, wantsToBlockUserWith id: String) {
@@ -275,4 +278,15 @@ extension ProfileController: ProfileHeaderDelegate {
             print("Succussfully unblocked user and pop up alert here..")
         }
     }
+}
+
+// MARK: - EditProfileControllerDelegate
+
+extension ProfileController: EditProfileControllerDelegate {
+    
+    func updateProfile() {
+        print("updateProfile in profile VC called")
+        fetchUser()
+    }
+    
 }

@@ -10,9 +10,15 @@ import FirebaseFirestore
 import Kingfisher
 import Lottie
 
+protocol EditProfileControllerDelegate: AnyObject {
+    func updateProfile()
+}
+
 class EditProfileController: UIViewController {
     
     // MARK: - Properties
+    
+    weak var delegate: EditProfileControllerDelegate?
     
     private lazy var tableView: UITableView = {
         let table = UITableView(frame: .zero, style: .grouped)
@@ -201,6 +207,7 @@ extension EditProfileController: EditProfileCellDelegate {
                         self.tableView.reloadData()
                         self.stopAnimationView()
                         self.view.isUserInteractionEnabled = true
+                        self.delegate?.updateProfile()
                         self.navigationController?.popViewController(animated: true)
                     case .failure(let error):
                         print("Fail to fetch user \(error)")

@@ -22,6 +22,8 @@ class ConversationsController: UIViewController {
     
     private var conversations: [Conversation] = []
     
+    private var currentUser: User?
+    
     // MARK: - Life Cycle
     
     override func viewDidLoad() {
@@ -30,8 +32,12 @@ class ConversationsController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        fetchConversations()
         
+        fetchCurrentUser { [weak self] user in
+            guard let self = self else { return }
+            self.currentUser = user
+            self.fetchConversations()
+        }
     }
     
     // MARK: - API
@@ -40,15 +46,53 @@ class ConversationsController: UIViewController {
         presentLoadingView(shouldPresent: true)
         MessegeService.shared.fetchConversations { [weak self] result in
             guard let self = self else { return }
-            self.presentLoadingView(shouldPresent: false)
             switch result {
             case .success(let conversations):
-                self.conversations = conversations
+                print("conversations count \(conversations.count)")
+                self.conversations = self.filterConversationsFromBlockedUser(conversations: conversations)
+                print("conversations after filtering blocked users count \(self.conversations.count)")
                 self.tableView.reloadData()
+                self.presentLoadingView(shouldPresent: false)
             case .failure(let error):
-                print("Fail to fetch conversations \(error)")
+                self.presentErrorAlert(title: "Error", message: "\(error.localizedDescription)", completion: nil)
             }
         }
+    }
+    
+    private func fetchCurrentUser(completion: @escaping (User) -> Void) {
+        UserService.shared.fetchUser(uid: uid) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let user):
+                completion(user)
+            case .failure(let error):
+                self.presentErrorAlert(title: "Error", message: "\(error.localizedDescription)", completion: nil)
+            }
+        }
+    }
+    
+    private func filterConversationsFromBlockedUser(conversations: [Conversation]) -> [Conversation] {
+        guard let currentUser = currentUser else {
+            presentErrorAlert(title: "Error", message: "Current user is not existed", completion: nil)
+            print("current user nil in conversation VC")
+            return []
+        }
+        
+        if currentUser.blockedUsersId.count == 0 {
+            return conversations
+        }
+
+        var result: [Conversation] = []
+        
+        currentUser.blockedUsersId.forEach { blockedId in
+            conversations.forEach { conversation in
+                if conversation.user.id != blockedId {
+                    result.append(conversation)
+                }
+            }
+        }
+        
+        return result
     }
     
     // MARK: - Selector

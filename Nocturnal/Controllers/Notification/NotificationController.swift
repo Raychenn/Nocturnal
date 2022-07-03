@@ -107,7 +107,7 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
             case .success(let notifications):
                 self.notifications = self.getFilteredNotifications(notifications: notifications)
                 print("filtered notifications count \(self.notifications.count)")
-                self.notifications = self.filterEventsFromBlockedUsers(notifications: self.notifications)
+                self.notifications = self.filterNotificationFromBlockedUsers(notifications: self.notifications)
                 print("filtered notifications after blocking users \(self.notifications.count)")
                 self.fetchEvents { [weak self] events in
                     guard let self = self else { return }
@@ -246,7 +246,7 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
         return result
     }
     
-    func filterEventsFromBlockedUsers(notifications: [Notification]) -> [Notification] {
+    func filterNotificationFromBlockedUsers(notifications: [Notification]) -> [Notification] {
         if currentUser.blockedUsersId.count == 0 {
             return notifications
         }

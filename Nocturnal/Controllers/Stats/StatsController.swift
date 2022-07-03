@@ -26,7 +26,9 @@ class StatsController: UIViewController, ChartViewDelegate {
             } else {
                 loadingAnimationView.stop()
                 emptyWarningLabel.removeFromSuperview()
+                resetData()
                 self.fetchEventStyles()
+                self.setupStyleCounts()
                 self.calculateCost()
                 self.setupPieChart()
                 self.setupBarChart()
@@ -82,12 +84,12 @@ class StatsController: UIViewController, ChartViewDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
                 
-//        presentLoadingView(shouldPresent: true)
-//        fetchCurrentUser { [weak self] user in
-//            guard let self = self else { return }
-//            self.user = user
-//            self.fetchJoinedEvents()
-//        }
+        presentLoadingView(shouldPresent: true)
+        fetchCurrentUser { [weak self] user in
+            guard let self = self else { return }
+            self.user = user
+            self.fetchJoinedEvents()
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -131,6 +133,19 @@ class StatsController: UIViewController, ChartViewDelegate {
     }
     
     // MARK: - Helpers
+    
+    private func resetData() {
+        rockCounts = 0
+        rappingCounts = 0
+        edmCounts = 0
+        discoCounts = 0
+        hippopCounts = 0
+        jazzCounts = 0
+        kpopCounts = 0
+        metalCounts = 0
+        costs = []
+        joinedEventStyles = []
+    }
     
     private func configureEmptyWarningLabel() {
         view.addSubview(emptyWarningLabel)
@@ -177,8 +192,6 @@ class StatsController: UIViewController, ChartViewDelegate {
         
         pieChartView.chartDescription.text = "Monthly joined event styles"
         
-        setupStyleCounts()
-        
         let dataEntries: [PieChartDataEntry] = [
             PieChartDataEntry(value: rockCounts, label: "Rock"),
             PieChartDataEntry(value: rappingCounts, label: "Rapping"),
@@ -197,6 +210,7 @@ class StatsController: UIViewController, ChartViewDelegate {
     }
     
     func setupStyleCounts() {
+        
         joinedEventStyles.forEach { style in
             switch style {
             case .rock:
@@ -226,7 +240,7 @@ class StatsController: UIViewController, ChartViewDelegate {
 
         var entries: [BarChartDataEntry] = []
         
-        for index in 0..<joinedEventStyles.count {
+        for index in 0..<currentJoinedEvents.count {
             entries.append(BarChartDataEntry(x: Double(index), y: costs[index]))
         }
         

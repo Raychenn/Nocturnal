@@ -24,6 +24,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.dataSource = self
         collectionView.delegate = self
+        collectionView.showsVerticalScrollIndicator = false
         collectionView.refreshControl = refreshControl
         collectionView.refreshControl?.addTarget(self, action: #selector(refreshData), for: .valueChanged)
         collectionView.register(ExploreCell.self, forCellWithReuseIdentifier: ExploreCell.identifier)
@@ -89,17 +90,22 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        fetchCurrentUser { [weak self] user in
-            guard let self = self else { return }
-            
-            self.currentUser = user
+        if Auth.auth().currentUser == nil {
             self.fetchEvents()
+        } else {
+            fetchCurrentUser { [weak self] user in
+                guard let self = self else { return }
+                
+                self.currentUser = user
+                self.fetchEvents()
+            }
         }
     }
     
     // MARK: - API
     private func fetchEvents() {
         refreshControl.beginRefreshing()
+        presentLoadingView(shouldPresent: true)
         EventService.shared.fetchAllEvents { [weak self] result in
             guard let self = self else { return }
             switch result {
@@ -110,6 +116,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
                     self.generateRandomHeight(eventCount: events.count)
                     self.refreshControl.endRefreshing()
                     self.collectionView.reloadData()
+                    self.presentLoadingView(shouldPresent: false)
                 } else {
                     self.filterEventsFromBlockedUsers(events: events) { [weak self] filteredEvents in
                         guard let self = self else { return }
@@ -119,6 +126,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
                         self.generateRandomHeight(eventCount: filteredEvents.count)
                         self.refreshControl.endRefreshing()
                         self.collectionView.reloadData()
+                        self.presentLoadingView(shouldPresent: false)
                 }
             }
             case .failure(let error):

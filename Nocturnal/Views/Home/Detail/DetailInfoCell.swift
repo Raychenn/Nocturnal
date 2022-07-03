@@ -117,7 +117,7 @@ class DetailInfoCell: UITableViewCell {
     
     private let hostNameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .medium)
+        label.font = .systemFont(ofSize: 17, weight: .bold)
         label.text = "Host: Ray Chen"
         label.textColor = .lightGray
         return label
@@ -237,7 +237,7 @@ class DetailInfoCell: UITableViewCell {
     // MARK: - Heleprs
 
     func configureCell(with event: Event, host: User) {
-        backgroundColor = .black
+        backgroundColor = UIColor.hexStringToUIColor(hex: "#161616")
         self.hostProfileImageView.kf.setImage(with: URL(string: host.profileImageURL)!)
         self.hostNameLabel.text = host.name
         self.event = event

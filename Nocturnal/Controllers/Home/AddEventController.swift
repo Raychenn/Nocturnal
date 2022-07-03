@@ -198,6 +198,7 @@ extension AddEventController: UploadEventInfoCellDelegate {
         print("event address \(userInputData.eventAddress)")
         let geoCoder = CLGeocoder()
         configureAnimationView()
+        self.view.isUserInteractionEnabled = false
         geoCoder.geocodeAddressString(userInputData.eventAddress) { [weak self] (placemarks, error) in
             guard let self = self else { return }
             print("geo coding")
@@ -241,7 +242,7 @@ extension AddEventController: UploadEventInfoCellDelegate {
                         }
                         
                         self.stopAnimationView()
-                        
+                        self.view.isUserInteractionEnabled = true
                         print("Scussfully uploaded event")
                         self.navigationController?.popViewController(animated: true)
                     }

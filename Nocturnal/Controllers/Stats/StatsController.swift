@@ -89,6 +89,13 @@ class StatsController: UIViewController, ChartViewDelegate {
         }
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        loadingAnimationView.stop()
+        emptyWarningLabel.removeFromSuperview()
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

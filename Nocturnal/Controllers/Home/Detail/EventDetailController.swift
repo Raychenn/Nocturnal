@@ -327,14 +327,13 @@ extension EventDetailController: UITableViewDataSource {
         switch indexPath.row {
         case 0:
             infoCell.configureCell(with: event, host: host)
-            infoCell.backgroundColor = UIColor.hexStringToUIColor(hex: "#161616")
             infoCell.delegate = self
             return infoCell
         case 1:
             mapCell.delegate = self
             mapCell.event = event
-            mapCell.configureCell(with: event)
             mapCell.backgroundColor = UIColor.hexStringToUIColor(hex: "#161616")
+            mapCell.configureCell(with: event)
             return mapCell
         case 2:
             descriptionCell.configureCell(with: event)
@@ -360,7 +359,7 @@ extension EventDetailController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
         if indexPath.row == 0 {
-            return 300
+            return 310
         } else if indexPath.row == 1 {
             return 200
         }

@@ -35,14 +35,6 @@ class DetailDescriptionCell: UITableViewCell {
         label.text = "loading"
         return label
     }()
-    
-//     lazy var readMoreLabel: UILabel = {
-//        let label = UILabel()
-//         label.translatesAutoresizingMaskIntoConstraints = false
-//         label.text = "Read More"
-//         label.font = .systemFont(ofSize: 15, weight: .semibold)
-//         return label
-//    }()
                     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -68,6 +60,7 @@ class DetailDescriptionCell: UITableViewCell {
     // MARK: - Helpers
     
     private func setupCellUI() {
+        backgroundColor = UIColor.hexStringToUIColor(hex: "#161616")
         contentView.addSubview(descriptionTitleLabel)
         descriptionTitleLabel.anchor(top: contentView.topAnchor, left: contentView.leftAnchor, paddingTop: 8, paddingLeft: 8)
         

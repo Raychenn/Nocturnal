@@ -58,10 +58,6 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     
     var notifications: [Notification] = [] {
         didSet {
-            notifications.forEach { notification in
-                print("xxx \(notification.applicantId)")
-            }
-            
             if notifications.count == 0 {
                 configureAnimationView()
                 configureEmptyWarningLabel()
@@ -96,6 +92,13 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
             self.currentUser = user
             self.fetchNotifications()
         }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        loadingAnimationView.stop()
+        emptyWarningLabel.removeFromSuperview()
     }
     
     // MARK: - API
@@ -276,6 +279,8 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let notificationCell = tableView.dequeueReusableCell(withIdentifier: NotificationCell.identifier, for: indexPath) as? NotificationCell else { return UITableViewCell() }
         
+        notificationCell.delegate = self
+        
         let notification = notifications[indexPath.section]
         let event = events[indexPath.section]
         
@@ -287,7 +292,7 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
             let applicant = applicants[indexPath.section]
             
             notificationCell.configueCell(with: notification, user: applicant, event: event)
-            notificationCell.delegate = self
+            
         } else {
             // have both applicants and hosts notifications
             let type = NotificationType(rawValue: notification.type) ?? .none

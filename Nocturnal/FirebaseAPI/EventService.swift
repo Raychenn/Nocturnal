@@ -18,6 +18,10 @@ class EventService {
         collection_event.document(eventId).delete(completion: completion)
     }
     
+    func removeEventPendingUsers(eventId: String, applicantId: String, completion: FirestoreCompletion) {
+        collection_event.document(eventId).updateData(["pendingUsersId": FieldValue.arrayRemove([applicantId])], completion: completion)
+    }
+    
     func updateEventPendingUsers(eventId: String, applicantId: String, completion: FirestoreCompletion) {
         collection_event.document(eventId).updateData(["pendingUsersId": FieldValue.arrayUnion([applicantId])], completion: completion)
     }

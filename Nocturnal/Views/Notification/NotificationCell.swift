@@ -68,7 +68,6 @@ class NotificationCell: UITableViewCell {
     
     var notification: Notification?
         
-    var applicantId: String?
     // MARK: - Life Cycle
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -105,11 +104,6 @@ class NotificationCell: UITableViewCell {
     }
     
     @objc func didTapPermissionButton() {
-        
-        guard let applicantId = applicantId else {
-            print("applicantId nil")
-            return
-        }
     
         guard var notification = notification else {
             print("notification nil")
@@ -124,9 +118,9 @@ class NotificationCell: UITableViewCell {
         permissionButton.setTitle(notification.isRequestPermitted ? "Deny": "Accept", for: .normal)
         permissionButton.backgroundColor = notification.isRequestPermitted ? .red: .deepBlue
         if notification.isRequestPermitted {
-            delegate?.cell(self, wantsToAccept: applicantId)
+            delegate?.cell(self, wantsToAccept: notification.applicantId)
         } else {
-            delegate?.cell(self, wantsToDeny: applicantId)
+            delegate?.cell(self, wantsToDeny: notification.applicantId)
         }
     }
     

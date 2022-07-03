@@ -173,6 +173,7 @@ extension EditProfileController: EditProfileCellDelegate {
     
         let imageToUpload = updatedImage == nil ? currentImage: updatedImage ?? UIImage()
         configureAnimationView()
+        self.view.isUserInteractionEnabled = false
         StorageUploader.shared.uploadProfileImage(with: imageToUpload) { [weak self] downloadedImageURL in
             guard let self = self else { return }
             let user = User(name: "\(editedData.firstname) \(editedData.familyname)",
@@ -199,6 +200,7 @@ extension EditProfileController: EditProfileCellDelegate {
                         self.currentUser = updatedUser
                         self.tableView.reloadData()
                         self.stopAnimationView()
+                        self.view.isUserInteractionEnabled = true
                         self.navigationController?.popViewController(animated: true)
                     case .failure(let error):
                         print("Fail to fetch user \(error)")

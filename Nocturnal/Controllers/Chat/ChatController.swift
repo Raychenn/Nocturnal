@@ -198,11 +198,11 @@ extension ChatController: UICollectionViewDelegateFlowLayout {
         if let text = message.text {
             estimatedHeight = estimatedFrameForText(text: text).height + 25
         } else if let imageWidth = message.imageWidth, let imageHeight = message.imageHeight {
+            // determine estimated height for image message bubble container
             
             // h1 / w1 = h2 / w2
             // solve for h1
             // h1 = h2 / w2 * w1
-            
             estimatedHeight = CGFloat(imageHeight / imageWidth * 200)
 //            estimatedHeight = 120
         }

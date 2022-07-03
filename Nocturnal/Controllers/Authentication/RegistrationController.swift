@@ -107,7 +107,7 @@ class RegistrationController: UIViewController {
         }
         
         signUpButton.configuration?.showsActivityIndicator = true
-        
+        presentLoadingView(shouldPresent: true)
         StorageUploader.shared.uploadProfileImage(with: profileImage) { downloadedImgURL in
             
             let defaultGender = Gender.unspecified.rawValue
@@ -127,14 +127,32 @@ class RegistrationController: UIViewController {
             AuthService.shared.registerUser(withUser: user, password: password) { [weak self] error in
                 guard let self = self else { return }
                 guard error == nil else {
-                    print("Error signing user up \(String(describing: error))")
+                    self.presentErrorAlert(title: "Error", message: error!.localizedDescription, completion: nil)
                     return
                 }
+                var keyWindow: UIWindow? {
+                    // Get connected scenes
+                    return UIApplication.shared.connectedScenes
+                        // Keep only active scenes, onscreen and visible to the user
+                        .filter { $0.activationState == .foregroundActive }
+                        // Keep only the first `UIWindowScene`
+                        .first(where: { $0 is UIWindowScene })
+                        // Get its associated windows
+                        .flatMap({ $0 as? UIWindowScene })?.windows
+                        // Finally, keep only the key window
+                        .first(where: \.isKeyWindow)
+                }
+
+                guard let tab = keyWindow?.rootViewController as? MainTabBarController else {
+                    print("no tab bar controller")
+                    return
+                }
+
+                print("successfully register user with firestore")
+                self.presentLoadingView(shouldPresent: false)
+                tab.authenticateUserAndConfigureUI()
                 self.signUpButton.configuration?.showsActivityIndicator = false
                 self.dismiss(animated: true)
-                print("successfully register user with firestore")
-                // call homeController to configureUI again
-                
             }
         }
     }
@@ -152,7 +170,7 @@ class RegistrationController: UIViewController {
         let stack = UIStackView(arrangedSubviews: [emailContainerView, passwordContainerView, fullnameContainerView, signUpButton])
         stack.axis = .vertical
         stack.distribution = .fillEqually
-        stack.spacing = 20
+        stack.spacing = 15
         
         view.addSubview(stack)
         stack.anchor(top: plusPhotoButton.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 32, paddingLeft: 32, paddingRight: 32)

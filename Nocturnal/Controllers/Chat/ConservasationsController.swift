@@ -25,20 +25,22 @@ class ConversationsController: UIViewController {
     // MARK: - Life Cycle
     
     override func viewDidLoad() {
-//        fetchConversations()
         setupUI()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         fetchConversations()
-        configureChatNavBar(withTitle: "Conversations", preferLargeTitles: true)
+        
     }
     
     // MARK: - API
     
     private func fetchConversations() {
-        MessegeService.shared.fetchConversations { result in
+        presentLoadingView(shouldPresent: true)
+        MessegeService.shared.fetchConversations { [weak self] result in
+            guard let self = self else { return }
+            self.presentLoadingView(shouldPresent: false)
             switch result {
             case .success(let conversations):
                 self.conversations = conversations
@@ -56,6 +58,7 @@ class ConversationsController: UIViewController {
     
     // MARK: - Helpers
     private func setupUI() {
+        configureChatNavBar(withTitle: "Conversations", preferLargeTitles: true)
         view.backgroundColor = .white
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "x.circle.fill"), style: .plain, target: self, action: #selector(handleDismissal))
         view.addSubview(tableView)

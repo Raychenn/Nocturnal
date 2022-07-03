@@ -40,6 +40,8 @@ class ProfileController: UIViewController {
     
     let gradient = CAGradientLayer()
     
+    private lazy var gradientView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 400))
+    
     private var isBlocked = false
     
     // MARK: - Life Cycle
@@ -60,12 +62,11 @@ class ProfileController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         fetchUser()
+        gradientView.layer.insertSublayer(gradient, at: 0)
         navigationController?.navigationBar.isHidden = true
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
+    override func viewDidDisappear(_ animated: Bool) {
         gradient.removeFromSuperlayer()
     }
     
@@ -178,13 +179,12 @@ extension ProfileController: UICollectionViewDelegate {
         profileHeader.shouldBlockUser = isBlocked
         profileHeader.configureHeader(user: currentUser)
 
-        let gradientView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 400))
         gradient.frame = gradientView.frame
         gradient.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
         gradient.locations = [0.0, 1.3]
-        gradientView.layer.insertSublayer(gradient, at: 0)
         profileHeader.profileImageView.addSubview(gradientView)
         profileHeader.bringSubviewToFront(gradientView)
+        
         profileHeader.delegate = self
         return profileHeader
     }

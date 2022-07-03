@@ -67,7 +67,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     
     var originalAllEvents: [Event] = []
     
-    private let currentUser: User
+    private var currentUser: User
     
     // MARK: - Life Cycle
     
@@ -88,7 +88,13 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        fetchEvents()
+        
+        fetchCurrentUser { [weak self] user in
+            guard let self = self else { return }
+            
+            self.currentUser = user
+            self.fetchEvents()
+        }
     }
     
     // MARK: - API
@@ -107,7 +113,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
                 } else {
                     self.filterEventsFromBlockedUsers(events: events) { [weak self] filteredEvents in
                         guard let self = self else { return }
-                        print("filter events count \(filteredEvents)")
+                        print("filter events count in explore VC \(filteredEvents.count)")
                         self.events = filteredEvents
                         self.originalAllEvents = filteredEvents
                         self.generateRandomHeight(eventCount: filteredEvents.count)
@@ -128,15 +134,30 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     func filterEventsFromBlockedUsers(events: [Event], completion: @escaping ([Event]) -> Void) {
         var result: [Event] = []
     
-        currentUser.blockedUsersId.forEach { blockedId in
-            events.forEach { event in
-                    if blockedId != event.hostID {
-                        result.append(event)
+        if currentUser.blockedUsersId.count == 0 {
+            completion(events)
+        } else {
+            currentUser.blockedUsersId.forEach { blockedId in
+                events.forEach { event in
+                        if blockedId != event.hostID {
+                            result.append(event)
+                        }
                     }
                 }
+            completion(result)
+        }
+    }
+    
+    private func fetchCurrentUser(completion: @escaping (User) -> Void) {
+        UserService.shared.fetchUser(uid: uid) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let user):
+                completion(user)
+            case .failure(let error):
+                self.presentErrorAlert(title: "Error", message: "\(error.localizedDescription)", completion: nil)
             }
-
-        completion(result)
+        }
     }
     
     // MARK: - Selectors

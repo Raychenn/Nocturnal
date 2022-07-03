@@ -84,7 +84,7 @@ class NotificationCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 10))
+        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 5))
     }
     
     override func prepareForReuse() {
@@ -146,9 +146,8 @@ class NotificationCell: UITableViewCell {
         permissionButton.setTitle(notification.isRequestPermitted ? "Deny": "Accept", for: .normal)
         permissionButton.backgroundColor = notification.isRequestPermitted ? .red: .deepBlue
         if type == .joinEventRequest {
-            applicantId = notification.applicantId
             eventImageView.isHidden = true
-            titleLabel.attributedText(firstPart: user.name, secondPart: "\(type.description) to join \(event.title)")
+            titleLabel.attributedText(firstPart: user.name, secondPart: " \(type.description) to join \(event.title)")
         }
         
         timeLabel.text = "\(Date.dateTimeFormatter.string(from: notification.sentTime.dateValue()))"

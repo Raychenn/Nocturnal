@@ -155,7 +155,6 @@ extension EditProfileController: UITableViewDelegate {
 extension EditProfileController: EditProfileCellDelegate {
     
     func didTapSave(cell: EditProfileCell, editedData: EditProfileCellModel) {
-        print("didTapSave")
         let currentImage = self.currentImage ?? UIImage()
          
         // update user data in firestore

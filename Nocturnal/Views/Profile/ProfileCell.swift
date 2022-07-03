@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 protocol ProfileCellDelegate: AnyObject {
     func didTapEditProfile(cell: ProfileCell)
@@ -110,20 +111,7 @@ class ProfileCell: UICollectionViewCell {
          return button
      }()
     
-    var user: User? {
-        didSet {
-            guard let user = user else { return }
-            if user.id != uid {
-                editProfileButton.isHidden = true
-                settingsButton.isHidden = true
-                conversationButton.isHidden = true
-            } else {
-                editProfileButton.isHidden = false
-                settingsButton.isHidden = false
-                conversationButton.isHidden = false
-            }
-        }
-    }
+    var user: User?
 
     // MARK: - Life Cycle
    
@@ -169,8 +157,14 @@ class ProfileCell: UICollectionViewCell {
             countryLabel.text = flag
         }
 
-        settingsButton.isHidden = user.id ?? "" == uid ? false: true
-        editProfileButton.isHidden = user.id ?? "" == uid ? false: true
+        guard let currentUid = Auth.auth().currentUser?.uid else {
+            print("current uid nil")
+            return
+        }
+        
+        settingsButton.isHidden = user.id ?? "" == currentUid ? false: true
+        editProfileButton.isHidden = user.id ?? "" == currentUid ? false: true
+        conversationButton.isHidden = user.id ?? "" == currentUid ? false: true
     }
     func setupCellUI() {
         backgroundColor = UIColor.darkGray

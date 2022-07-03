@@ -12,7 +12,7 @@ import Lottie
 class StatsController: UIViewController, ChartViewDelegate {
 
     // MARK: - Properties
-    private let user: User
+    private var user: User
     
     private lazy var pieChartView = PieChartView(frame: .zero)
     
@@ -76,7 +76,17 @@ class StatsController: UIViewController, ChartViewDelegate {
     init(user: User) {
         self.user = user
         super.init(nibName: nil, bundle: nil)
-        fetchJoinedEvents()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+                
+        presentLoadingView(shouldPresent: true)
+        fetchCurrentUser { [weak self] user in
+            guard let self = self else { return }
+            self.user = user
+            self.fetchJoinedEvents()
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -92,8 +102,21 @@ class StatsController: UIViewController, ChartViewDelegate {
             switch result {
             case .success(let events):
                 self.currentJoinedEvents = events
+                self.presentLoadingView(shouldPresent: false)
             case .failure(let error):
                 print("Fail to fetch events \(error)")
+            }
+        }
+    }
+    
+    private func fetchCurrentUser(completion: @escaping (User) -> Void) {
+        UserService.shared.fetchUser(uid: uid) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let user):
+                completion(user)
+            case .failure(let error):
+                self.presentErrorAlert(title: "Error", message: "\(error.localizedDescription)", completion: nil)
             }
         }
     }
@@ -112,6 +135,7 @@ class StatsController: UIViewController, ChartViewDelegate {
         loadingAnimationView.centerX(inView: view)
         loadingAnimationView.widthAnchor.constraint(equalToConstant: view.frame.size.width - 20).isActive = true
         loadingAnimationView.heightAnchor.constraint(equalTo: loadingAnimationView.widthAnchor).isActive = true
+        loadingAnimationView.play()
     }
     
     private func stopAnimationView() {

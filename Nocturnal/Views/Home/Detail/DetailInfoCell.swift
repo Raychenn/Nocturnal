@@ -10,6 +10,7 @@ import Kingfisher
 import CoreLocation
 import Contacts
 import MapKit
+import FirebaseAuth
 
 protocol DetailInfoCellDelegate: AnyObject {
     func playMusic(cell: DetailInfoCell, musicURL: String)
@@ -259,6 +260,10 @@ class DetailInfoCell: UITableViewCell {
         styleLabel.text = "Event Style: \(event.style)"
         feeLabel.text = "$\(String(event.fee))"
         joinedMembersLabel.text = "Joined Members: \(event.participants.count)"
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("uid in nil")
+            return
+        }
         chatButton.isHidden = uid == event.hostID
         deleteImageView.isHidden = uid != event.hostID
     }

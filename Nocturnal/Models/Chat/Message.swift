@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseFirestoreSwift
 import FirebaseFirestore
+import FirebaseAuth
 
 struct Message: Codable {
     @DocumentID var id: String?
@@ -19,9 +20,12 @@ struct Message: Codable {
     var imageWidth: CGFloat?
     let user: User?
     let sentTime: Timestamp
-    // isFromCurrenUser = fromId == uid
     var isFromCurrenUser: Bool
     var chatPartnerId: String {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("current user nil")
+            return ""
+        }
         if uid == fromId {
             return toId
         } else {

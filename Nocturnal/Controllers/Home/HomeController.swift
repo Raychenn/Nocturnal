@@ -102,12 +102,10 @@ class HomeController: UIViewController {
             case .success(let events):
                 if self.currentUser.blockedUsersId.count == 0 {
                     self.events = events
-                    print("all events count \(events.count)")
                     self.fetchHostsWhenLoggedin()
                 } else {
                     self.filterEventsFromBlockedUsers(events: events) { filteredEvents in
                         self.events = filteredEvents
-                        print("filteredEvents count \(filteredEvents.count)")
                         self.fetchHostsWhenLoggedin()
                     }
                 }

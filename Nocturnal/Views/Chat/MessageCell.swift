@@ -92,22 +92,22 @@ class MessageCell: UICollectionViewCell {
         profileImageView.setDimensions(height: 36, width: 36)
         profileImageView.layer.cornerRadius = 36/2
         
+        // bubbleContainer's height will be dynamic based on textView's height (input texts)
         addSubview(bubbleContainer)
         bubbleContainer.layer.cornerRadius = 12
         bubbleContainer.anchor(top: topAnchor, bottom: bottomAnchor)
-        //        bubbleContainer.widthAnchor.constraint(lessThanOrEqualToConstant: 250).isActive = true
         bubbleContainerWidthConst = bubbleContainer.widthAnchor.constraint(lessThanOrEqualToConstant: 250)
         bubbleContainerWidthConst.isActive = true
-        
+        // for incoming message
         bubbleLeftAnchor = bubbleContainer.leftAnchor.constraint(equalTo: profileImageView.rightAnchor, constant: 12)
         bubbleLeftAnchor.isActive = false
-        
+        // sending message from current user
         bubbleRightAnchor = bubbleContainer.rightAnchor.constraint(equalTo: rightAnchor, constant: -12)
         bubbleRightAnchor.isActive = false
-        
+        // text message
         bubbleContainer.addSubview(textView)
         textView.anchor(top: bubbleContainer.topAnchor, left: bubbleContainer.leftAnchor, bottom: bubbleContainer.bottomAnchor, right: bubbleContainer.rightAnchor, paddingTop: 4, paddingLeft: 12, paddingBottom: 4, paddingRight: 12)
-        
+        // image message
         bubbleContainer.addSubview(messageImageView)
         messageImageView.anchor(top: bubbleContainer.topAnchor, left: bubbleContainer.leftAnchor, bottom: bubbleContainer.bottomAnchor, right: bubbleContainer.rightAnchor)
     }
@@ -127,7 +127,6 @@ class MessageCell: UICollectionViewCell {
     }
     
     func configureToCell() {
-        //        guard let message = message else { return }
         bubbleContainer.backgroundColor = .lightGray
         bubbleLeftAnchor.isActive = false
         bubbleRightAnchor.isActive = true

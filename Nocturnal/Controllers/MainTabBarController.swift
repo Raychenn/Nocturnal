@@ -48,8 +48,8 @@ class MainTabBarController: UITabBarController {
             fetchCurrentUser { [weak self] user in
                 guard let self = self else { return }
                 self.currentUser = user
-                print("user logged in current user name is \(self.currentUser?.name)")
                 self.configureViewControllers(with: user)
+                self.selectedIndex = 0
                 self.presentLoadingView(shouldPresent: false)
             }
         }

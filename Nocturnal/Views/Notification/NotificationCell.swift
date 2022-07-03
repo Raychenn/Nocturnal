@@ -129,29 +129,31 @@ class NotificationCell: UITableViewCell {
         self.notification = notification
         guard let type = NotificationType(rawValue: notification.type) else { return }
         
-        if type == .failureJoinedEventResponse || type == .successJoinedEventResponse {
-            permissionButton.isHidden = true
-            eventImageView.isHidden = false
-            titleLabel.attributedText(firstPart: user.name, secondPart: "\(type.description)")
-        } else {
-            permissionButton.isHidden = false
-            eventImageView.isHidden = false
-        }
         permissionButton.setTitle(notification.isRequestPermitted ? "Deny": "Accept", for: .normal)
         permissionButton.backgroundColor = notification.isRequestPermitted ? .red: .deepBlue
-        if type == .joinEventRequest {
-            eventImageView.isHidden = true
-            titleLabel.attributedText(firstPart: user.name, secondPart: " \(type.description) to join \(event.title)")
-        }
-        
         timeLabel.text = "\(Date.dateTimeFormatter.string(from: notification.sentTime.dateValue()))"
         guard let profileUrl = URL(string: user.profileImageURL), let eventUrl = URL(string: event.eventImageURL) else {
             print("no profileImageURL")
             return
         }
-        
         profileImageView.kf.setImage(with: profileUrl)
         eventImageView.kf.setImage(with: eventUrl)
+        
+        if type == .failureJoinedEventResponse || type == .successJoinedEventResponse {
+            permissionButton.isHidden = true
+            eventImageView.isHidden = false
+            titleLabel.attributedText(firstPart: user.name, secondPart: "\(type.description)")
+        } else {
+            eventImageView.isHidden = true
+            permissionButton.isHidden = false
+            titleLabel.attributedText(firstPart: user.name, secondPart: " \(type.description) to join \(event.title)")
+//            eventImageView.isHidden = false
+        }
+        
+//        if type == .joinEventRequest {
+//
+//        }
+        
     }
     
     private func setupCellUI() {

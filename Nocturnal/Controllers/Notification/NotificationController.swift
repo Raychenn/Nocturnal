@@ -109,7 +109,6 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
             switch result {
             case .success(let notifications):
                 self.notifications = self.getFilteredNotifications(notifications: notifications)
-                print("filtered notifications count \(self.notifications.count)")
                 self.notifications = self.filterNotificationFromBlockedUsers(notifications: self.notifications)
                 print("filtered notifications after blocking users \(self.notifications.count)")
                 self.fetchEvents { [weak self] events in
@@ -139,7 +138,7 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     private func fetchEvents(completion: @escaping ([Event]) -> Void) {
         var eventsId: [String] = []
         notifications.forEach({ eventsId.append($0.eventId) })
-        
+        notifications.forEach({ print("event id \($0.eventId)") })
         EventService.shared.fetchEvents(fromEventIds: eventsId) { result in
             switch result {
             case .success(let events):

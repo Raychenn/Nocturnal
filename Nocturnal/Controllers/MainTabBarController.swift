@@ -44,11 +44,13 @@ class MainTabBarController: UITabBarController {
             }
         } else {
             // user is logged in
+            presentLoadingView(shouldPresent: true)
             fetchCurrentUser { [weak self] user in
                 guard let self = self else { return }
                 self.currentUser = user
-                print("user logged in current user name is \(self.currentUser?.name)")
                 self.configureViewControllers(with: user)
+                self.selectedIndex = 0
+                self.presentLoadingView(shouldPresent: false)
             }
         }
     }
@@ -83,11 +85,11 @@ class MainTabBarController: UITabBarController {
         view.backgroundColor = .white
         let home = templateNavigationViewController(unselectedImage: UIImage(systemName: "house")!, selectedImage: UIImage(systemName: "house.fill")!, rootViewController: HomeController(currentUser: user))
         
-        let explore = templateNavigationViewController(unselectedImage: UIImage(systemName: "magnifyingglass")!, selectedImage: UIImage(systemName: "magnifyingglass")!, rootViewController: ExploreController())
+        let explore = templateNavigationViewController(unselectedImage: UIImage(systemName: "magnifyingglass")!, selectedImage: UIImage(systemName: "magnifyingglass")!, rootViewController: ExploreController(user: user))
         
         let stats = templateNavigationViewController(unselectedImage: UIImage(systemName: "clock")!, selectedImage: UIImage(systemName: "clock.fill")!, rootViewController: StatsController(user: user))
         
-        let notification = templateNavigationViewController(unselectedImage: UIImage(systemName: "heart")!, selectedImage: UIImage(systemName: "heart.fill")!, rootViewController: NotificationController(user: user))
+        let notification = templateNavigationViewController(unselectedImage: UIImage(systemName: "bell")!, selectedImage: UIImage(systemName: "bell.fill")!, rootViewController: NotificationController(user: user))
          
         let profile = templateNavigationViewController(unselectedImage: UIImage(systemName: "person")!, selectedImage: UIImage(systemName: "person.fill")!, rootViewController: ProfileController(user: user))
     

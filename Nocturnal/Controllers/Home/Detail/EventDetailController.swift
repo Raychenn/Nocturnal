@@ -10,6 +10,7 @@ import AVFoundation
 import CoreLocation
 import FirebaseFirestore
 import FirebaseAuth
+import Lottie
 
 class EventDetailController: UIViewController {
     
@@ -116,6 +117,16 @@ class EventDetailController: UIViewController {
     
     var joinState: JoinState = .join
     
+    private let loadingAnimationView: AnimationView = {
+       let view = AnimationView(name: "cheers")
+        view.loopMode = .loop
+        view.contentMode = .scaleAspectFill
+        view.animationSpeed = 1
+        view.backgroundColor = .clear
+        view.play()
+        return view
+    }()
+    
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -170,6 +181,21 @@ class EventDetailController: UIViewController {
     }
     
     // MARK: - Helpers
+    
+    private func configureAnimationView() {
+        view.addSubview(loadingAnimationView)
+        loadingAnimationView.centerY(inView: view)
+        loadingAnimationView.centerX(inView: view)
+        loadingAnimationView.widthAnchor.constraint(equalToConstant: 150).isActive = true
+        loadingAnimationView.heightAnchor.constraint(equalTo: loadingAnimationView.widthAnchor).isActive = true
+    }
+    
+    private func stopAnimationView() {
+        loadingAnimationView.stop()
+        loadingAnimationView.alpha = 0
+        loadingAnimationView.removeFromSuperview()
+    }
+    
     private func setupUI() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         setupJoinButtonState()
@@ -301,14 +327,13 @@ extension EventDetailController: UITableViewDataSource {
         switch indexPath.row {
         case 0:
             infoCell.configureCell(with: event, host: host)
-            infoCell.backgroundColor = UIColor.hexStringToUIColor(hex: "#161616")
             infoCell.delegate = self
             return infoCell
         case 1:
             mapCell.delegate = self
             mapCell.event = event
-            mapCell.configureCell(with: event)
             mapCell.backgroundColor = UIColor.hexStringToUIColor(hex: "#161616")
+            mapCell.configureCell(with: event)
             return mapCell
         case 2:
             descriptionCell.configureCell(with: event)
@@ -327,18 +352,14 @@ extension EventDetailController: UITableViewDataSource {
 extension EventDetailController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        guard let cell = tableView.cellForRow(at: indexPath) as? DetailDescriptionCell else {return}
-//        tableView.beginUpdates()
-//        cell.decriptionContentLabel.numberOfLines = 0
-//        cell.discriptionLabelHeightConst.isActive = false
-//        tableView.endUpdates()
         tableView.deselectRow(at: indexPath, animated: true)
+        
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
         if indexPath.row == 0 {
-            return 300
+            return 310
         } else if indexPath.row == 1 {
             return 200
         }
@@ -379,7 +400,7 @@ extension EventDetailController: DetailInfoCellDelegate {
             print("start deleting ...")
             let eventId = self.event.id ?? ""
             print("eventId \(eventId)")
-            
+            self.configureAnimationView()
             print("start deleteJoinedEvent")
             UserService.shared.deleteJoinedEvent(eventId: eventId) { error in
                 if let error = error {
@@ -404,6 +425,7 @@ extension EventDetailController: DetailInfoCellDelegate {
                                 print("Fail to delete event \(error)")
                                 return
                             }
+                            self.stopAnimationView()
                             print("Successfully delete event")
                             self.navigationController?.popViewController(animated: true)
                         }
@@ -423,10 +445,8 @@ extension EventDetailController: DetailInfoCellDelegate {
             print("NO host")
             return
         }
-        print("host name \(host.name)")
         let profileVC = ProfileController(user: host)
         let nav = UINavigationController(rootViewController: profileVC)
-//        nav.modalPresentationStyle = .fullScreen
         present(nav, animated: true)
     }
     
@@ -438,6 +458,7 @@ extension EventDetailController: DetailInfoCellDelegate {
                 let chatVC = ChatController(user: host)
                 self.navigationController?.pushViewController(chatVC, animated: true)
             case .failure(let error):
+                self.presentErrorAlert(title: "Error", message: "\(error.localizedDescription)", completion: nil)
                 print("Fail to fetch host \(error)")
             }
         }
@@ -461,20 +482,9 @@ extension EventDetailController: DetailInfoCellDelegate {
 extension EventDetailController: DetailDescriptionCellDelegate {
     
     func animateDescriptionLabel(cell: DetailDescriptionCell) {
-//        cell.shouldShowLabel = !cell.shouldShowLabel
-//        if cell.shouldShowLabel {
-//            cell.decriptionContentLabel.numberOfLines = 0
-//
-//        } else {
-//            cell.decriptionContentLabel.numberOfLines = 5
-//        }
-//        cell.decriptionContentLabel.numberOfLines = numberOfLines
-//        let newTitle = numberOfLines == 0 ? "Less" : "More"
-//        cell.readMoreButton.setTitle(newTitle, for: .normal)
 
-//        UIView.animate(withDuration: 0.5) { cell.contentView.layoutIfNeeded() }
-//        UIView.transition(with: cell.decriptionContentLabel, duration: 0.5, options: .curveLinear, animations: {
-//                cell.layoutIfNeeded()
-//            })
+        tableView.beginUpdates()
+        cell.decriptionContentLabel.numberOfLines = 0
+        tableView.endUpdates()
     }
 }

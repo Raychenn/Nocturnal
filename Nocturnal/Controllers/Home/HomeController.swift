@@ -65,6 +65,7 @@ class HomeController: UIViewController {
         super.viewWillAppear(animated)
         // fetch all events from firestore
         print("viewWillAppear called")
+        presentLoadingView(shouldPresent: true)
         fetchCurrentUser { [weak self] in
             guard let self = self else {return}
             self.fetchAllEvents()
@@ -74,14 +75,20 @@ class HomeController: UIViewController {
     // MARK: - API
     
     private func fetchCurrentUser(completion: @escaping () -> Void) {
-        guard let userId = Auth.auth().currentUser?.uid else { return }
-        UserService.shared.fetchUser(uid: userId) { result in
-            switch result {
-            case .success(let user):
-                self.currentUser = user
-                completion()
-            case .failure(let error):
-                print("Fail to fetch user in home \(error)")
+        if Auth.auth().currentUser == nil {
+            completion()
+        } else {
+            if let userId = Auth.auth().currentUser?.uid {
+                UserService.shared.fetchUser(uid: userId) { result in
+                    switch result {
+                    case .success(let user):
+                        print("current user in home \(user.name)")
+                        self.currentUser = user
+                        completion()
+                    case .failure(let error):
+                        print("Fail to fetch user in home \(error)")
+                    }
+                }
             }
         }
     }
@@ -95,12 +102,10 @@ class HomeController: UIViewController {
             case .success(let events):
                 if self.currentUser.blockedUsersId.count == 0 {
                     self.events = events
-                    print("all events count \(events.count)")
                     self.fetchHostsWhenLoggedin()
                 } else {
                     self.filterEventsFromBlockedUsers(events: events) { filteredEvents in
                         self.events = filteredEvents
-                        print("filteredEvents count \(filteredEvents.count)")
                         self.fetchHostsWhenLoggedin()
                     }
                 }
@@ -131,8 +136,14 @@ class HomeController: UIViewController {
             events.forEach({hostsId.append($0.hostID)})
             fetchHosts(hostsId: hostsId) { [weak self] in
                 guard let self = self else { return }
+                self.presentLoadingView(shouldPresent: false)
                 self.refreshControl.endRefreshing()
             }
+        } else {
+            // not logged in
+            self.presentLoadingView(shouldPresent: false)
+            self.collectionView.reloadData()
+            self.refreshControl.endRefreshing()
         }
     }
     
@@ -145,8 +156,16 @@ class HomeController: UIViewController {
     }
     
     @objc func didTapShowEventButton() {
-        let addEventVC = AddEventController()
-        navigationController?.pushViewController(addEventVC, animated: true)
+        if Auth.auth().currentUser == nil {
+            DispatchQueue.main.async {
+                let loginController = LoginController()
+                let nav = UINavigationController(rootViewController: loginController)
+                self.present(nav, animated: true, completion: nil)
+            }
+        } else {
+            let addEventVC = AddEventController()
+            navigationController?.pushViewController(addEventVC, animated: true)
+        }
     }
     
     // MARK: - Helpers

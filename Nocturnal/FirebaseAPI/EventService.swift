@@ -18,6 +18,10 @@ class EventService {
         collection_event.document(eventId).delete(completion: completion)
     }
     
+    func removeEventPendingUsers(eventId: String, applicantId: String, completion: FirestoreCompletion) {
+        collection_event.document(eventId).updateData(["pendingUsersId": FieldValue.arrayRemove([applicantId])], completion: completion)
+    }
+    
     func updateEventPendingUsers(eventId: String, applicantId: String, completion: FirestoreCompletion) {
         collection_event.document(eventId).updateData(["pendingUsersId": FieldValue.arrayUnion([applicantId])], completion: completion)
     }
@@ -57,26 +61,28 @@ func postNewEvent(event: Event, completion: FirestoreCompletion) {
 
 func fetchEvents(fromEventIds ids: [String], completion: @escaping (Result<[Event], Error>) -> Void) {
     var events: [Event] = []
-    let group = DispatchGroup()
+    let semaphore = DispatchSemaphore(value: 0)
     
-    ids.forEach { eventId in
-        group.enter()
-        collection_event.document(eventId).getDocument { snapshot, error in
-            group.leave()
-            guard let snapshot = snapshot, error == nil else {
-                completion(.failure(error!))
-                return
+    DispatchQueue.global(qos: .userInitiated).async {
+        ids.forEach { eventId in
+            collection_event.document(eventId).getDocument { snapshot, error in
+                semaphore.signal()
+                guard let snapshot = snapshot, error == nil else {
+                    completion(.failure(error!))
+                    return
+                }
+                do {
+                    let event = try snapshot.data(as: Event.self)
+                    events.append(event)
+                } catch {
+                    completion(.failure(error))
+                }
             }
-            do {
-                let event = try snapshot.data(as: Event.self)
-                events.append(event)
-            } catch {
-                completion(.failure(error))
-            }
+            semaphore.wait()
         }
-    }
-    group.notify(queue: .main) {
-        completion(.success(events))
+        DispatchQueue.main.async {
+            completion(.success(events))
+        }
     }
 }
 

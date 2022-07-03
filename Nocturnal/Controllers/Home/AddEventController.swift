@@ -11,6 +11,7 @@ import PhotosUI
 import FirebaseFirestore
 import SwiftUI
 import CoreLocation
+import Lottie
 
 class AddEventController: UIViewController {
     
@@ -35,6 +36,16 @@ class AddEventController: UIViewController {
     
     var eventMusicURLString: String?
     
+    let loadingAnimationView: AnimationView = {
+       let view = AnimationView(name: "cheers")
+        view.loopMode = .loop
+        view.contentMode = .scaleAspectFill
+        view.animationSpeed = 1
+        view.backgroundColor = .clear
+        view.play()
+        return view
+    }()
+    
     // MARK: - Life Cycle
     
     override func viewDidLoad() {
@@ -48,13 +59,7 @@ class AddEventController: UIViewController {
     private func setupUI() {
         setupNavigationBar()
         view.backgroundColor = .white
-//        view.addSubview(newEventImageView)
         view.addSubview(tableView)
-        
-//        newEventImageView.centerX(inView: view)
-//        newEventImageView.anchor(top: view.safeAreaLayoutGuide.topAnchor,
-//                                 paddingTop: 0)
-        
         tableView.anchor(top: view.safeAreaLayoutGuide.topAnchor,
                          left: view.leftAnchor,
                          bottom: view.safeAreaLayoutGuide.bottomAnchor,
@@ -67,6 +72,20 @@ class AddEventController: UIViewController {
         navigationController?.navigationBar.tintColor = .black
         //        tableView.contentInsetAdjustmentBehavior = .never
         //        tableView.setContentOffset(.init(x: 0, y: -2), animated: false)
+    }
+    
+    private func configureAnimationView() {
+        view.addSubview(loadingAnimationView)
+        loadingAnimationView.centerY(inView: view)
+        loadingAnimationView.centerX(inView: view)
+        loadingAnimationView.widthAnchor.constraint(equalToConstant: 150).isActive = true
+        loadingAnimationView.heightAnchor.constraint(equalTo: loadingAnimationView.widthAnchor).isActive = true
+    }
+    
+    private func stopAnimationView() {
+        loadingAnimationView.stop()
+        loadingAnimationView.alpha = 0
+        loadingAnimationView.removeFromSuperview()
     }
 }
 
@@ -84,7 +103,6 @@ extension AddEventController: UITableViewDataSource {
         }
         
         infoCell.delegate = self
-        //        infoCell.backgroundColor = .red
         return infoCell
     }
 }
@@ -179,10 +197,13 @@ extension AddEventController: UploadEventInfoCellDelegate {
         }
         print("event address \(userInputData.eventAddress)")
         let geoCoder = CLGeocoder()
-        geoCoder.geocodeAddressString(userInputData.eventAddress) { (placemarks, error) in
+        configureAnimationView()
+        self.view.isUserInteractionEnabled = false
+        geoCoder.geocodeAddressString(userInputData.eventAddress) { [weak self] (placemarks, error) in
+            guard let self = self else { return }
             print("geo coding")
             if let error = error {
-                print("error converting address \(error)")
+                self.presentErrorAlert(title: "Error", message: "error converting address \(error.localizedDescription))", completion: nil)
                 return
             }
             guard let placemarks = placemarks, let location = placemarks[0].location else {
@@ -212,14 +233,18 @@ extension AddEventController: UploadEventInfoCellDelegate {
                                          pendingUsersId: [])
                     
                     EventService.shared.postNewEvent(event: newEvent) { [weak self] error in
+                        guard let self = self else { return }
                         print("start uploading event")
                         guard error == nil else {
+                            self.presentErrorAlert(title: "Error", message: "Fail to upload event: \(error!.localizedDescription)", completion: nil)
                             print("Fail to upload event \(String(describing: error))")
                             return
                         }
                         
+                        self.stopAnimationView()
+                        self.view.isUserInteractionEnabled = true
                         print("Scussfully uploaded event")
-                        self?.navigationController?.popViewController(animated: true)
+                        self.navigationController?.popViewController(animated: true)
                     }
                 }
             }

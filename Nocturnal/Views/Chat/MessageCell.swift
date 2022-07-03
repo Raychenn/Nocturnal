@@ -8,25 +8,39 @@
 import UIKit
 import Kingfisher
 
+protocol MessageCellDelegate: AnyObject {
+    func performZoomInForStartingImageMessage(startingImageView: UIImageView)
+}
+
 class MessageCell: UICollectionViewCell {
+    
+    weak var delegate: MessageCellDelegate?
     
     var message: Message? {
         didSet {
             guard let message = message else { return  }
             textView.text = message.text
+            
+            if let messageUrlString = message.imageUrl, let messageUrl = URL(string: messageUrlString) {
+                messageImageView.isHidden = false
+                messageImageView.kf.setImage(with: messageUrl)
+                bubbleContainer.backgroundColor = .clear
+            } else {
+                messageImageView.isHidden = true
+            }
         }
     }
     
-     let profileImageView: UIImageView = {
-       let imageView = UIImageView()
-        imageView.contentMode = .scaleToFill
+    let profileImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.backgroundColor = .lightGray
         return imageView
     }()
     
     private let textView: UITextView = {
-       let textView = UITextView()
+        let textView = UITextView()
         textView.backgroundColor = .clear
         textView.font = .systemFont(ofSize: 20)
         textView.isScrollEnabled = false
@@ -36,8 +50,20 @@ class MessageCell: UICollectionViewCell {
         return textView
     }()
     
-     let bubbleContainer: UIView = {
-       let view = UIView()
+    lazy var messageImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.layer.cornerRadius = 16
+        imageView.clipsToBounds = true
+        imageView.backgroundColor = .clear
+        imageView.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleZoomin))
+        imageView.addGestureRecognizer(tap)
+        return imageView
+    }()
+    
+    let bubbleContainer: UIView = {
+        let view = UIView()
         view.backgroundColor = .purple
         
         return view
@@ -45,6 +71,17 @@ class MessageCell: UICollectionViewCell {
     
     var bubbleLeftAnchor: NSLayoutConstraint!
     var bubbleRightAnchor: NSLayoutConstraint!
+    var bubbleContainerWidthConst = NSLayoutConstraint()
+    
+    // MARK: - Selector
+    
+    @objc func handleZoomin(tapGesture: UITapGestureRecognizer) {
+        if let imageView = tapGesture.view as? UIImageView {
+            delegate?.performZoomInForStartingImageMessage(startingImageView: imageView)
+        } else {
+            print("Can not get image view from gesture")
+        }
+    }
     
     // MARK: - Life Cycle
     
@@ -55,19 +92,24 @@ class MessageCell: UICollectionViewCell {
         profileImageView.setDimensions(height: 36, width: 36)
         profileImageView.layer.cornerRadius = 36/2
         
+        // bubbleContainer's height will be dynamic based on textView's height (input texts)
         addSubview(bubbleContainer)
         bubbleContainer.layer.cornerRadius = 12
         bubbleContainer.anchor(top: topAnchor, bottom: bottomAnchor)
-        bubbleContainer.widthAnchor.constraint(lessThanOrEqualToConstant: 250).isActive = true
-
+        bubbleContainerWidthConst = bubbleContainer.widthAnchor.constraint(lessThanOrEqualToConstant: 250)
+        bubbleContainerWidthConst.isActive = true
+        // for incoming message
         bubbleLeftAnchor = bubbleContainer.leftAnchor.constraint(equalTo: profileImageView.rightAnchor, constant: 12)
         bubbleLeftAnchor.isActive = false
-        
+        // sending message from current user
         bubbleRightAnchor = bubbleContainer.rightAnchor.constraint(equalTo: rightAnchor, constant: -12)
         bubbleRightAnchor.isActive = false
-        
+        // text message
         bubbleContainer.addSubview(textView)
         textView.anchor(top: bubbleContainer.topAnchor, left: bubbleContainer.leftAnchor, bottom: bubbleContainer.bottomAnchor, right: bubbleContainer.rightAnchor, paddingTop: 4, paddingLeft: 12, paddingBottom: 4, paddingRight: 12)
+        // image message
+        bubbleContainer.addSubview(messageImageView)
+        messageImageView.anchor(top: bubbleContainer.topAnchor, left: bubbleContainer.leftAnchor, bottom: bubbleContainer.bottomAnchor, right: bubbleContainer.rightAnchor)
     }
     
     required init?(coder: NSCoder) {
@@ -77,21 +119,17 @@ class MessageCell: UICollectionViewCell {
     func configureFromCell(user: User) {
         guard let profileUrl = URL(string: user.profileImageURL) else { return }
         
-        guard let message = message else { return }
+        bubbleContainer.backgroundColor = .purple
         bubbleLeftAnchor.isActive = true
         bubbleRightAnchor.isActive = false
-        bubbleContainer.backgroundColor = .purple
         profileImageView.isHidden = false
         profileImageView.kf.setImage(with: profileUrl)
-        textView.text = message.text
     }
     
     func configureToCell() {
-        guard let message = message else { return }
+        bubbleContainer.backgroundColor = .lightGray
         bubbleLeftAnchor.isActive = false
         bubbleRightAnchor.isActive = true
-        bubbleContainer.backgroundColor = .lightGray
         profileImageView.isHidden = true
-        textView.text = message.text
     }
 }

@@ -15,4 +15,5 @@ target 'Nocturnal' do
   pod 'CHTCollectionViewWaterfallLayout'
   pod 'IQKeyboardManagerSwift'
   pod 'Charts'
+  pod 'lottie-ios'
 end

@@ -152,7 +152,7 @@ class FullMapController: UIViewController {
         request.source = MKMapItem(placemark: startingLocation)
         request.destination = MKMapItem(placemark: destination)
         request.transportType = .automobile
-        request.requestsAlternateRoutes = true
+        request.requestsAlternateRoutes = false
         return request
     }
     
@@ -179,9 +179,26 @@ extension FullMapController: CLLocationManagerDelegate {
 // MARK: - MKMapViewDelegate
 
 extension FullMapController: MKMapViewDelegate {
+    
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        
+        if annotation is MKUserLocation {
+            return nil
+        } else {
+            let annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: "annotationIdentifier")
+            annotationView.image = UIImage(named: "dj")
+            annotationView.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
+            annotationView.contentMode = .scaleAspectFit
+            annotationView.canShowCallout = true
+            annotationView.calloutOffset = CGPoint(x: -5, y: 5)
+            return annotationView
+        }
+    }
+    
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         guard let overlay = overlay as? MKPolyline else { return MKOverlayRenderer() }
         let renderer = MKPolylineRenderer(overlay: overlay)
+        renderer.lineWidth = 3
         renderer.strokeColor = .primaryBlue
         
         return renderer

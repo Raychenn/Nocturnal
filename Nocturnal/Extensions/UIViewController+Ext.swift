@@ -9,6 +9,19 @@ import UIKit
 
 extension UIViewController {
     
+    var keyWindow: UIWindow? {
+        // Get connected scenes
+        return UIApplication.shared.connectedScenes
+            // Keep only active scenes, onscreen and visible to the user
+            .filter { $0.activationState == .foregroundActive }
+            // Keep only the first `UIWindowScene`
+            .first(where: { $0 is UIWindowScene })
+            // Get its associated windows
+            .flatMap({ $0 as? UIWindowScene })?.windows
+            // Finally, keep only the key window
+            .first(where: \.isKeyWindow)
+    }
+    
     var isModal: Bool {
 
         let presentingIsModal = presentingViewController != nil
@@ -16,6 +29,31 @@ extension UIViewController {
         let presentingIsTabBar = tabBarController?.presentingViewController is UITabBarController
 
         return presentingIsModal || presentingIsNavigation || presentingIsTabBar
+    }
+    
+    func presentAlert(title: String?, message: String?, completion: (() -> Void)? = nil) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+            guard let completion = completion else { return }
+            completion()
+        }
+
+        alert.addAction(okAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func presentErrorAlert(title: String? = "Something went wrong", message: String?, completion: (() -> Void)? = nil) {
+        
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+            guard let completion = completion else { return }
+            completion()
+        }
+
+        alert.addAction(okAction)
+        
+        present(alert, animated: true, completion: nil)
     }
     
     func configureChatNavBar(withTitle: String, backgroundColor: UIColor? = UIColor.black, preferLargeTitles: Bool) {

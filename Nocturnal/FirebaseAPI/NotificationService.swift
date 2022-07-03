@@ -79,6 +79,7 @@ func postAceeptedNotification(to applicantUid: String, notification: Notificatio
             print("Fail to update notification \(String(describing: error))")
             return
         }
+        print("done updatePermissionNotification")
         // send response notification to applicant
         postNotification(to: applicantUid, notification: notification) { error in
             guard error == nil else {
@@ -86,14 +87,23 @@ func postAceeptedNotification(to applicantUid: String, notification: Notificatio
                 return
             }
            
+            print("done updateEventParticipants")
             // also need to add nitification.applicantId to event.participants array
             EventService.shared.updateEventParticipants(notification: notification) { error in
                 guard error == nil else {
                     print("Fail to update event \(String(describing: error))")
                     return
                 }
-                // add nitification.eventId to specified user's user.joinedEvents array
-                UserService.shared.updateUserToJoinEvent(uid: applicantUid, joinedEventId: notification.eventId, completion: completion)
+                print("done removeEventPendingUsers")
+                EventService.shared.removeEventPendingUsers(eventId: notification.eventId, applicantId: notification.applicantId) { error in
+                    guard error == nil else {
+                        print("Fail to remove pending user \(String(describing: error))")
+                        return
+                    }
+                    print("done updateUserToJoinEvent")
+                    // add nitification.eventId to specified user's user.joinedEvents array
+                    UserService.shared.updateUserToJoinEvent(uid: applicantUid, joinedEventId: notification.eventId, completion: completion)
+                }
             }
         }
     }
@@ -101,32 +111,40 @@ func postAceeptedNotification(to applicantUid: String, notification: Notificatio
 
 func postDeniedNotification(to applicantUid: String, notification: Notification, completion: FirestoreCompletion) {
     // finish here tomorrow (opposite of postAceeptedNotification)
+    print("postAceeptedNotification called")
     updatePermissionNotification(for: uid, isPermitted: notification.isRequestPermitted, notification: notification) { error in
         guard error == nil else {
             print("Fail to update notification \(String(describing: error))")
             return
         }
-        
+        print("done updatePermissionNotification")
         postNotification(to: applicantUid, notification: notification) { error in
             guard error == nil else {
                 print("Fail to post notification \(String(describing: error))")
                 return
             }
-            
+            print("done postNotification")
             EventService.shared.removeEventParticipants(notification: notification) { error in
                 guard error == nil else {
                     print("Fail to remove applicant from participants \(String(describing: error))")
                     return
                 }
-                
+                print("done removeEventParticipants")
                 EventService.shared.updateEventDeniedUsers(eventId: notification.eventId, applicantId: applicantUid) { error in
                     
                     guard error == nil else {
                         print("Fail to update EventDeniedUsers \(String(describing: error))")
                         return
                     }
-                    
-                    UserService.shared.removeUserFromEvent(uid: applicantUid, joinedEventId: notification.eventId, completion: completion)
+                    print("done updateEventDeniedUsers")
+                    EventService.shared.removeEventPendingUsers(eventId: notification.eventId, applicantId: notification.applicantId) { error in
+                        guard error == nil else {
+                            print("Fail to remove pending user \(String(describing: error))")
+                            return
+                        }
+                        print("done removeEventPendingUsers")
+                        UserService.shared.removeUserFromEvent(uid: applicantUid, joinedEventId: notification.eventId, completion: completion)
+                    }
                 }
             }
         }

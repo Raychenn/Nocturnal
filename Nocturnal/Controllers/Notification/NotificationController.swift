@@ -7,6 +7,8 @@
 
 import UIKit
 import FirebaseFirestore
+import FirebaseAuth
+import Lottie
 
 class NotificationController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
@@ -23,29 +25,50 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
         return table
     }()
     
-    private let currentUser: User
+    private let loadingAnimationView: AnimationView = {
+       let view = AnimationView(name: "empty-box")
+        view.loopMode = .loop
+        view.contentMode = .scaleAspectFill
+        view.animationSpeed = 1
+        view.backgroundColor = .clear
+        view.play()
+        return view
+    }()
     
-    var hosts: [User] = [] {
-        didSet {
-            tableView.reloadData()
-        }
-    }
+    private let emptyWarningLabel: UILabel = {
+       let label = UILabel()
+        label.text = "No Available Data yet"
+        label.font = .systemFont(ofSize: 30, weight: .bold)
+        label.textAlignment = .center
+        label.textColor = .white
+        return label
+    }()
     
-    var applicants: [User] = [] {
-        didSet {
-            tableView.reloadData()
-        }
-    }
+    private var currentUser: User
+    
+    var hosts: [User] = []
+    
+    var applicants: [User] = []
     
     var events: [Event] = [] 
     
-    var notifications: [Notification] = []
+    var notifications: [Notification] = [] {
+        didSet {
+            if notifications.count == 0 {
+                configureAnimationView()
+                configureEmptyWarningLabel()
+                presentLoadingView(shouldPresent: false)
+            } else {
+                loadingAnimationView.stop()
+                emptyWarningLabel.removeFromSuperview()
+            }
+        }
+    }
     
     // MARK: - Life Cyle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        fetchNotifications()
         setupUI()
     }
     
@@ -60,17 +83,30 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        fetchNotifications()
+        fetchCurrentUser { [weak self] user in
+            guard let self = self else { return }
+            self.currentUser = user
+            self.fetchNotifications()
+        }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        loadingAnimationView.stop()
+        emptyWarningLabel.removeFromSuperview()
     }
     
     // MARK: - API
     
     private func fetchNotifications() {
+        presentLoadingView(shouldPresent: true)
         NotificationService.shared.fetchNotifications(uid: currentUser.id ?? "") { result in
             switch result {
             case .success(let notifications):
                 self.notifications = self.getFilteredNotifications(notifications: notifications)
-                print("notifications count \(self.notifications.count)")
+                self.notifications = self.filterNotificationFromBlockedUsers(notifications: self.notifications)
+                print("filtered notifications after blocking users \(self.notifications.count)")
                 self.fetchEvents { [weak self] events in
                     guard let self = self else { return }
                     self.events = events
@@ -78,7 +114,19 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
                 }
                 
             case .failure(let error):
-                print("Fail to get notification \(error)")
+                self.presentErrorAlert(title: "Error", message: "Fail to get notification: \(error.localizedDescription)", completion: nil)
+            }
+        }
+    }
+    
+    private func fetchCurrentUser(completion: @escaping (User) -> Void) {
+        UserService.shared.fetchUser(uid: uid) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let user):
+                completion(user)
+            case .failure(let error):
+                self.presentErrorAlert(title: "Error", message: "\(error.localizedDescription)", completion: nil)
             }
         }
     }
@@ -86,13 +134,12 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     private func fetchEvents(completion: @escaping ([Event]) -> Void) {
         var eventsId: [String] = []
         notifications.forEach({ eventsId.append($0.eventId) })
-        
         EventService.shared.fetchEvents(fromEventIds: eventsId) { result in
             switch result {
             case .success(let events):
                 completion(events)
             case .failure(let error):
-                print("Fail to fetch event \(error)")
+                self.presentErrorAlert(title: "Error", message: "Fail to fetch event: \(error.localizedDescription)", completion: nil)
             }
         }
     }
@@ -103,7 +150,7 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
             case .success(let users):
                 completion(users)
             case .failure(let error):
-                print("Fail to fetch hosts \(error)")
+                self.presentErrorAlert(title: "Error", message: "Fail to fetch hosts: \(error.localizedDescription)", completion: nil)
             }
         }
     }
@@ -114,7 +161,7 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
             case .success(let users):
                 completion(users)
             case .failure(let error):
-                print("Fail to fetch applicants \(error)")
+                self.presentErrorAlert(title: "Error", message: "Fail to fetch applicants: \(error.localizedDescription)", completion: nil)
             }
         }
     }
@@ -125,21 +172,26 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
         var hostsId: [String] = []
         notifications.forEach({ hostsId.append($0.hostId) })
         
-        self.notifications.forEach { notification in
-            let type = NotificationType(rawValue: notification.type)
-            
-            if type == .joinEventRequest {
-                fetchApplicants(uids: applicantsId) { [weak self] applicants in
-                    guard let self = self else { return }
-                    self.applicants = applicants
-                }
-            } else {
-                // fetch hosts
-                fetchHosts(uids: hostsId) { [weak self] hosts in
-                    guard let self = self else { return }
-                    self.hosts = hosts
-                }
-            }
+        let group = DispatchGroup()
+    
+        group.enter()
+        fetchApplicants(uids: applicantsId) { [weak self] applicants in
+            group.leave()
+            guard let self = self else { return }
+            self.applicants = applicants
+            self.presentLoadingView(shouldPresent: false)
+        }
+        
+        group.enter()
+        fetchHosts(uids: hostsId) { [weak self] hosts in
+            group.leave()
+            guard let self = self else { return }
+            self.hosts = hosts
+            self.presentLoadingView(shouldPresent: false)
+        }
+        
+        group.notify(queue: .main) {
+            self.tableView.reloadData()
         }
     }
     
@@ -154,11 +206,56 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
         tableView.fillSuperview()
     }
     
+    private func configureAnimationView() {
+        view.addSubview(loadingAnimationView)
+        loadingAnimationView.centerY(inView: view)
+        loadingAnimationView.centerX(inView: view)
+        loadingAnimationView.widthAnchor.constraint(equalToConstant: view.frame.size.width - 20).isActive = true
+        loadingAnimationView.heightAnchor.constraint(equalTo: loadingAnimationView.widthAnchor).isActive = true
+        loadingAnimationView.play()
+    }
+    
+    private func configureEmptyWarningLabel() {
+        view.addSubview(emptyWarningLabel)
+        emptyWarningLabel.centerX(inView: loadingAnimationView)
+        emptyWarningLabel.anchor(top: loadingAnimationView.bottomAnchor, paddingTop: 15)
+    }
+    
+    private func stopAnimationView() {
+        loadingAnimationView.stop()
+        loadingAnimationView.alpha = 0
+        loadingAnimationView.removeFromSuperview()
+    }
+    
     private func getFilteredNotifications(notifications: [Notification]) -> [Notification] {
+        
+        guard let currentUid = Auth.auth().currentUser?.uid else {
+            print("current uid nil in explore VC")
+            return []
+        }
+        
       let result = notifications.filter { notification in
+          
             let type = NotificationType(rawValue: notification.type)
-            
-          return notification.applicantId != uid || type == .successJoinedEventResponse || type == .failureJoinedEventResponse
+          
+          return notification.applicantId != currentUid || type == .successJoinedEventResponse || type == .failureJoinedEventResponse
+        }
+        return result
+    }
+    
+    func filterNotificationFromBlockedUsers(notifications: [Notification]) -> [Notification] {
+        if currentUser.blockedUsersId.count == 0 {
+            return notifications
+        }
+        
+        var result: [Notification] = []
+        
+        currentUser.blockedUsersId.forEach { blockedId in
+            notifications.forEach { notification in
+                if notification.hostId != blockedId && notification.applicantId != blockedId {
+                    result.append(notification)
+                }
+            }
         }
         return result
     }
@@ -176,18 +273,31 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let notificationCell = tableView.dequeueReusableCell(withIdentifier: NotificationCell.identifier, for: indexPath) as? NotificationCell else { return UITableViewCell() }
         
+        notificationCell.delegate = self
+        
         let notification = notifications[indexPath.section]
-        let event = events[indexPath.row]
+        let event = events[indexPath.section]
         
         if applicants.count == 0 {
-            let host = hosts[indexPath.row]
+            let host = hosts[indexPath.section]
 
             notificationCell.configueCell(with: notification, user: host, event: event)
         } else if hosts.count == 0 {
-            let applicant = applicants[indexPath.row]
-        
+            let applicant = applicants[indexPath.section]
+            
             notificationCell.configueCell(with: notification, user: applicant, event: event)
-            notificationCell.delegate = self
+            
+        } else {
+            // have both applicants and hosts notifications
+            let type = NotificationType(rawValue: notification.type) ?? .none
+            let applicant = applicants[indexPath.section]
+            let host = hosts[indexPath.section]
+            
+            if type == .joinEventRequest {
+                notificationCell.configueCell(with: notification, user: applicant, event: event)
+            } else {
+                notificationCell.configueCell(with: notification, user: host, event: event)
+            }
         }
         
         return notificationCell
@@ -201,9 +311,6 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
         cell.layer.shadowPath = UIBezierPath(roundedRect: cell.bounds, cornerRadius: radius).cgPath
     }
     
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        100
-    }
 }
 
 // MARK: - NotificationCellDelegate
@@ -222,13 +329,17 @@ extension NotificationController: NotificationCellDelegate {
                                         sentTime: Timestamp(date: Date()),
                                         type: type, isRequestPermitted: true)
         
+        presentLoadingView(shouldPresent: true)
+        
         NotificationService.shared.postAceeptedNotification(to: selectedNotification.applicantId ,
-                                                          notification: notification) { error in
+                                                          notification: notification) { [weak self] error in
+            guard let self = self else { return }
             guard error == nil else {
                 print("Fail to postAcceptNotification \(String(describing: error))")
+                self.presentErrorAlert(title: "Error", message: "Fail to post accept notification: \(error!.localizedDescription)", completion: nil)
                 return
             }
-            
+            self.presentLoadingView(shouldPresent: false)
             print("Succesfully postAcceptNotification")
         }
     }
@@ -244,13 +355,17 @@ extension NotificationController: NotificationCellDelegate {
                                         hostId: selectedNotification.hostId,
                                         sentTime: Timestamp(date: Date()),
                                         type: type, isRequestPermitted: false)
-
-        NotificationService.shared.postDeniedNotification(to: selectedNotification.applicantId, notification: notification) { error in
+        
+        presentLoadingView(shouldPresent: true)
+        
+        NotificationService.shared.postDeniedNotification(to: selectedNotification.applicantId, notification: notification) { [weak self] error in
+            guard let self = self else { return }
             guard error == nil else {
-                print("Fail to postDeyNotification \(String(describing: error))")
+                self.presentErrorAlert(title: "Error", message: "Fail to post deny notification: \(error!.localizedDescription)", completion: nil)
+                print("Fail to post Deny Notification \(String(describing: error))")
                 return
             }
-            
+            self.presentLoadingView(shouldPresent: false)
             print("Succesfully postDeyNotification")
         }
     }

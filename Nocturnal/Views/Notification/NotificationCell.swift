@@ -68,7 +68,6 @@ class NotificationCell: UITableViewCell {
     
     var notification: Notification?
         
-    var applicantId: String?
     // MARK: - Life Cycle
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -84,7 +83,7 @@ class NotificationCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 10))
+        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 5))
     }
     
     override func prepareForReuse() {
@@ -105,11 +104,6 @@ class NotificationCell: UITableViewCell {
     }
     
     @objc func didTapPermissionButton() {
-        
-        guard let applicantId = applicantId else {
-            print("applicantId nil")
-            return
-        }
     
         guard var notification = notification else {
             print("notification nil")
@@ -124,9 +118,9 @@ class NotificationCell: UITableViewCell {
         permissionButton.setTitle(notification.isRequestPermitted ? "Deny": "Accept", for: .normal)
         permissionButton.backgroundColor = notification.isRequestPermitted ? .red: .deepBlue
         if notification.isRequestPermitted {
-            delegate?.cell(self, wantsToAccept: applicantId)
+            delegate?.cell(self, wantsToAccept: notification.applicantId)
         } else {
-            delegate?.cell(self, wantsToDeny: applicantId)
+            delegate?.cell(self, wantsToDeny: notification.applicantId)
         }
     }
     
@@ -135,30 +129,31 @@ class NotificationCell: UITableViewCell {
         self.notification = notification
         guard let type = NotificationType(rawValue: notification.type) else { return }
         
-        if type == .failureJoinedEventResponse || type == .successJoinedEventResponse {
-            permissionButton.isHidden = true
-            eventImageView.isHidden = false
-            titleLabel.attributedText(firstPart: user.name, secondPart: "\(type.description)")
-        } else {
-            permissionButton.isHidden = false
-            eventImageView.isHidden = false
-        }
         permissionButton.setTitle(notification.isRequestPermitted ? "Deny": "Accept", for: .normal)
         permissionButton.backgroundColor = notification.isRequestPermitted ? .red: .deepBlue
-        if type == .joinEventRequest {
-            applicantId = notification.applicantId
-            eventImageView.isHidden = true
-            titleLabel.attributedText(firstPart: user.name, secondPart: "\(type.description) to join \(event.title)")
-        }
-        
         timeLabel.text = "\(Date.dateTimeFormatter.string(from: notification.sentTime.dateValue()))"
         guard let profileUrl = URL(string: user.profileImageURL), let eventUrl = URL(string: event.eventImageURL) else {
             print("no profileImageURL")
             return
         }
-        
         profileImageView.kf.setImage(with: profileUrl)
         eventImageView.kf.setImage(with: eventUrl)
+        
+        if type == .failureJoinedEventResponse || type == .successJoinedEventResponse {
+            permissionButton.isHidden = true
+            eventImageView.isHidden = false
+            titleLabel.attributedText(firstPart: user.name, secondPart: "\(type.description)")
+        } else {
+            eventImageView.isHidden = true
+            permissionButton.isHidden = false
+            titleLabel.attributedText(firstPart: user.name, secondPart: " \(type.description) to join \(event.title)")
+//            eventImageView.isHidden = false
+        }
+        
+//        if type == .joinEventRequest {
+//
+//        }
+        
     }
     
     private func setupCellUI() {

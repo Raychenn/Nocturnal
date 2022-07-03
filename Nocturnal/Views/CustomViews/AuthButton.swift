@@ -6,7 +6,7 @@
 //
 
 import UIKit
-class AuthButton: UIButton {
+class AuthButton: UIButton, Buzzable {
     
     var title: String? {
         didSet {

@@ -7,4 +7,6 @@
 
 import FirebaseAuth
 
-var uid = Auth.auth().currentUser?.uid ?? "No User Found"
+var uid: String {
+    return Auth.auth().currentUser?.uid ?? "No User Found"
+}

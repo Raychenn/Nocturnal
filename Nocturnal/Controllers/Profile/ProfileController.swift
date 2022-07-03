@@ -40,6 +40,8 @@ class ProfileController: UIViewController {
     
     let gradient = CAGradientLayer()
     
+    private lazy var gradientView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 400))
+    
     private var isBlocked = false
     
     // MARK: - Life Cycle
@@ -60,12 +62,11 @@ class ProfileController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         fetchUser()
+        gradientView.layer.insertSublayer(gradient, at: 0)
         navigationController?.navigationBar.isHidden = true
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
+    override func viewDidDisappear(_ animated: Bool) {
         gradient.removeFromSuperlayer()
     }
     
@@ -93,6 +94,7 @@ class ProfileController: UIViewController {
             case .success(let user):
                 print("current user name in profile \(user.name)")
                 self.currentUser = user
+                self.collectionView.reloadData()
                 self.checkIfIsBlockedUser { isBlocked in
                     self.isBlocked = isBlocked
                     self.collectionView.reloadData()
@@ -178,13 +180,12 @@ extension ProfileController: UICollectionViewDelegate {
         profileHeader.shouldBlockUser = isBlocked
         profileHeader.configureHeader(user: currentUser)
 
-        let gradientView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 400))
         gradient.frame = gradientView.frame
         gradient.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
         gradient.locations = [0.0, 1.3]
-        gradientView.layer.insertSublayer(gradient, at: 0)
         profileHeader.profileImageView.addSubview(gradientView)
         profileHeader.bringSubviewToFront(gradientView)
+        
         profileHeader.delegate = self
         return profileHeader
     }
@@ -222,6 +223,7 @@ extension ProfileController: UICollectionViewDelegateFlowLayout {
 extension ProfileController: ProfileCellDelegate {
     func didTapEditProfile(cell: ProfileCell) {
         let editProfileVC = EditProfileController(user: currentUser)
+        editProfileVC.delegate = self
         navigationController?.pushViewController(editProfileVC, animated: true)
     }
     
@@ -248,6 +250,7 @@ extension ProfileController: JoinedEventCellDelegate {
     }
 }
 
+// MARK: - ProfileHeaderDelegate
 extension ProfileController: ProfileHeaderDelegate {
     
     func profileHeader(_ header: ProfileHeader, wantsToBlockUserWith id: String) {
@@ -275,4 +278,15 @@ extension ProfileController: ProfileHeaderDelegate {
             print("Succussfully unblocked user and pop up alert here..")
         }
     }
+}
+
+// MARK: - EditProfileControllerDelegate
+
+extension ProfileController: EditProfileControllerDelegate {
+    
+    func updateProfile() {
+        print("updateProfile in profile VC called")
+        fetchUser()
+    }
+    
 }

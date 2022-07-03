@@ -7,6 +7,7 @@
 
 import UIKit
 import Kingfisher
+import FirebaseAuth
 
 class ConversationCell: UITableViewCell {
     
@@ -80,8 +81,18 @@ class ConversationCell: UITableViewCell {
             profileImageView.kf.setImage(with: profileURL, placeholder: UIImage(systemName: "person.fill"))
         }
         
+        if conversation.message.imageUrl != nil {
+            if Auth.auth().currentUser?.uid == conversation.message.chatPartnerId {
+                messageLabel.text = "sent you a photo"
+            } else {
+                messageLabel.text = "you sent a photo"
+            }
+            
+        } else {
+            messageLabel.text = conversation.message.text
+        }
+        
         timestampLabel.text = Date.dateTimeFormatter.string(from: conversation.message.sentTime.dateValue())
         usernameLabel.text = conversation.user.name
-        messageLabel.text = conversation.message.text
     }
 }

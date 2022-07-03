@@ -44,9 +44,12 @@
 		ED1560AD286CA0AA0089121D /* SettingHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1560AC286CA0AA0089121D /* SettingHeader.swift */; };
 		ED1560B1286D46D10089121D /* BlockedUsersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1560B0286D46D10089121D /* BlockedUsersController.swift */; };
 		ED1560B3286D4B9A0089121D /* BlockListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1560B2286D4B9A0089121D /* BlockListCell.swift */; };
-		ED1560B6286D75B00089121D /* LottieWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1560B5286D75B00089121D /* LottieWrapper.swift */; };
 		ED180E5E286DE45C00FE57DE /* InputContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED180E5D286DE45C00FE57DE /* InputContainerView.swift */; };
 		ED180E61286DF54000FE57DE /* AddEventHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED180E60286DF54000FE57DE /* AddEventHeader.swift */; };
+		ED180EAB286ECA3200FE57DE /* cheers.json in Resources */ = {isa = PBXBuildFile; fileRef = ED180EAA286ECA3200FE57DE /* cheers.json */; };
+		ED180EB3286EDAD100FE57DE /* PopupAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED180EB2286EDAD100FE57DE /* PopupAlertController.swift */; };
+		ED180EB5286EE2D100FE57DE /* Buzzable+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED180EB4286EE2D100FE57DE /* Buzzable+Protocol.swift */; };
+		ED180EB7286EFC2F00FE57DE /* empty-box.json in Resources */ = {isa = PBXBuildFile; fileRef = ED180EB6286EFC2F00FE57DE /* empty-box.json */; };
 		ED191D0F2865873E009A10CC /* String+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED191D0E2865873E009A10CC /* String+Ext.swift */; };
 		ED194CB12859DF0700C9E5D3 /* MusicSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB02859DF0700C9E5D3 /* MusicSample.swift */; };
 		ED194CB62859E5D100C9E5D3 /* EventService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB52859E5D100C9E5D3 /* EventService.swift */; };
@@ -153,9 +156,12 @@
 		ED1560AC286CA0AA0089121D /* SettingHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingHeader.swift; sourceTree = "<group>"; };
 		ED1560B0286D46D10089121D /* BlockedUsersController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedUsersController.swift; sourceTree = "<group>"; };
 		ED1560B2286D4B9A0089121D /* BlockListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockListCell.swift; sourceTree = "<group>"; };
-		ED1560B5286D75B00089121D /* LottieWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieWrapper.swift; sourceTree = "<group>"; };
 		ED180E5D286DE45C00FE57DE /* InputContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputContainerView.swift; sourceTree = "<group>"; };
 		ED180E60286DF54000FE57DE /* AddEventHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventHeader.swift; sourceTree = "<group>"; };
+		ED180EAA286ECA3200FE57DE /* cheers.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = cheers.json; sourceTree = "<group>"; };
+		ED180EB2286EDAD100FE57DE /* PopupAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupAlertController.swift; sourceTree = "<group>"; };
+		ED180EB4286EE2D100FE57DE /* Buzzable+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Buzzable+Protocol.swift"; sourceTree = "<group>"; };
+		ED180EB6286EFC2F00FE57DE /* empty-box.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "empty-box.json"; sourceTree = "<group>"; };
 		ED191D0E2865873E009A10CC /* String+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Ext.swift"; sourceTree = "<group>"; };
 		ED194CB02859DF0700C9E5D3 /* MusicSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicSample.swift; sourceTree = "<group>"; };
 		ED194CB52859E5D100C9E5D3 /* EventService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventService.swift; sourceTree = "<group>"; };
@@ -288,6 +294,8 @@
 				ED0A4844285873DC004661BB /* LaunchScreen.storyboard */,
 				ED0A4847285873DC004661BB /* Info.plist */,
 				ED1560A6286BF4AD0089121D /* GoogleService-Info.plist */,
+				ED180EB6286EFC2F00FE57DE /* empty-box.json */,
+				ED180EAA286ECA3200FE57DE /* cheers.json */,
 			);
 			path = Nocturnal;
 			sourceTree = "<group>";
@@ -352,6 +360,7 @@
 				ED204B21285DB16F0016FDCA /* UILabel+Ext.swift */,
 				ED191D0E2865873E009A10CC /* String+Ext.swift */,
 				ED1560A8286C4C7B0089121D /* UIWindow+Ext.swift */,
+				ED180EB4286EE2D100FE57DE /* Buzzable+Protocol.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -420,6 +429,7 @@
 				ED0E58222860758F00064C02 /* MessageInputAccessoryView.swift */,
 				EDC663F128619407007FEF82 /* NTSegmentControl.swift */,
 				ED180E5D286DE45C00FE57DE /* InputContainerView.swift */,
+				ED180EB2286EDAD100FE57DE /* PopupAlertController.swift */,
 			);
 			path = CustomViews;
 			sourceTree = "<group>";
@@ -455,7 +465,6 @@
 		ED1560B4286D75960089121D /* LottieWrapper */ = {
 			isa = PBXGroup;
 			children = (
-				ED1560B5286D75B00089121D /* LottieWrapper.swift */,
 			);
 			path = LottieWrapper;
 			sourceTree = "<group>";
@@ -679,9 +688,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED0A4846285873DC004661BB /* LaunchScreen.storyboard in Resources */,
+				ED180EAB286ECA3200FE57DE /* cheers.json in Resources */,
 				EDEF691828687D3E00F944BF /* powerfultrap.mp3 in Resources */,
 				EDEF691528687D3E00F944BF /* enigma.mp3 in Resources */,
 				EDEF691928687D3E00F944BF /* extreme.mp3 in Resources */,
+				ED180EB7286EFC2F00FE57DE /* empty-box.json in Resources */,
 				EDC3361C2859DC4100A6A95A /* slowmotion.mp3 in Resources */,
 				EDC3361A2859DC4100A6A95A /* relaxing.mp3 in Resources */,
 				ED0A4843285873DC004661BB /* Assets.xcassets in Resources */,
@@ -800,10 +811,10 @@
 				ED81C3DB285D9804004C12EA /* NotificationService.swift in Sources */,
 				EDD1032D28603F8800AECAD9 /* DateHeaderLabel.swift in Sources */,
 				ED0422E028644F8E005C20EE /* EditProfileCell.swift in Sources */,
-				ED1560B6286D75B00089121D /* LottieWrapper.swift in Sources */,
 				ED847A0A285C764000F33C7F /* MKMapView+Ext.swift in Sources */,
 				ED847A04285B870500F33C7F /* StretchyTableHeaderView.swift in Sources */,
 				EDD1032528601EBA00AECAD9 /* ChatController.swift in Sources */,
+				ED180EB3286EDAD100FE57DE /* PopupAlertController.swift in Sources */,
 				ED0A483C285873DB004661BB /* SceneDelegate.swift in Sources */,
 				ED194CB12859DF0700C9E5D3 /* MusicSample.swift in Sources */,
 				ED847A1C285CE5E700F33C7F /* User.swift in Sources */,
@@ -827,6 +838,7 @@
 				ED847A02285B7FCA00F33C7F /* MKPlacemark+Ext.swift in Sources */,
 				ED847A06285C6EBA00F33C7F /* MediaPlayerView.swift in Sources */,
 				ED194CB82859E62F00C9E5D3 /* Event.swift in Sources */,
+				ED180EB5286EE2D100FE57DE /* Buzzable+Protocol.swift in Sources */,
 				ED0B424628588750000680C2 /* UIFont+Ext.swift in Sources */,
 				ED8B1EF32860CC4B008A0ECB /* MessageService.swift in Sources */,
 				ED0A485928587BDE004661BB /* StatsController.swift in Sources */,
@@ -995,7 +1007,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Nocturnal/Nocturnal.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 8572WS27HD;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Nocturnal/Info.plist;
@@ -1004,6 +1016,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1027,7 +1040,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Nocturnal/Nocturnal.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 8572WS27HD;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Nocturnal/Info.plist;
@@ -1036,6 +1049,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (

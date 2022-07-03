@@ -16,6 +16,7 @@ class ChatController: UICollectionViewController {
     private lazy var messageInputView: MessageInputAccessoryView = {
         let view = MessageInputAccessoryView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 50))
         view.delegate = self
+        
         return view
     }()
     
@@ -32,6 +33,12 @@ class ChatController: UICollectionViewController {
         textField.placeholder = "Enter messages..."
         return textField
     }()
+    
+    private var startingFrame: CGRect?
+    
+    private var blackBackgroundView: UIView?
+    
+    private var startingImageView: UIImageView?
     
     private var chatMessages: [[Message]] = []
     
@@ -88,6 +95,7 @@ class ChatController: UICollectionViewController {
             case .success(let message):
                 self.messages.append(message)
                 self.collectionView.reloadData()
+                print("reloaded")
                 self.collectionView.scrollToItem(at: [0, self.messages.count - 1], at: .bottom, animated: true)
             case .failure(let error):
                 print("Fail to fetch messages \(error)")
@@ -109,19 +117,6 @@ class ChatController: UICollectionViewController {
 //        }
 //    }
     
-//    private func fetchUser(completion: @escaping () -> Void) {
-//        let chatPartnerId = user.id ?? ""
-//        UserService.shared.fetchUser(uid: chatPartnerId) { result in
-//            switch result {
-//            case .success(let user):
-//                self.chatPartner = user
-//                completion()
-//            case .failure(let error):
-//                print("Fail to fetch user \(error)")
-//            }
-//        }
-//    }
-    
     // MARK: - Helpers
     
     private func setupUI() {
@@ -131,9 +126,33 @@ class ChatController: UICollectionViewController {
         collectionView.alwaysBounceVertical = true
         collectionView.keyboardDismissMode = .interactive
     }
-//    func numberOfSections(in tableView: UITableView) -> Int {
-//        textMessages.count
-//    }
+
+    private func estimatedFrameForText(text: String) -> CGRect {
+        let size = CGSize(width: 200, height: 1000)
+        let options = NSStringDrawingOptions.usesLineFragmentOrigin
+        
+        return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 20)], context: nil)
+    }
+    
+    // MARK: - Selectors
+    
+    @objc func handleZoomOut(tapGesture: UITapGestureRecognizer) {
+        
+        if let zoomOutImageView = tapGesture.view, let startingFrame = self.startingFrame {
+            // prevent the abrupt corner radius chagnes when zooming back in
+            zoomOutImageView.layer.cornerRadius = 16
+            zoomOutImageView.clipsToBounds = true
+            
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut) {
+                zoomOutImageView.frame = startingFrame
+                self.blackBackgroundView?.alpha = 0
+                self.inputAccessoryView?.alpha = 1
+            } completion: { _ in
+                zoomOutImageView.removeFromSuperview()
+                self.startingImageView?.isHidden = false
+            }
+        }
+    }
 
     // MARK: - CollectionView DataSource
     
@@ -143,16 +162,25 @@ class ChatController: UICollectionViewController {
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let messageCell = collectionView.dequeueReusableCell(withReuseIdentifier: MessageCell.identifier, for: indexPath) as? MessageCell else { return UICollectionViewCell() }
-      
+        messageCell.delegate = self
+        
         let message = messages[indexPath.item]
         
-        messageCell.message = message
-        
+        if let text = message.text {
+            messageCell.bubbleContainerWidthConst.constant = estimatedFrameForText(text: text).width + 40
+        } else if message.imageUrl != nil {
+            // fall in here if it is a image message
+            messageCell.bubbleContainerWidthConst.constant = 200
+        }
+       
         if message.fromId == uid {
             messageCell.configureToCell()
         } else {
             messageCell.configureFromCell(user: user)
         }
+        
+        messageCell.message = message
+        
         return messageCell
     }
 }
@@ -163,15 +191,23 @@ extension ChatController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        let frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 50)
-        let estimatedSizeCell = MessageCell(frame: frame)
-        estimatedSizeCell.message = messages[indexPath.row]
-        estimatedSizeCell.layoutIfNeeded()
+        let message = messages[indexPath.row]
         
-        let targetSize = CGSize(width: view.frame.width, height: 1000)
-        let estimatedSize = estimatedSizeCell.systemLayoutSizeFitting(targetSize)
+        var estimatedHeight: CGFloat = 80
         
-        return .init(width: view.frame.width, height: estimatedSize.height)
+        if let text = message.text {
+            estimatedHeight = estimatedFrameForText(text: text).height + 25
+        } else if let imageWidth = message.imageWidth, let imageHeight = message.imageHeight {
+            // determine estimated height for image message bubble container
+            
+            // h1 / w1 = h2 / w2
+            // solve for h1
+            // h1 = h2 / w2 * w1
+            estimatedHeight = CGFloat(imageHeight / imageWidth * 200)
+//            estimatedHeight = 120
+        }
+                
+        return .init(width: view.frame.width, height: estimatedHeight)
     }
 }
 
@@ -181,6 +217,7 @@ extension ChatController: MessageInputAccessoryViewDelegate {
     func handleSentImage(_ inputView: MessageInputAccessoryView) {
         print("did tap handleSentImage")
         let imagePicker = UIImagePickerController()
+        imagePicker.allowsEditing = true
         imagePicker.delegate = self
         present(imagePicker, animated: true)
     }
@@ -190,13 +227,15 @@ extension ChatController: MessageInputAccessoryViewDelegate {
         
         let isFromCurrentUser = user.id ?? "" == uid
         // send message to firestore
-        let message = Message(toId: user.id ?? "", fromId: uid, text: message, user: user, sentTime: Timestamp(date: Date()), isFromCurrenUser: isFromCurrentUser)
-        
-        MessegeService.shared.uploadMessage(message, to: user) { error in
+        let message = Message(toId: user.id ?? "", fromId: uid, text: message, imageUrl: nil, user: user, sentTime: Timestamp(date: Date()), isFromCurrenUser: isFromCurrentUser)
+        presentLoadingView(shouldPresent: true)
+        MessegeService.shared.uploadMessage(message, to: user) { [weak self] error in
+            guard let self = self else { return }
             if let error = error {
                 print("Fail to send message \(error)")
                 return
             }
+            self.presentLoadingView(shouldPresent: false)
             print("Successfully sending message")
         }
     }
@@ -204,13 +243,92 @@ extension ChatController: MessageInputAccessoryViewDelegate {
 
 // MARK: - UIImagePickerControllerDelegate, UINavigationControllerDelegate
 extension ChatController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
         guard let selectedPhoto = info[.editedImage] as? UIImage else { return }
         
         // upload image to firebase
-        
+        presentLoadingView(shouldPresent: true)
+        StorageUploader.shared.uploadMessageImage(with: selectedPhoto) { [weak self] downloadedImageUrl in
+            guard let self = self else { return }
+            
+            let isFromCurrentUser = self.user.id ?? "" == uid
+            // send message to firestore
+            let message = Message(toId: self.user.id ?? "",
+                                  fromId: uid, text: nil,
+                                  imageUrl: downloadedImageUrl,
+                                  imageHeight: selectedPhoto.size.height,
+                                  imageWidth: selectedPhoto.size.width,
+                                  user: self.user,
+                                  sentTime: Timestamp(date: Date()),
+                                  isFromCurrenUser: isFromCurrentUser)
+            
+            MessegeService.shared.uploadMessage(message, to: self.user) { error in
+                if let error = error {
+                    print("Fail to send message \(error)")
+                    return
+                }
+                self.presentLoadingView(shouldPresent: false)
+                print("Successfully sending message")
+            }
+        }
         self.dismiss(animated: true, completion: nil)
     }
+}
+
+// MARK: - MessageCellDelegate
+extension ChatController: MessageCellDelegate {
+    
+    func performZoomInForStartingImageMessage(startingImageView: UIImageView) {
+        // hold the reference to startingImageView so that when zooming in, we hide the imageView first and unhide it after removing the zoomingImageView completely
+        self.startingImageView = startingImageView
+        self.startingImageView?.isHidden = true
+        // get the frame for the entire cell
+        guard let startingFrame = startingImageView.superview?.convert(startingImageView.frame, to: nil) else {
+            print("can not convert zooming frame")
+            return
+        }
+        
+        self.startingFrame = startingFrame
+    
+        guard let safeStartingFrame = self.startingFrame else {
+            print("no starting frame ...")
+            return
+        }
+        
+        let zoomingImageView = UIImageView(frame: safeStartingFrame)
+        zoomingImageView.image = startingImageView.image
+        zoomingImageView.isUserInteractionEnabled = true
+        let zoomingImageViewTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleZoomOut))
+        zoomingImageView.addGestureRecognizer(zoomingImageViewTapGesture)
+
+        guard let keyWindow = self.keyWindow else {
+            print("can not get keywindow")
+            return
+        }
+        
+        self.blackBackgroundView = UIView(frame: keyWindow.frame)
+        guard let blackBackgroundView = blackBackgroundView else {
+            print("blackBackgroundView nil")
+            return
+        }
+        blackBackgroundView.backgroundColor = .black
+        blackBackgroundView.alpha = 0
+        keyWindow.addSubview(blackBackgroundView)
+        
+        keyWindow.addSubview(zoomingImageView)
+        
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut) {
+            blackBackgroundView.alpha = 1
+            self.inputAccessoryView?.alpha = 0
+            // get the correct height
+            // h2 / w2 = h1 / w1
+            // h2 = h1 / w1 * w2
+            let height = safeStartingFrame.height / safeStartingFrame.width * keyWindow.frame.width
+            zoomingImageView.frame = CGRect(x: 0, y: 0, width: keyWindow.frame.width, height: height)
+            zoomingImageView.center = keyWindow.center
+        } completion: { _ in
+            // do nothing
+        }
+    }
+    
 }

@@ -13,6 +13,8 @@ class RegistrationController: UIViewController {
     
     private var profileImage: UIImage?
     
+    let popupVC = PopupAlertController()
+    
     private lazy var plusPhotoButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(named: "plus_photo"), for: .normal)
@@ -52,7 +54,7 @@ class RegistrationController: UIViewController {
     
     private let fullNameTextField: UITextField = CustomTextField(placeholder: "Full Name")
         
-    private lazy var signUpButton: UIButton = {
+    private lazy var signUpButton: AuthButton = {
         let button = AuthButton(type: .system)
         button.title = "Sign Up"
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
@@ -72,25 +74,12 @@ class RegistrationController: UIViewController {
         super.viewDidLoad()
         
         confiureUI()
-        configureNotificationObserver()
     }
     
     // MARK: - selectors
     
     @objc func handleShowLogIn() {
         navigationController?.popViewController(animated: true)
-    }
-    
-    @objc func textDidChange(_ sender: UITextField) {
-        if sender == emailTextField {
-            
-        } else if sender == passwordTextField {
-            
-        } else if sender == fullNameTextField {
-            
-        } else {
-            
-        }
     }
     
     @objc func didTapplusPhotoButton() {
@@ -103,13 +92,22 @@ class RegistrationController: UIViewController {
     
     @objc func handleSignUp() {
         
-        guard let email = emailTextField.text else { return }
-        guard let password = passwordTextField.text else { return }
-        guard let fullName = fullNameTextField.text else { return }
-        guard let profileImage = self.profileImage else { return }
+        guard let email = emailTextField.text,
+              let password = passwordTextField.text,
+              let fullName = fullNameTextField.text,
+              let profileImage = self.profileImage,
+              !email.isEmpty, !password.isEmpty, !fullName.isEmpty else {
+            
+            popupVC.modalTransitionStyle = .crossDissolve
+            popupVC.modalPresentationStyle = .overCurrentContext
+            popupVC.delegate = self
+            signUpButton.buzz()
+            self.present(popupVC, animated: true)
+            return
+        }
         
         signUpButton.configuration?.showsActivityIndicator = true
-        
+        presentLoadingView(shouldPresent: true)
         StorageUploader.shared.uploadProfileImage(with: profileImage) { downloadedImgURL in
             
             let defaultGender = Gender.unspecified.rawValue
@@ -129,14 +127,32 @@ class RegistrationController: UIViewController {
             AuthService.shared.registerUser(withUser: user, password: password) { [weak self] error in
                 guard let self = self else { return }
                 guard error == nil else {
-                    print("Error signing user up \(String(describing: error))")
+                    self.presentErrorAlert(title: "Error", message: error!.localizedDescription, completion: nil)
                     return
                 }
+                var keyWindow: UIWindow? {
+                    // Get connected scenes
+                    return UIApplication.shared.connectedScenes
+                        // Keep only active scenes, onscreen and visible to the user
+                        .filter { $0.activationState == .foregroundActive }
+                        // Keep only the first `UIWindowScene`
+                        .first(where: { $0 is UIWindowScene })
+                        // Get its associated windows
+                        .flatMap({ $0 as? UIWindowScene })?.windows
+                        // Finally, keep only the key window
+                        .first(where: \.isKeyWindow)
+                }
+
+                guard let tab = keyWindow?.rootViewController as? MainTabBarController else {
+                    print("no tab bar controller")
+                    return
+                }
+
+                print("successfully register user with firestore")
+                self.presentLoadingView(shouldPresent: false)
+                tab.authenticateUserAndConfigureUI()
                 self.signUpButton.configuration?.showsActivityIndicator = false
                 self.dismiss(animated: true)
-                print("successfully register user with firestore")
-                // call homeController to configureUI again
-                
             }
         }
     }
@@ -154,7 +170,7 @@ class RegistrationController: UIViewController {
         let stack = UIStackView(arrangedSubviews: [emailContainerView, passwordContainerView, fullnameContainerView, signUpButton])
         stack.axis = .vertical
         stack.distribution = .fillEqually
-        stack.spacing = 20
+        stack.spacing = 15
         
         view.addSubview(stack)
         stack.anchor(top: plusPhotoButton.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 32, paddingLeft: 32, paddingRight: 32)
@@ -163,13 +179,6 @@ class RegistrationController: UIViewController {
         alreadyHasAcouuntButton.centerX(inView: view)
         alreadyHasAcouuntButton.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor)
         
-    }
-    
-    private func configureNotificationObserver() {
-        
-        emailTextField.addTarget(self, action: #selector(textDidChange), for: .editingChanged)
-        passwordTextField.addTarget(self, action: #selector(textDidChange), for: .editingChanged)
-        fullNameTextField.addTarget(self, action: #selector(textDidChange), for: .editingChanged)
     }
 }
 
@@ -190,4 +199,12 @@ extension RegistrationController: UIImagePickerControllerDelegate, UINavigationC
         profileImage = selectedPhoto
         self.dismiss(animated: true, completion: nil)
     }
+}
+
+extension RegistrationController: PopupAlertControllerDelegate {
+    
+    func handleDismissal() {
+        popupVC.dismiss(animated: true)
+    }
+
 }

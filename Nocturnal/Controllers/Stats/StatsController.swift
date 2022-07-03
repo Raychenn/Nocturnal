@@ -7,11 +7,12 @@
 
 import UIKit
 import Charts
+import Lottie
 
 class StatsController: UIViewController, ChartViewDelegate {
 
     // MARK: - Properties
-    private let user: User
+    private var user: User
     
     private lazy var pieChartView = PieChartView(frame: .zero)
     
@@ -20,11 +21,16 @@ class StatsController: UIViewController, ChartViewDelegate {
     private var currentJoinedEvents: [Event] = [] {
         didSet {
             if currentJoinedEvents.count == 0 {
-                
+                configureAnimationView()
+                configureEmptyWarningLabel()
             } else {
+                loadingAnimationView.stop()
+                emptyWarningLabel.removeFromSuperview()
+                resetData()
                 self.fetchEventStyles()
-                self.setupPieChart()
+                self.setupStyleCounts()
                 self.calculateCost()
+                self.setupPieChart()
                 self.setupBarChart()
             }
         }
@@ -42,6 +48,25 @@ class StatsController: UIViewController, ChartViewDelegate {
     var metalCounts: Double = 0
     var costs: [Double] = []
     
+    private let loadingAnimationView: AnimationView = {
+       let view = AnimationView(name: "empty-box")
+        view.loopMode = .loop
+        view.contentMode = .scaleAspectFill
+        view.animationSpeed = 1
+        view.backgroundColor = .clear
+        view.play()
+        return view
+    }()
+    
+    private let emptyWarningLabel: UILabel = {
+       let label = UILabel()
+        label.text = "No Available Data yet"
+        label.font = .systemFont(ofSize: 30, weight: .bold)
+        label.textAlignment = .center
+        label.textColor = .white
+        return label
+    }()
+    
     // MARK: - Life Cycle
     
     override func viewDidLoad() {
@@ -53,7 +78,25 @@ class StatsController: UIViewController, ChartViewDelegate {
     init(user: User) {
         self.user = user
         super.init(nibName: nil, bundle: nil)
-        fetchJoinedEvents()
+        self.fetchJoinedEvents()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+                
+        presentLoadingView(shouldPresent: true)
+        fetchCurrentUser { [weak self] user in
+            guard let self = self else { return }
+            self.user = user
+            self.fetchJoinedEvents()
+        }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        loadingAnimationView.stop()
+        emptyWarningLabel.removeFromSuperview()
     }
     
     required init?(coder: NSCoder) {
@@ -63,19 +106,67 @@ class StatsController: UIViewController, ChartViewDelegate {
     // MARK: - API
     
     private func fetchJoinedEvents() {
+        presentLoadingView(shouldPresent: true)
         EventService.shared.fetchEvents(fromEventIds: user.joinedEventsId) { [weak self] result in
             guard let self = self else { return }
             
             switch result {
             case .success(let events):
                 self.currentJoinedEvents = events
+                self.presentLoadingView(shouldPresent: false)
             case .failure(let error):
                 print("Fail to fetch events \(error)")
             }
         }
     }
     
+    private func fetchCurrentUser(completion: @escaping (User) -> Void) {
+        UserService.shared.fetchUser(uid: uid) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let user):
+                completion(user)
+            case .failure(let error):
+                self.presentErrorAlert(title: "Error", message: "\(error.localizedDescription)", completion: nil)
+            }
+        }
+    }
+    
     // MARK: - Helpers
+    
+    private func resetData() {
+        rockCounts = 0
+        rappingCounts = 0
+        edmCounts = 0
+        discoCounts = 0
+        hippopCounts = 0
+        jazzCounts = 0
+        kpopCounts = 0
+        metalCounts = 0
+        costs = []
+        joinedEventStyles = []
+    }
+    
+    private func configureEmptyWarningLabel() {
+        view.addSubview(emptyWarningLabel)
+        emptyWarningLabel.centerX(inView: loadingAnimationView)
+        emptyWarningLabel.anchor(top: loadingAnimationView.bottomAnchor, paddingTop: 15)
+    }
+    
+    private func configureAnimationView() {
+        view.addSubview(loadingAnimationView)
+        loadingAnimationView.centerY(inView: view)
+        loadingAnimationView.centerX(inView: view)
+        loadingAnimationView.widthAnchor.constraint(equalToConstant: view.frame.size.width - 20).isActive = true
+        loadingAnimationView.heightAnchor.constraint(equalTo: loadingAnimationView.widthAnchor).isActive = true
+        loadingAnimationView.play()
+    }
+    
+    private func stopAnimationView() {
+        loadingAnimationView.stop()
+        loadingAnimationView.alpha = 0
+        loadingAnimationView.removeFromSuperview()
+    }
     
     func setupUI() {
         view.backgroundColor = .systemBackground
@@ -101,8 +192,6 @@ class StatsController: UIViewController, ChartViewDelegate {
         
         pieChartView.chartDescription.text = "Monthly joined event styles"
         
-        setupStyleCounts()
-        
         let dataEntries: [PieChartDataEntry] = [
             PieChartDataEntry(value: rockCounts, label: "Rock"),
             PieChartDataEntry(value: rappingCounts, label: "Rapping"),
@@ -121,6 +210,7 @@ class StatsController: UIViewController, ChartViewDelegate {
     }
     
     func setupStyleCounts() {
+        
         joinedEventStyles.forEach { style in
             switch style {
             case .rock:
@@ -148,13 +238,9 @@ class StatsController: UIViewController, ChartViewDelegate {
         
         barChartView.anchor(top: pieChartView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 10, paddingLeft: 15, paddingRight: 15, height: 300)
 
-        // Configure Axis
-//        let xAxis = barChart.xAxis
-//        xAxis.labelFont = UIFont.systemFont(ofSize: 20, weight: .black)
-        
         var entries: [BarChartDataEntry] = []
         
-        for index in 0..<joinedEventStyles.count {
+        for index in 0..<currentJoinedEvents.count {
             entries.append(BarChartDataEntry(x: Double(index), y: costs[index]))
         }
         

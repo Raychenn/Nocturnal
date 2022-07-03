@@ -10,6 +10,7 @@ import Kingfisher
 import CoreLocation
 import Contacts
 import MapKit
+import FirebaseAuth
 
 protocol DetailInfoCellDelegate: AnyObject {
     func playMusic(cell: DetailInfoCell, musicURL: String)
@@ -116,7 +117,7 @@ class DetailInfoCell: UITableViewCell {
     
     private let hostNameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .medium)
+        label.font = .systemFont(ofSize: 17, weight: .bold)
         label.text = "Host: Ray Chen"
         label.textColor = .lightGray
         return label
@@ -236,7 +237,7 @@ class DetailInfoCell: UITableViewCell {
     // MARK: - Heleprs
 
     func configureCell(with event: Event, host: User) {
-        backgroundColor = .black
+        backgroundColor = UIColor.hexStringToUIColor(hex: "#161616")
         self.hostProfileImageView.kf.setImage(with: URL(string: host.profileImageURL)!)
         self.hostNameLabel.text = host.name
         self.event = event
@@ -259,6 +260,10 @@ class DetailInfoCell: UITableViewCell {
         styleLabel.text = "Event Style: \(event.style)"
         feeLabel.text = "$\(String(event.fee))"
         joinedMembersLabel.text = "Joined Members: \(event.participants.count)"
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("uid in nil")
+            return
+        }
         chatButton.isHidden = uid == event.hostID
         deleteImageView.isHidden = uid != event.hostID
     }

@@ -114,8 +114,11 @@ class EditProfileCell: UITableViewCell {
     
     // MARK: - Helpers
     func configureCell(with user: User) {
-        firstnameField.text = user.name
         
+        let firstname = String(user.name.split(separator: " ")[0])
+        let familyname = String(user.name.split(separator: " ")[1])
+        firstnameField.text = firstname
+        familynameField.text = familyname
         emailField.text = user.email
         countryField.text = user.country
         let gender = Gender(rawValue: user.gender) ?? .unspecified
@@ -132,6 +135,10 @@ class EditProfileCell: UITableViewCell {
         
         datePicker.date = user.birthday.dateValue()
         bioInputTextView.text = user.bio
+        
+        if !bioInputTextView.text.isEmpty {
+            bioInputTextView.placeholderText = nil
+        }
     }
     
     func setupTextFields() {
@@ -207,8 +214,11 @@ class EditProfileCell: UITableViewCell {
             return
         }
         let currentGender = Gender(rawValue: currentUser.gender) ?? .unspecified
-        self.data.firstname = firstnameField.text ?? currentUser.name
-        self.data.familyname = familynameField.text ?? currentUser.name
+        let inputName = "\(firstnameField.text ?? currentUser.name) \(familynameField.text ?? currentUser.name)"
+        let firstname = String(inputName.split(separator: " ")[0])
+        let familyname = String(inputName.split(separator: " ")[1])
+        self.data.firstname = firstname
+        self.data.familyname = familyname
         self.data.email = emailField.text ?? currentUser.email
         self.data.country = countryField.text ?? currentUser.country
         self.data.birthday = Timestamp(date: selectedBirthday ?? Date())

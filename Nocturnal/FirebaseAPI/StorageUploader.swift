@@ -12,6 +12,33 @@ struct StorageUploader {
     
     static let shared = StorageUploader()
     
+    func uploadMessageImage(with image: UIImage, completion: @escaping (String) -> Void) {
+        
+        // make the file a little smaller
+        guard let imageData = image.jpegData(compressionQuality: 0.4) else { return }
+        let fileName = UUID().uuidString
+        
+        let ref = Storage.storage().reference(withPath: "message_images/\(fileName)")
+        
+        ref.putData(imageData, metadata: nil) { _, error in
+            if let error = error {
+                print("fail to upload image: \(error.localizedDescription)")
+                return
+            }
+            
+            ref.downloadURL { url, error in
+                guard error == nil else {
+                    print("error downloading images \(String(describing: error))")
+                    return
+                }
+                
+                guard let imageUrl = url?.absoluteString else { return }
+                
+                completion(imageUrl)
+            }
+        }
+    }
+    
     func uploadEventImage(with image: UIImage, completion: @escaping (String) -> Void) {
         
         // make the file a little smaller
@@ -28,7 +55,7 @@ struct StorageUploader {
             
             ref.downloadURL { url, error in
                 guard error == nil else {
-                    print("error downloading images")
+                    print("error downloading images \(String(describing: error))")
                     return
                 }
                 

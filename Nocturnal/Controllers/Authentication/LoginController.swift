@@ -44,7 +44,7 @@ class LoginController: UIViewController {
         return textField
     }()
     
-    private lazy var loginButton: UIButton = {
+    private lazy var loginButton: AuthButton = {
         let button = AuthButton(type: .system)
         button.setHeight(50)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
@@ -77,6 +77,8 @@ class LoginController: UIViewController {
         return button
     }()
     
+    let popupVC = PopupAlertController()
+    
     var currentNonce: String?
     
     // MARK: - life cycle
@@ -84,7 +86,6 @@ class LoginController: UIViewController {
         super.viewDidLoad()
         
         configureUI()
-        configureNotificationObserver()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -100,50 +101,48 @@ class LoginController: UIViewController {
         navigationController?.pushViewController(controller, animated: true)
     }
     
-    @objc func textDidChange(_ sender: UITextField) {
-        if sender == emailTextField {
-            
-        } else {
-            
-        }
-    }
-    
     @objc func handleLogIn() {
-        guard let email = emailTextField.text else { return }
-        guard let password = passwordTextField.text else { return }
-        
-        loginButton.configuration?.showsActivityIndicator = true
-        
-        AuthService.shared.logUserIn(with: email, password: password) { _, error in
-            if let error = error {
-                print("Failed to log user in with error \(error)")
-                return
-            }
-            
-            var keyWindow: UIWindow? {
-                // Get connected scenes
-                return UIApplication.shared.connectedScenes
-                    // Keep only active scenes, onscreen and visible to the user
-                    .filter { $0.activationState == .foregroundActive }
-                    // Keep only the first `UIWindowScene`
-                    .first(where: { $0 is UIWindowScene })
-                    // Get its associated windows
-                    .flatMap({ $0 as? UIWindowScene })?.windows
-                    // Finally, keep only the key window
-                    .first(where: \.isKeyWindow)
-            }
-
-            guard let tab = keyWindow?.rootViewController as? MainTabBarController else {
-                print("no tab bar controller")
-                return
-            }
-            
-            tab.authenticateUserAndConfigureUI()
-            
-            self.loginButton.configuration?.showsActivityIndicator = false
-            print("successfully logged user in")
-            self.dismiss(animated: true)
+        guard let email = emailTextField.text, let password = passwordTextField.text, !email.isEmpty, !password.isEmpty else {
+            popupVC.modalTransitionStyle = .crossDissolve
+            popupVC.modalPresentationStyle = .overCurrentContext
+            popupVC.delegate = self
+            loginButton.buzz()
+            present(self.popupVC, animated: true)
+            return
         }
+            loginButton.configuration?.showsActivityIndicator = true
+            presentLoadingView(shouldPresent: true)
+            AuthService.shared.logUserIn(with: email, password: password) { [weak self]  _, error in
+                guard let self = self else { return }
+                if let error = error {
+                    self.presentLoadingView(shouldPresent: false)
+                    self.presentErrorAlert(title: "Error", message: "\(String(describing: error.localizedDescription))", completion: nil)
+                    return
+                } else {
+                    var keyWindow: UIWindow? {
+                        // Get connected scenes
+                        return UIApplication.shared.connectedScenes
+                            // Keep only active scenes, onscreen and visible to the user
+                            .filter { $0.activationState == .foregroundActive }
+                            // Keep only the first `UIWindowScene`
+                            .first(where: { $0 is UIWindowScene })
+                            // Get its associated windows
+                            .flatMap({ $0 as? UIWindowScene })?.windows
+                            // Finally, keep only the key window
+                            .first(where: \.isKeyWindow)
+                    }
+
+                    guard let tab = keyWindow?.rootViewController as? MainTabBarController else {
+                        print("no tab bar controller")
+                        return
+                    }
+                    self.presentLoadingView(shouldPresent: false)
+                    tab.authenticateUserAndConfigureUI()
+                    self.loginButton.configuration?.showsActivityIndicator = false
+                    print("successfully logged user in")
+                    self.dismiss(animated: true)
+                }
+            }
     }
     
     @objc func handleLoginWithApple() {
@@ -186,11 +185,6 @@ class LoginController: UIViewController {
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         navigationController?.navigationBar.compactAppearance = appearance
-    }
-    
-    private func configureNotificationObserver() {
-        emailTextField.addTarget(self, action: #selector(textDidChange), for: .editingChanged)
-        passwordTextField.addTarget(self, action: #selector(textDidChange), for: .editingChanged)
     }
     
     // MARK: - Apple sign in
@@ -277,14 +271,15 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
           let credential = OAuthProvider.credential(withProviderID: "apple.com",
                                                     idToken: idTokenString,
                                                     rawNonce: nonce)
+            presentLoadingView(shouldPresent: true)
           // Sign in with Firebase.
           Auth.auth().signIn(with: credential) { (authResult, error) in
               if error != nil {
               // Error. If error.code == .MissingOrInvalidNonce, make sure
               // you're sending the SHA256-hashed nonce as a hex string with
               // your request to Apple.
-                  print(error!.localizedDescription)
-              return
+                  self.presentErrorAlert(title: "Error", message: "Fail to log in with Apple: \(String(describing: error!.localizedDescription))", completion: nil)
+              return        
             }
               
               var keyWindow: UIWindow? {
@@ -314,6 +309,7 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
                       if isExisted {
                           // go to main tab bar controller and fetch user data
                           tab.authenticateUserAndConfigureUI()
+                          self.presentLoadingView(shouldPresent: false)
                           self.dismiss(animated: true)
                       } else {
                         // Create new user
@@ -328,6 +324,7 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
                               }
                               print("did Sign in appleeee")
                               tab.authenticateUserAndConfigureUI()
+                              self.presentLoadingView(shouldPresent: false)
                               self.dismiss(animated: true)
                           }
                       }
@@ -335,7 +332,6 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
                       print("Fail to if check user is existed \(error)")
                   }
               }
-            // ...
           }
         }
       }
@@ -358,4 +354,12 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
                       
           print("didCompleteWithError: \(error.localizedDescription)")
       }
+}
+
+extension LoginController: PopupAlertControllerDelegate {
+    
+    func handleDismissal() {
+        popupVC.dismiss(animated: true)
+    }
+
 }

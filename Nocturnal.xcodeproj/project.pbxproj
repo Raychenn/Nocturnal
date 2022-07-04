@@ -101,6 +101,7 @@
 		EDD1032528601EBA00AECAD9 /* ChatController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD1032428601EBA00AECAD9 /* ChatController.swift */; };
 		EDD1032B28603E3100AECAD9 /* ChatCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD1032A28603E3100AECAD9 /* ChatCell.swift */; };
 		EDD1032D28603F8800AECAD9 /* DateHeaderLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD1032C28603F8800AECAD9 /* DateHeaderLabel.swift */; };
+		EDED0ACB2872C7B6008ECDE4 /* HudWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDED0ACA2872C7B6008ECDE4 /* HudWrapper.swift */; };
 		EDEF690B286750BC00F944BF /* HomeEventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDEF690A286750BC00F944BF /* HomeEventCell.swift */; };
 		EDEF691428687D3E00F944BF /* summertime.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDEF690E28687D3C00F944BF /* summertime.mp3 */; };
 		EDEF691528687D3E00F944BF /* enigma.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDEF690F28687D3D00F944BF /* enigma.mp3 */; };
@@ -214,6 +215,7 @@
 		EDD1032428601EBA00AECAD9 /* ChatController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatController.swift; sourceTree = "<group>"; };
 		EDD1032A28603E3100AECAD9 /* ChatCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatCell.swift; sourceTree = "<group>"; };
 		EDD1032C28603F8800AECAD9 /* DateHeaderLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateHeaderLabel.swift; sourceTree = "<group>"; };
+		EDED0ACA2872C7B6008ECDE4 /* HudWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HudWrapper.swift; sourceTree = "<group>"; };
 		EDEF690A286750BC00F944BF /* HomeEventCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeEventCell.swift; sourceTree = "<group>"; };
 		EDEF690E28687D3C00F944BF /* summertime.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = summertime.mp3; sourceTree = "<group>"; };
 		EDEF690F28687D3D00F944BF /* enigma.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = enigma.mp3; sourceTree = "<group>"; };
@@ -277,7 +279,7 @@
 		ED0A4838285873DB004661BB /* Nocturnal */ = {
 			isa = PBXGroup;
 			children = (
-				ED1560B4286D75960089121D /* LottieWrapper */,
+				EDED0AC92872C790008ECDE4 /* JGProgressHudWrapper */,
 				ED1560A5286BF3020089121D /* Nocturnal.entitlements */,
 				ED194CB42859E51000C9E5D3 /* FirebaseAPI */,
 				ED0B425028588AE1000680C2 /* Third party wrapper */,
@@ -462,13 +464,6 @@
 			path = Setting;
 			sourceTree = "<group>";
 		};
-		ED1560B4286D75960089121D /* LottieWrapper */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = LottieWrapper;
-			sourceTree = "<group>";
-		};
 		ED180E5F286DF4D800FE57DE /* Add Event */ = {
 			isa = PBXGroup;
 			children = (
@@ -605,6 +600,14 @@
 				EDC663EC28615D8D007FEF82 /* ConversationCell.swift */,
 			);
 			path = Chat;
+			sourceTree = "<group>";
+		};
+		EDED0AC92872C790008ECDE4 /* JGProgressHudWrapper */ = {
+			isa = PBXGroup;
+			children = (
+				EDED0ACA2872C7B6008ECDE4 /* HudWrapper.swift */,
+			);
+			path = JGProgressHudWrapper;
 			sourceTree = "<group>";
 		};
 		EDF3E2A9285ACA76000E2218 /* Detail */ = {
@@ -856,6 +859,7 @@
 				ED83392E285ADC4B00236814 /* DetailDescriptionCell.swift in Sources */,
 				ED0A485728587A7C004661BB /* ExploreController.swift in Sources */,
 				ED5D192A286A11750054AC56 /* SettingsController.swift in Sources */,
+				EDED0ACB2872C7B6008ECDE4 /* HudWrapper.swift in Sources */,
 				ED180E5E286DE45C00FE57DE /* InputContainerView.swift in Sources */,
 				EDF3E2A8285AC563000E2218 /* EventDetailController.swift in Sources */,
 				EDF3E2AB285ACA91000E2218 /* DetailInfoCell.swift in Sources */,

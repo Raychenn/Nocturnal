@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseAuth
+import JGProgressHUD
 
 class ProfileController: UIViewController {
 
@@ -129,7 +130,7 @@ class ProfileController: UIViewController {
     }
     
     // MARK: - Helpers
-    func setupUI() {
+    private func setupUI() {
         navigationController?.navigationBar.isHidden = true
         view.backgroundColor = .white
         view.addSubview(collectionView)
@@ -203,13 +204,6 @@ extension ProfileController: UICollectionViewDelegateFlowLayout {
         let approximatedWidthBioTextView = view.frame.width - 20
         let size = CGSize(width: approximatedWidthBioTextView, height: 1000)
         let estimatedFrame = NSString(string: currentUser.bio).boundingRect(with: size, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 18)], context: nil)
-        
-//        let frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 50)
-//        let estimatedSizeCell = BioCell(frame: frame)
-//        estimatedSizeCell.bioLabel.text = currentUser.bio
-//        estimatedSizeCell.layoutIfNeeded()
-//        let targetSize = CGSize(width: view.frame.width, height: 500)
-//        let estimatedSize = estimatedSizeCell.systemLayoutSizeFitting(targetSize)
 
         if indexPath.item == 1 {
             return .init(width: view.frame.width - 20, height: estimatedFrame.height + 100)
@@ -256,27 +250,40 @@ extension ProfileController: ProfileHeaderDelegate {
     func profileHeader(_ header: ProfileHeader, wantsToBlockUserWith id: String) {
         print("block user")
 
-        UserService.shared.addUserToBlockedList(blockedUid: id) { error in
-            if let error = error {
-                print("Fail to block user \(error)")
-                return
+        let alert = UIAlertController(title: "Are you sure to block this user?", message: "", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "NO", style: .default, handler: nil))
+        alert.addAction(UIAlertAction(title: "YES", style: .destructive, handler: { _ in
+            UserService.shared.addUserToBlockedList(blockedUid: id) { error in
+                if let error = error {
+                    HudManager.shared.showError(on: self, text: "\(error.localizedDescription)")
+                    print("Fail to block user \(error)")
+                    return
+                }
+                
+                HudManager.shared.showSuccess(on: self, text: "Success")
+                print("Succussfully blocked user and pop up alert here..")
             }
-            
-            print("Succussfully blocked user and pop up alert here..")
-        }
+        }))
+        
+        self.present(alert, animated: true)
     }
     
     func profileHeader(_ header: ProfileHeader, wantsToUnblockUserWith id: String) {
         print("unblock user")
-
-        UserService.shared.removeUserFromblockedList(blockedUid: id) { error in
-            if let error = error {
-                print("Fail to block user \(error)")
-                return
+        let alert = UIAlertController(title: "Are you sure to unblock this user?", message: "", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "NO", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "YES", style: .default, handler: { _ in
+            UserService.shared.removeUserFromblockedList(blockedUid: id) { error in
+                if let error = error {
+                    HudManager.shared.showError(on: self, text: "\(error.localizedDescription)")
+                    print("Fail to block user \(error)")
+                    return
+                }
+                HudManager.shared.showSuccess(on: self, text: "Success")
+                print("Succussfully unblocked user and pop up alert here..")
             }
-            
-            print("Succussfully unblocked user and pop up alert here..")
-        }
+        }))
+        self.present(alert, animated: true)
     }
 }
 

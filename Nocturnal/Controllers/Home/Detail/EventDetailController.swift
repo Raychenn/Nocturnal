@@ -197,6 +197,7 @@ class EventDetailController: UIViewController {
     }
     
     private func setupUI() {
+        overrideUserInterfaceStyle = .dark
         guard let uid = Auth.auth().currentUser?.uid else { return }
         setupJoinButtonState()
         navigationController?.navigationBar.isHidden = true

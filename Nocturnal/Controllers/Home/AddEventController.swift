@@ -36,8 +36,10 @@ class AddEventController: UIViewController {
     
     var eventMusicURLString: String?
     
+    var eventVideoURLString: String?
+    
     let loadingAnimationView: AnimationView = {
-       let view = AnimationView(name: "cheers")
+        let view = AnimationView(name: "cheers")
         view.loopMode = .loop
         view.contentMode = .scaleAspectFill
         view.animationSpeed = 1
@@ -46,6 +48,29 @@ class AddEventController: UIViewController {
         return view
     }()
     
+    lazy var imagePickerController: UIImagePickerController = {
+        let imagePicker = UIImagePickerController()
+        imagePicker.sourceType = .photoLibrary
+        imagePicker.modalPresentationStyle = .popover
+        imagePicker.delegate = self
+        imagePicker.allowsEditing = true
+        return imagePicker
+    }()
+    
+    lazy var popupView: CustomPopupView = {
+        let view = CustomPopupView()
+        view.delegate = self
+        view.layer.cornerRadius = 5
+        return view
+    }()
+    
+    let visualEffectView: UIVisualEffectView = {
+        let blureEffect = UIBlurEffect(style: .light)
+        let view = UIVisualEffectView(effect: blureEffect)
+        
+        return view
+    }()
+        
     // MARK: - Life Cycle
     
     override func viewDidLoad() {
@@ -87,6 +112,26 @@ class AddEventController: UIViewController {
         loadingAnimationView.alpha = 0
         loadingAnimationView.removeFromSuperview()
     }
+    
+    private func configurePopupView() {
+        view.addSubview(visualEffectView)
+        visualEffectView.fillSuperview()
+        visualEffectView.alpha = 0
+        
+        view.addSubview(popupView)
+        popupView.centerX(inView: view)
+        popupView.centerY(inView: view, constant: 35)
+        popupView.setDimensions(height: view.frame.width - 30, width: view.frame.width - 50)
+        
+        popupView.transform = CGAffineTransform.init(scaleX: 1.3, y: 1.3)
+        popupView.alpha = 0
+        
+        UIView.animate(withDuration: 0.5) {
+            self.visualEffectView.alpha = 1
+            self.popupView.alpha = 1
+            self.popupView.transform = .identity
+        }
+    }
 }
 
 // MARK: - UITableViewDataSource
@@ -118,7 +163,7 @@ extension AddEventController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        150
+        return UITableView.automaticDimension
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -139,25 +184,49 @@ extension AddEventController: UIImagePickerControllerDelegate, UINavigationContr
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
         
-        guard let selectedProfileImage = info[.editedImage] as? UIImage else { return }
-        self.selectedEventImage = selectedProfileImage
-        if let header = tableView.headerView(forSection: 0) as? AddEventHeader {
-            header.newEventImageView.image = self.selectedEventImage
-            dismiss(animated: true)
+        if let videoUrl = info[UIImagePickerController.InfoKey.mediaURL] as? URL {
+            // Do something with the URL
+        
+            presentLoadingView(shouldPresent: true)
+            StorageUploader.shared.uploadEventVideo(videoUrl: videoUrl) { [weak self] downloadedUrl in
+                guard let self = self, let videoURL = URL(string: downloadedUrl) else { return }
+                print("downloadedUrl \(downloadedUrl)")
+                if let header = self.tableView.headerView(forSection: 0) as? AddEventHeader {
+                    self.eventVideoURLString = downloadedUrl
+                    header.setupVideoPlayerView(videoURL: videoURL)
+                    header.newVideoButton.isHidden = true
+                    self.presentLoadingView(shouldPresent: false)
+                    self.dismiss(animated: true)
+                }
+            }
+        } else if let selectedProfileImage = info[.editedImage] as? UIImage {
+            // upload an image
+            self.selectedEventImage = selectedProfileImage
+            if let header = tableView.headerView(forSection: 0) as? AddEventHeader {
+                header.newEventImageView.image = self.selectedEventImage
+                header.newPhotoButton.isHidden = true
+                dismiss(animated: true)
+            }
         }
     }
 }
 
 // MARK: - AddEventHeaderDelegate
 extension AddEventController: AddEventHeaderDelegate {
-    
+
     func uploadNewEventImageView(header: AddEventHeader) {
-        let imagePickerController = UIImagePickerController()
-        imagePickerController.sourceType = .photoLibrary
-        imagePickerController.modalPresentationStyle = .popover
-        imagePickerController.delegate = self
-        imagePickerController.allowsEditing = true
+        imagePickerController.mediaTypes = ["public.image"]
         self.present(imagePickerController, animated: true, completion: nil)
+    }
+    
+    func uploadNewEventVideoView(header: AddEventHeader) {
+        
+        if UserDefaults.standard.bool(forKey: UserDefaultConstant.hasSeenUploadVideoPopup) == true {
+            self.imagePickerController.mediaTypes = ["public.movie"]
+            self.present(self.imagePickerController, animated: true)
+        } else {
+            configurePopupView()
+        }
     }
 }
 
@@ -169,8 +238,8 @@ extension AddEventController: UploadEventInfoCellDelegate {
         
         // update button to be enable
         cell.doneButton.isEnabled = true
-        
     }
+    
     func uploadEvent(cell: UploadEventInfoCell) {
         
         guard let userInputData = userInputData else { return }
@@ -181,7 +250,7 @@ extension AddEventController: UploadEventInfoCellDelegate {
               !userInputData.eventMusicString.isEmpty,
               !userInputData.eventTime.description.isEmpty,
               !userInputData.eventDescription.isEmpty,
-              let selectedEventImage = selectedEventImage
+              let selectedEventImage = self.selectedEventImage
         else {
             print("incomplete input data")
             return
@@ -195,59 +264,79 @@ extension AddEventController: UploadEventInfoCellDelegate {
             print("musicUrlData nil")
             return
         }
-        print("event address \(userInputData.eventAddress)")
-        let geoCoder = CLGeocoder()
-        configureAnimationView()
-        self.view.isUserInteractionEnabled = false
-        geoCoder.geocodeAddressString(userInputData.eventAddress) { [weak self] (placemarks, error) in
-            guard let self = self else { return }
-            print("geo coding")
-            if let error = error {
-                self.presentErrorAlert(title: "Error", message: "error converting address \(error.localizedDescription))", completion: nil)
-                return
-            }
-            guard let placemarks = placemarks, let location = placemarks[0].location else {
-                // handle no location found
-                print("Present Alert to show no location found")
-                return
-            }
-            
-            // get location
-            let fakeLocation = GeoPoint(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
-            print("new GeoPoint \(fakeLocation)")
-            StorageUploader.shared.uploadEventImage(with: selectedEventImage) { downloadedImageURL in
+            // upload video
+            let geoCoder = CLGeocoder()
+            configureAnimationView()
+            self.view.isUserInteractionEnabled = false
+            geoCoder.geocodeAddressString(userInputData.eventAddress) { [weak self] (placemarks, error) in
+                guard let self = self else { return }
+                print("geo coding")
+                if let error = error {
+                    self.presentLoadingView(shouldPresent: false)
+                    self.presentErrorAlert(title: "Error", message: "error converting address \(error.localizedDescription))", completion: nil)
+                    return
+                }
+                guard let placemarks = placemarks, let location = placemarks[0].location else {
+                    // handle no location found
+                    print("Present Alert to show no location found")
+                    return
+                }
+                // get location
+                let destinationLocation = GeoPoint(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
                 
-                StorageUploader.shared.uploadEventMusic(with: musicUrlData) { downloadedMusicURL in
-                    
-                    let newEvent = Event(title: userInputData.eventName,
-                                         hostID: uid,
-                                         description: userInputData.eventDescription,
-                                         startingDate: Timestamp(date: userInputData.eventTime),
-                                         destinationLocation: fakeLocation,
-                                         fee: Double(userInputData.eventFee) ?? 0,
-                                         style: userInputData.eventStyle,
-                                         eventImageURL: downloadedImageURL,
-                                         eventMusicURL: downloadedMusicURL,
-                                         participants: [],
-                                         deniedUsersId: [],
-                                         pendingUsersId: [])
-                    
-                    EventService.shared.postNewEvent(event: newEvent) { [weak self] error in
-                        guard let self = self else { return }
-                        print("start uploading event")
-                        guard error == nil else {
-                            self.presentErrorAlert(title: "Error", message: "Fail to upload event: \(error!.localizedDescription)", completion: nil)
-                            print("Fail to upload event \(String(describing: error))")
-                            return
-                        }
-                        
-                        self.stopAnimationView()
-                        self.view.isUserInteractionEnabled = true
-                        print("Scussfully uploaded event")
-                        self.navigationController?.popViewController(animated: true)
+                StorageUploader.shared.uploadEventImage(with: selectedEventImage) { downloadedImageURL in
+            
+                    StorageUploader.shared.uploadEventMusic(with: musicUrlData) { downloadedMusicURL in
+            
+                        let newEvent = Event(title: userInputData.eventName,
+                                             hostID: uid,
+                                             description: userInputData.eventDescription,
+                                             startingDate: Timestamp(date: userInputData.eventTime),
+                                             destinationLocation: destinationLocation,
+                                             fee: Double(userInputData.eventFee) ?? 0,
+                                             style: userInputData.eventStyle,
+                                             eventImageURL: downloadedImageURL,
+                                             eventMusicURL: downloadedMusicURL,
+                                             eventVideoURL: self.eventVideoURLString,
+                                             participants: [],
+                                             deniedUsersId: [],
+                                             pendingUsersId: [])
+            
+                        EventService.shared.postNewEvent(event: newEvent) { [weak self] error in
+                            guard let self = self else { return }
+                            print("start uploading event")
+                            guard error == nil else {
+                                self.presentLoadingView(shouldPresent: false)
+                                self.presentErrorAlert(title: "Error", message: "Fail to upload event: \(error!.localizedDescription)", completion: nil)
+                                print("Fail to upload event \(String(describing: error))")
+                                return
+                            }
+            
+                            self.stopAnimationView()
+                            self.view.isUserInteractionEnabled = true
+                            print("Scussfully uploaded event")
+                            self.navigationController?.popViewController(animated: true)
                     }
                 }
             }
         }
     }
+}
+ // MARK: - CustomPopupViewDelegate
+
+extension AddEventController: CustomPopupViewDelegate {
+    
+    func handleDismissal() {
+        UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut) {
+            self.visualEffectView.alpha = 0
+            self.popupView.alpha = 0
+            self.popupView.transform = .init(scaleX: 1.3, y: 1.3)
+        } completion: { _ in
+            self.popupView.removeFromSuperview()
+            self.imagePickerController.mediaTypes = ["public.movie"]
+            self.present(self.imagePickerController, animated: true)
+            UserDefaults.standard.set(true, forKey: UserDefaultConstant.hasSeenUploadVideoPopup)
+        }
+    }
+    
 }

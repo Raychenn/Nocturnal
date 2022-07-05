@@ -44,13 +44,13 @@ class MainTabBarController: UITabBarController {
             }
         } else {
             // user is logged in
-            presentLoadingView(shouldPresent: true)
+//            presentLoadingView(shouldPresent: true)
             fetchCurrentUser { [weak self] user in
                 guard let self = self else { return }
                 self.currentUser = user
                 self.configureViewControllers(with: user)
                 self.selectedIndex = 0
-                self.presentLoadingView(shouldPresent: false)
+//                self.presentLoadingView(shouldPresent: false)
             }
         }
     }

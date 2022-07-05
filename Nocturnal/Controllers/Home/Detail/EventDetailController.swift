@@ -459,6 +459,7 @@ extension EventDetailController: DetailInfoCellDelegate {
                 let chatVC = ChatController(user: host)
                 self.navigationController?.pushViewController(chatVC, animated: true)
             case .failure(let error):
+                self.presentLoadingView(shouldPresent: false)
                 self.presentErrorAlert(title: "Error", message: "\(error.localizedDescription)", completion: nil)
                 print("Fail to fetch host \(error)")
             }

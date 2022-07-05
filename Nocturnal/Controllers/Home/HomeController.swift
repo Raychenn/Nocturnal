@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseAuth
+import AVKit
 
 class HomeController: UIViewController {
     
@@ -44,7 +45,7 @@ class HomeController: UIViewController {
     var events: [Event] = []
     
     var evnetHosts: [User] = []
-    
+        
     // MARK: - Life Cycle
     
     init(currentUser: User) {
@@ -71,7 +72,13 @@ class HomeController: UIViewController {
             self.fetchAllEvents()
         }
     }
-        
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        releaseVideoPlayer()
+    }
+
     // MARK: - API
     
     private func fetchCurrentUser(completion: @escaping () -> Void) {
@@ -170,6 +177,15 @@ class HomeController: UIViewController {
     
     // MARK: - Helpers
     
+    func releaseVideoPlayer() {
+        collectionView.visibleCells.forEach { cell in
+            if let homeCell = cell as? HomeEventCell {
+                homeCell.player?.removeAllItems()
+                homeCell.player = nil
+            }
+        }
+    }
+    
     func setupUI() {
         configureChatNavBar(withTitle: "Home", backgroundColor: UIColor.hexStringToUIColor(hex: "#1C242F"), preferLargeTitles: true)
         navigationController?.navigationBar.prefersLargeTitles = false
@@ -224,7 +240,7 @@ extension HomeController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         guard let eventCell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeEventCell.identifier, for: indexPath) as? HomeEventCell else { return UICollectionViewCell() }
-        
+                
         // should have 2 types of config | loggedin user vs no user
         if Auth.auth().currentUser == nil {
             let event = events[indexPath.item]

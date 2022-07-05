@@ -273,12 +273,14 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
                                                     rawNonce: nonce)
             presentLoadingView(shouldPresent: true)
           // Sign in with Firebase.
-          Auth.auth().signIn(with: credential) { (authResult, error) in
+          Auth.auth().signIn(with: credential) { [weak self] (authResult, error) in
+              guard let self = self else { return }
               if error != nil {
               // Error. If error.code == .MissingOrInvalidNonce, make sure
               // you're sending the SHA256-hashed nonce as a hex string with
               // your request to Apple.
-                  self.presentErrorAlert(title: "Error", message: "Fail to log in with Apple: \(String(describing: error!.localizedDescription))", completion: nil)
+             self.presentLoadingView(shouldPresent: false)
+             self.presentErrorAlert(title: "Error", message: "Fail to log in with Apple: \(String(describing: error!.localizedDescription))", completion: nil)
               return        
             }
               

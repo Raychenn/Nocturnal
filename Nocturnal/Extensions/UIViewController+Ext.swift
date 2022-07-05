@@ -120,7 +120,8 @@ extension UIViewController {
             }
             
             loadingView.addSubview(indicator)
-            indicator.style = .large
+            indicator.style = UIActivityIndicatorView.Style.large
+            indicator.color = .white
             indicator.center = view.center
             indicator.startAnimating()
             

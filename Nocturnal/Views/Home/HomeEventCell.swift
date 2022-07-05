@@ -8,6 +8,7 @@
 import UIKit
 import Kingfisher
 import FirebaseFirestore
+import AVKit
 
 class HomeEventCell: UICollectionViewCell {
     
@@ -78,6 +79,24 @@ class HomeEventCell: UICollectionViewCell {
         view.backgroundColor = UIColor.hexStringToUIColor(hex: "#1C242F")
         return view
     }()
+    
+    let videoPlayerView = UIView()
+    
+    private lazy var muteButton: UIButton = {
+       let button = UIButton()
+        let config = UIImage.SymbolConfiguration(pointSize: 25)
+        button.setImage(UIImage(systemName: "speaker", withConfiguration: config), for: .normal)
+        button.tintColor = .darkGray
+        button.isHidden = true
+        button.addTarget(self, action: #selector(muteVideo), for: .touchUpInside)
+        return button
+    }()
+    
+    var player: AVQueuePlayer?
+    
+    var looper: AVPlayerLooper?
+    
+    var isMuted = false
 
     // MARK: - Life Cycle
     
@@ -97,11 +116,86 @@ class HomeEventCell: UICollectionViewCell {
         profileImageView.layer.masksToBounds = true
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        player = nil
+    }
+    
+    // MARK: - Selector
+    
+    @objc func muteVideo() {
+        isMuted = !isMuted
+        muteSound(shouldMute: isMuted)
+    }
+    
     // MARK: - Heleprs
     
+    func setupVideoPlayerView(videoURLString: String) {
+        player = AVQueuePlayer()
+        
+        guard let player = player else {
+            print("player nil in home cell")
+            return
+        }
+        
+        CacheManager.shared.getFileWith(stringUrl: videoURLString) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let url):
+                print("cached url \(url)")
+                let playerItem = AVPlayerItem(url: url)
+                self.looper = AVPlayerLooper(player: player, templateItem: playerItem)
+               let playerLayer = AVPlayerLayer(player: player)
+               playerLayer.frame = self.videoPlayerView.bounds
+                playerLayer.contentsGravity = .resizeAspectFill
+               self.videoPlayerView.layer.addSublayer(playerLayer)
+               player.play()
+            case .failure(let error):
+                print("Failt to cachce url \(error)")
+            }
+        }
+//        let playerItem = AVPlayerItem(url: videoURL)
+//        self.looper = AVPlayerLooper(player: player, templateItem: playerItem)
+//       let playerLayer = AVPlayerLayer(player: player)
+//       playerLayer.frame = self.videoPlayerView.bounds
+//        playerLayer.contentsGravity = .resizeAspectFill
+//       self.videoPlayerView.layer.addSublayer(playerLayer)
+//       player.play()
+        
+//        do {
+//            let urlString = try String(contentsOf: videoURL)
+//
+//        } catch {
+//            print("Fail to convert url \(error)")
+//        }
+   }
+    
+    func updateCellForDisplayMode(shouldShowVideo: Bool) {
+        videoPlayerView.bringSubviewToFront(muteButton)
+        if shouldShowVideo {
+            videoPlayerView.isHidden = false
+            muteButton.isHidden = false
+            eventImageView.isHidden = true
+        } else {
+            videoPlayerView.isHidden = true
+            muteButton.isHidden = true
+            eventImageView.isHidden = false
+        }
+    }
+    
     func configureCell(event: Event) {
-        guard let url = URL(string: event.eventImageURL) else { return }
-        eventImageView.kf.setImage(with: url)
+        if let videoUrlString = event.eventVideoURL {
+            // configure video cell
+            setupVideoPlayerView(videoURLString: videoUrlString)
+            updateCellForDisplayMode(shouldShowVideo: true)
+        } else {
+            // configure image cell
+            guard let imageUrl = URL(string: event.eventImageURL) else { return }
+            eventImageView.kf.setImage(with: imageUrl)
+            updateCellForDisplayMode(shouldShowVideo: false)
+        }
+        
         dateLabel.text = Date.dateFormatter.string(from: event.startingDate.dateValue())
         eventNameLabel.text = event.title
         feeLabel.text = "$\(event.fee)"
@@ -109,14 +203,34 @@ class HomeEventCell: UICollectionViewCell {
     }
     
     func configureCellForLoggedInUser(event: Event, host: User) {
-        guard let url = URL(string: event.eventImageURL) else { return }
+        if let videoUrlString = event.eventVideoURL {
+            // configure video cell
+            setupVideoPlayerView(videoURLString: videoUrlString)
+            updateCellForDisplayMode(shouldShowVideo: true)
+        } else {
+            // configure image cell
+            guard let imageUrl = URL(string: event.eventImageURL) else { return }
+            eventImageView.kf.setImage(with: imageUrl)
+            updateCellForDisplayMode(shouldShowVideo: false)
+        }
+
         guard let profileUrl = URL(string: host.profileImageURL) else { return }
-        eventImageView.kf.setImage(with: url)
+        profileImageView.kf.setImage(with: profileUrl)
         dateLabel.text = Date.dateFormatter.string(from: event.startingDate.dateValue())
         eventNameLabel.text = event.title
         feeLabel.text = "$\(event.fee)"
-        profileImageView.kf.setImage(with: profileUrl)
         hostNameLabel.text = host.name
+    }
+    
+    func muteSound(shouldMute: Bool) {
+        let config = UIImage.SymbolConfiguration(pointSize: 25)
+        if shouldMute {
+            player?.isMuted = true
+            muteButton.setImage(UIImage(systemName: "speaker.slash", withConfiguration: config), for: .normal)
+        } else {
+            player?.isMuted = false
+            muteButton.setImage(UIImage(systemName: "speaker", withConfiguration: config), for: .normal)
+        }
     }
     
     func setupCellUI() {
@@ -125,6 +239,15 @@ class HomeEventCell: UICollectionViewCell {
         backgroundColor = .black
         contentView.addSubview(eventImageView)
         eventImageView.anchor(top: contentView.topAnchor, left: contentView.leftAnchor, right: contentView.rightAnchor, height: 210)
+        
+        contentView.addSubview(videoPlayerView)
+        videoPlayerView.anchor(top: contentView.topAnchor, left: contentView.leftAnchor, right: contentView.rightAnchor, height: 210)
+        
+        videoPlayerView.addSubview(muteButton)
+        muteButton.anchor(bottom: videoPlayerView.bottomAnchor,
+                          right: videoPlayerView.rightAnchor,
+                          paddingBottom: 8,
+                          paddingRight: 8)
         
         contentView.addSubview(bottomBackgroundView)
         bottomBackgroundView.anchor(top: eventImageView.bottomAnchor, left: contentView.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor)
@@ -164,5 +287,5 @@ class HomeEventCell: UICollectionViewCell {
         hostNameLabel.centerY(inView: profileImageView)
         hostNameLabel.anchor(left: profileImageView.rightAnchor, paddingLeft: 8)
     }
-    
+
 }

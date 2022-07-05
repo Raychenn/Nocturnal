@@ -12,6 +12,38 @@ struct StorageUploader {
     
     static let shared = StorageUploader()
     
+    func uploadEventVideo(videoUrl: URL, completion: @escaping (String) -> Void) {
+        let fileName = UUID().uuidString
+        
+        let ref = Storage.storage().reference(withPath: "event_videos/\(fileName)")
+        
+        do {
+            let videoData = try Data(contentsOf: videoUrl)
+            
+            let metadata = StorageMetadata()
+            metadata.contentType = "video/mp4"
+            ref.putData(videoData, metadata: metadata) { _, error in
+                guard error == nil else {
+                    print("Fail to upload video \(error!)")
+                    return
+                }
+                
+                ref.downloadURL { downloadedUrl, error in
+                    guard error == nil else {
+                        print("error downloading images \(String(describing: error))")
+                        return
+                    }
+                    
+                    guard let downloadedUrlString = downloadedUrl?.absoluteString else { return }
+                    completion(downloadedUrlString)
+                }
+            }
+        } catch {
+            print("Fail to convert video url to data \(error)")
+        }
+
+    }
+    
     func uploadMessageImage(with image: UIImage, completion: @escaping (String) -> Void) {
         
         // make the file a little smaller
@@ -71,7 +103,7 @@ struct StorageUploader {
         let fileName = UUID().uuidString
         let ref = Storage.storage().reference(withPath: "event_music/\(fileName)")
         let metadata = StorageMetadata()
-         metadata.contentType = "audio/mpeg"
+        metadata.contentType = "audio/mpeg"
         
         ref.putData(musicData, metadata: metadata) { _, error in
             guard error == nil else {

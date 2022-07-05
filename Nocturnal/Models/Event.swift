@@ -20,7 +20,7 @@ struct Event: Codable {
     let style: String
     let eventImageURL: String
     let eventMusicURL: String
-//    let eventVideoURL: String?
+    let eventVideoURL: String?
     let participants: [String]
     let deniedUsersId: [String]
     let pendingUsersId: [String]

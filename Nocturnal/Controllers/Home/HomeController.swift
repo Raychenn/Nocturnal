@@ -30,6 +30,13 @@ class HomeController: UIViewController {
         return collectionView
     }()
     
+    private let addEventButtonBackgroundView: UIView = {
+       let view = UIView()
+        view.backgroundColor = UIColor.primaryBlue
+        view.setDimensions(height: 60, width: 60)
+        return view
+    }()
+    
     private lazy var addEventButton: UIButton = {
         let button = UIButton()
         button.setDimensions(height: 60, width: 60)
@@ -39,7 +46,7 @@ class HomeController: UIViewController {
         button.addTarget(self, action: #selector(didTapShowEventButton), for: .touchUpInside)
         return button
     }()
-    
+
     var currentUser: User
         
     var events: [Event] = []
@@ -62,10 +69,16 @@ class HomeController: UIViewController {
         setupUI()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        let pulseLayer = PulsingLayer(numberOfPulses: .infinity, radius: 50, view: addEventButtonBackgroundView)
+        self.addEventButtonBackgroundView.layer.addSublayer(pulseLayer)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // fetch all events from firestore
-        print("viewWillAppear called")
         presentLoadingView(shouldPresent: true)
         fetchCurrentUser { [weak self] in
             guard let self = self else {return}
@@ -75,7 +88,7 @@ class HomeController: UIViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-
+        removePulsingLayer()
         releaseVideoPlayer()
     }
 
@@ -177,6 +190,14 @@ class HomeController: UIViewController {
     
     // MARK: - Helpers
     
+    private func removePulsingLayer() {
+        self.addEventButtonBackgroundView.layer.sublayers?.forEach({ layer in
+            if layer is PulsingLayer {
+                layer.removeFromSuperlayer()
+            }
+        })
+    }
+    
     func releaseVideoPlayer() {
         collectionView.visibleCells.forEach { cell in
             if let homeCell = cell as? HomeEventCell {
@@ -198,16 +219,21 @@ class HomeController: UIViewController {
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
         
-        view.addSubview(addEventButton)
+        view.addSubview(addEventButtonBackgroundView)
+        addEventButtonBackgroundView.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor,
+                                            right: view.rightAnchor,
+                                            paddingBottom: 10,
+                                            paddingRight: 8)
+        addEventButtonBackgroundView.layer.cornerRadius = 60/2
         
+        view.addSubview(addEventButton)
         addEventButton.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor,
                               right: view.rightAnchor,
                               paddingBottom: 10,
                               paddingRight: 8)
-        
         addEventButton.layer.cornerRadius = 60/2
-        addEventButton.layer.masksToBounds = true
-        
+
+//        addEventButton.layer.masksToBounds = true
     }
     
     func filterEventsFromBlockedUsers(events: [Event], completion: @escaping ([Event]) -> Void) {

@@ -92,6 +92,13 @@ class HomeEventCell: UICollectionViewCell {
         return button
     }()
     
+    private let blurEffectView: UIVisualEffectView = {
+        
+        let blurEffect = UIBlurEffect(style: .systemUltraThinMaterialDark)
+        let blureEffectView = UIVisualEffectView(effect: blurEffect)
+        return blureEffectView
+    }()
+    
     var player: AVQueuePlayer?
     
     var looper: AVPlayerLooper?
@@ -139,6 +146,7 @@ class HomeEventCell: UICollectionViewCell {
             return
         }
         
+        // caching video url
         CacheManager.shared.getFileWith(stringUrl: videoURLString) { [weak self] result in
             guard let self = self else { return }
             switch result {
@@ -155,20 +163,6 @@ class HomeEventCell: UICollectionViewCell {
                 print("Failt to cachce url \(error)")
             }
         }
-//        let playerItem = AVPlayerItem(url: videoURL)
-//        self.looper = AVPlayerLooper(player: player, templateItem: playerItem)
-//       let playerLayer = AVPlayerLayer(player: player)
-//       playerLayer.frame = self.videoPlayerView.bounds
-//        playerLayer.contentsGravity = .resizeAspectFill
-//       self.videoPlayerView.layer.addSublayer(playerLayer)
-//       player.play()
-        
-//        do {
-//            let urlString = try String(contentsOf: videoURL)
-//
-//        } catch {
-//            print("Fail to convert url \(error)")
-//        }
    }
     
     func updateCellForDisplayMode(shouldShowVideo: Bool) {
@@ -251,6 +245,9 @@ class HomeEventCell: UICollectionViewCell {
         
         contentView.addSubview(bottomBackgroundView)
         bottomBackgroundView.anchor(top: eventImageView.bottomAnchor, left: contentView.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor)
+        
+        bottomBackgroundView.addSubview(blurEffectView)
+        blurEffectView.fillSuperview()
         
         bottomBackgroundView.addSubview(eventNameLabel)
         eventNameLabel.anchor(top: bottomBackgroundView.topAnchor,

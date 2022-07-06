@@ -58,6 +58,9 @@
 		ED194CBC2859EB7500C9E5D3 /* StorageUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CBB2859EB7500C9E5D3 /* StorageUploader.swift */; };
 		ED194CBE285A007C00C9E5D3 /* InputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CBD285A007C00C9E5D3 /* InputTextView.swift */; };
 		ED204B22285DB16F0016FDCA /* UILabel+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED204B21285DB16F0016FDCA /* UILabel+Ext.swift */; };
+		ED4DB00A28758C5D0051F40F /* Satisfy-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ED4DB00828758C5D0051F40F /* Satisfy-Regular.ttf */; };
+		ED4DB00B28758C5D0051F40F /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = ED4DB00928758C5D0051F40F /* LICENSE.txt */; };
+		ED4DB00D28758EDA0051F40F /* djVideo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = ED4DB00C28758EDA0051F40F /* djVideo.mp4 */; };
 		ED5D192A286A11750054AC56 /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5D1929286A11750054AC56 /* SettingsController.swift */; };
 		ED626A872862B09E003BB636 /* ProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED626A862862B09E003BB636 /* ProfileCell.swift */; };
 		ED626A8A2862B41C003BB636 /* JoinedEventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED626A892862B41C003BB636 /* JoinedEventCell.swift */; };
@@ -67,6 +70,9 @@
 		ED63D5102873E3E100603515 /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED63D50F2873E3E100603515 /* CacheManager.swift */; };
 		ED63D5122874145B00603515 /* CustomPopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED63D5112874145B00603515 /* CustomPopupView.swift */; };
 		ED63D5152874177600603515 /* UserDefautConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED63D5142874177600603515 /* UserDefautConstants.swift */; };
+		ED63D517287421AA00603515 /* PulsingLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED63D516287421AA00603515 /* PulsingLayer.swift */; };
+		ED7D1D1428749245005D31E3 /* PulsatingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7D1D1328749245005D31E3 /* PulsatingButton.swift */; };
+		ED7D1D1628757065005D31E3 /* intro.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = ED7D1D1528756F9B005D31E3 /* intro.mp4 */; };
 		ED81C3D4285D7F0F004C12EA /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED81C3D3285D7F0F004C12EA /* UserService.swift */; };
 		ED81C3D7285D93D3004C12EA /* Firebase+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED81C3D6285D93D3004C12EA /* Firebase+Ext.swift */; };
 		ED81C3D9285D9464004C12EA /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED81C3D8285D9464004C12EA /* Notification.swift */; };
@@ -174,6 +180,9 @@
 		ED194CBB2859EB7500C9E5D3 /* StorageUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageUploader.swift; sourceTree = "<group>"; };
 		ED194CBD285A007C00C9E5D3 /* InputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextView.swift; sourceTree = "<group>"; };
 		ED204B21285DB16F0016FDCA /* UILabel+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Ext.swift"; sourceTree = "<group>"; };
+		ED4DB00828758C5D0051F40F /* Satisfy-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Satisfy-Regular.ttf"; sourceTree = "<group>"; };
+		ED4DB00928758C5D0051F40F /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		ED4DB00C28758EDA0051F40F /* djVideo.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = djVideo.mp4; sourceTree = "<group>"; };
 		ED5D1929286A11750054AC56 /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
 		ED626A862862B09E003BB636 /* ProfileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCell.swift; sourceTree = "<group>"; };
 		ED626A892862B41C003BB636 /* JoinedEventCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinedEventCell.swift; sourceTree = "<group>"; };
@@ -183,7 +192,10 @@
 		ED63D50F2873E3E100603515 /* CacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
 		ED63D5112874145B00603515 /* CustomPopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPopupView.swift; sourceTree = "<group>"; };
 		ED63D5142874177600603515 /* UserDefautConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefautConstants.swift; sourceTree = "<group>"; };
+		ED63D516287421AA00603515 /* PulsingLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulsingLayer.swift; sourceTree = "<group>"; };
 		ED7627B6285F6922005EB15C /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
+		ED7D1D1328749245005D31E3 /* PulsatingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulsatingButton.swift; sourceTree = "<group>"; };
+		ED7D1D1528756F9B005D31E3 /* intro.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = intro.mp4; sourceTree = "<group>"; };
 		ED81C3D3285D7F0F004C12EA /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
 		ED81C3D6285D93D3004C12EA /* Firebase+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firebase+Ext.swift"; sourceTree = "<group>"; };
 		ED81C3D8285D9464004C12EA /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
@@ -285,6 +297,7 @@
 		ED0A4838285873DB004661BB /* Nocturnal */ = {
 			isa = PBXGroup;
 			children = (
+				ED4DB00728758C5D0051F40F /* Satisfy */,
 				ED63D5132874176700603515 /* Constant */,
 				ED63D50E2873E3D500603515 /* Managers */,
 				EDED0AC92872C790008ECDE4 /* JGProgressHudWrapper */,
@@ -306,6 +319,8 @@
 				ED1560A6286BF4AD0089121D /* GoogleService-Info.plist */,
 				ED180EB6286EFC2F00FE57DE /* empty-box.json */,
 				ED180EAA286ECA3200FE57DE /* cheers.json */,
+				ED7D1D1528756F9B005D31E3 /* intro.mp4 */,
+				ED4DB00C28758EDA0051F40F /* djVideo.mp4 */,
 			);
 			path = Nocturnal;
 			sourceTree = "<group>";
@@ -441,6 +456,8 @@
 				ED180E5D286DE45C00FE57DE /* InputContainerView.swift */,
 				ED180EB2286EDAD100FE57DE /* PopupAlertController.swift */,
 				ED63D5112874145B00603515 /* CustomPopupView.swift */,
+				ED63D516287421AA00603515 /* PulsingLayer.swift */,
+				ED7D1D1328749245005D31E3 /* PulsatingButton.swift */,
 			);
 			path = CustomViews;
 			sourceTree = "<group>";
@@ -520,6 +537,15 @@
 			children = (
 			);
 			path = Chat;
+			sourceTree = "<group>";
+		};
+		ED4DB00728758C5D0051F40F /* Satisfy */ = {
+			isa = PBXGroup;
+			children = (
+				ED4DB00828758C5D0051F40F /* Satisfy-Regular.ttf */,
+				ED4DB00928758C5D0051F40F /* LICENSE.txt */,
+			);
+			path = Satisfy;
 			sourceTree = "<group>";
 		};
 		ED5D1928286A115C0054AC56 /* Settings */ = {
@@ -721,6 +747,7 @@
 				EDEF691528687D3E00F944BF /* enigma.mp3 in Resources */,
 				EDEF691928687D3E00F944BF /* extreme.mp3 in Resources */,
 				ED180EB7286EFC2F00FE57DE /* empty-box.json in Resources */,
+				ED4DB00B28758C5D0051F40F /* LICENSE.txt in Resources */,
 				EDC3361C2859DC4100A6A95A /* slowmotion.mp3 in Resources */,
 				EDC3361A2859DC4100A6A95A /* relaxing.mp3 in Resources */,
 				ED0A4843285873DC004661BB /* Assets.xcassets in Resources */,
@@ -728,11 +755,14 @@
 				ED0A4841285873DB004661BB /* Main.storyboard in Resources */,
 				ED1560A7286BF4AD0089121D /* GoogleService-Info.plist in Resources */,
 				EDEF691628687D3E00F944BF /* yourstory.mp3 in Resources */,
+				ED7D1D1628757065005D31E3 /* intro.mp4 in Resources */,
 				EDC336172859DC4100A6A95A /* betterdays.mp3 in Resources */,
 				EDC336192859DC4100A6A95A /* dreams.mp3 in Resources */,
 				EDEF691728687D3E00F944BF /* urbanhiphop.mp3 in Resources */,
+				ED4DB00A28758C5D0051F40F /* Satisfy-Regular.ttf in Resources */,
 				EDEF691428687D3E00F944BF /* summertime.mp3 in Resources */,
 				EDC336182859DC4100A6A95A /* creativeminds.mp3 in Resources */,
+				ED4DB00D28758EDA0051F40F /* djVideo.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -835,6 +865,7 @@
 				ED0B424928588845000680C2 /* UIButton+Ext.swift in Sources */,
 				ED81C3DE285DA50D004C12EA /* NotificationCell.swift in Sources */,
 				ED63D5152874177600603515 /* UserDefautConstants.swift in Sources */,
+				ED63D517287421AA00603515 /* PulsingLayer.swift in Sources */,
 				ED0A485B28587C0C004661BB /* NotificationController.swift in Sources */,
 				ED0A483A285873DB004661BB /* AppDelegate.swift in Sources */,
 				ED81C3DB285D9804004C12EA /* NotificationService.swift in Sources */,
@@ -871,6 +902,7 @@
 				ED180EB5286EE2D100FE57DE /* Buzzable+Protocol.swift in Sources */,
 				ED0B424628588750000680C2 /* UIFont+Ext.swift in Sources */,
 				ED8B1EF32860CC4B008A0ECB /* MessageService.swift in Sources */,
+				ED7D1D1428749245005D31E3 /* PulsatingButton.swift in Sources */,
 				ED0A485928587BDE004661BB /* StatsController.swift in Sources */,
 				ED0B425828598718000680C2 /* UploadEventInfoCell.swift in Sources */,
 				ED0B4242285886D7000680C2 /* UIScrollView+Ext.swift in Sources */,

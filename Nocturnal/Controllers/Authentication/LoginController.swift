@@ -9,9 +9,17 @@ import UIKit
 import CryptoKit
 import AuthenticationServices
 import FirebaseAuth
+import AVKit
+import AVFAudio
 
 class LoginController: UIViewController {
     // MARK: - Properties
+    
+    private lazy var videoPlayerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .black
+        return view
+    }()
         
     private let iconImageView: UIImageView = {
        let img = UIImageView()
@@ -19,6 +27,15 @@ class LoginController: UIViewController {
         img.image = UIImage(named: "owl")
         
         return img
+    }()
+    
+    private let appNameLabel: UILabel = {
+       let label = UILabel()
+        label.font = .satisfyRegular(size: 35)
+        label.textColor = .white
+        label.textAlignment = .center
+        label.text = "Nocturnal Human"
+        return label
     }()
     
     private lazy var emailContainerView: InputContainerView = {
@@ -81,6 +98,12 @@ class LoginController: UIViewController {
     
     var currentNonce: String?
     
+    var player: AVQueuePlayer?
+    
+    var audioPlayer: AVAudioPlayer?
+    
+    var playerLooper: AVPlayerLooper?
+    
     // MARK: - life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -92,6 +115,15 @@ class LoginController: UIViewController {
         super.viewWillAppear(animated)
         
         configureNavBar()
+        playVideo()
+        playSound()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        player = nil
+        audioPlayer = nil
     }
     
     // MARK: - selectors
@@ -160,11 +192,18 @@ class LoginController: UIViewController {
     private func configureUI() {
         view.backgroundColor = .white
         navigationController?.navigationBar.barStyle = .black
-        configureGradientLayer()
-        view.addSubview(iconImageView)
-        iconImageView.centerX(inView: view)
-        iconImageView.setDimensions(height: 80, width: 120)
-        iconImageView.anchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: 32)
+        
+        view.addSubview(videoPlayerView)
+        videoPlayerView.fillSuperview()
+        
+        view.addSubview(appNameLabel)
+        appNameLabel.centerX(inView: view)
+        appNameLabel.anchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: 32)
+        
+//        view.addSubview(iconImageView)
+//        iconImageView.centerX(inView: view)
+//        iconImageView.setDimensions(height: 80, width: 120)
+//        iconImageView.anchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: 32)
         
         let stack = UIStackView(arrangedSubviews: [emailContainerView, passwordContainerView, loginButton, signinWithAppleButton, forgotPasswordButton])
         stack.axis = .vertical
@@ -172,7 +211,7 @@ class LoginController: UIViewController {
         stack.distribution = .fillEqually
         
         view.addSubview(stack)
-        stack.anchor(top: iconImageView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 32, paddingLeft: 32, paddingRight: 32)
+        stack.anchor(top: appNameLabel.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 32, paddingLeft: 32, paddingRight: 32)
         
         view.addSubview(dontHaveAccountButton)
         dontHaveAccountButton.centerX(inView: view)
@@ -185,6 +224,44 @@ class LoginController: UIViewController {
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         navigationController?.navigationBar.compactAppearance = appearance
+    }
+    
+    private func playVideo() {
+        guard let path = Bundle.main.path(forResource: "djVideo", ofType: "mp4") else {
+            print("no intro resouce")
+            return
+        }
+        self.player = AVQueuePlayer()
+        guard let player = player else { return }
+        let playerItem = AVPlayerItem(url: URL(fileURLWithPath: path))
+        playerLooper = AVPlayerLooper(player: player, templateItem: playerItem)
+        let playerLayer = AVPlayerLayer(player: player)
+        playerLayer.frame = view.bounds
+        playerLayer.videoGravity = .resizeAspectFill
+        self.videoPlayerView.layer.addSublayer(playerLayer)
+        player.play()
+    }
+    
+    private func playSound() {
+        guard let url = Bundle.main.url(forResource: "enigma", withExtension: "mp3") else {
+            print("can not find music resource in log in")
+            return
+        }
+        
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+
+            /* The following line is required for the player to work on iOS 11. Change the file type accordingly*/
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+
+            guard let audioPlayer = audioPlayer else { return }
+
+            audioPlayer.play()
+
+        } catch let error {
+            print("Fail to play music \(error)")
+        }
     }
     
     // MARK: - Apple sign in
@@ -273,12 +350,14 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
                                                     rawNonce: nonce)
             presentLoadingView(shouldPresent: true)
           // Sign in with Firebase.
-          Auth.auth().signIn(with: credential) { (authResult, error) in
+          Auth.auth().signIn(with: credential) { [weak self] (authResult, error) in
+              guard let self = self else { return }
               if error != nil {
               // Error. If error.code == .MissingOrInvalidNonce, make sure
               // you're sending the SHA256-hashed nonce as a hex string with
               // your request to Apple.
-                  self.presentErrorAlert(title: "Error", message: "Fail to log in with Apple: \(String(describing: error!.localizedDescription))", completion: nil)
+             self.presentLoadingView(shouldPresent: false)
+             self.presentErrorAlert(title: "Error", message: "Fail to log in with Apple: \(String(describing: error!.localizedDescription))", completion: nil)
               return        
             }
               

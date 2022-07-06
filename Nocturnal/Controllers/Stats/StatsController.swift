@@ -115,6 +115,8 @@ class StatsController: UIViewController, ChartViewDelegate {
                 self.currentJoinedEvents = events
                 self.presentLoadingView(shouldPresent: false)
             case .failure(let error):
+                self.presentLoadingView(shouldPresent: false)
+                self.presentErrorAlert(title: "Error", message: "\(error.localizedDescription)", completion: nil)
                 print("Fail to fetch events \(error)")
             }
         }
@@ -127,6 +129,7 @@ class StatsController: UIViewController, ChartViewDelegate {
             case .success(let user):
                 completion(user)
             case .failure(let error):
+                self.presentLoadingView(shouldPresent: false)
                 self.presentErrorAlert(title: "Error", message: "\(error.localizedDescription)", completion: nil)
             }
         }

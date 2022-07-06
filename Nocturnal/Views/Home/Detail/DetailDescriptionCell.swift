@@ -17,6 +17,7 @@ class DetailDescriptionCell: UITableViewCell {
     
     private let descriptionTitleLabel: UILabel = {
         let label = UILabel()
+        label.textColor = .label
         label.font = .systemFont(ofSize: 25, weight: .bold)
         label.numberOfLines = 0
         label.text = "About"
@@ -25,6 +26,7 @@ class DetailDescriptionCell: UITableViewCell {
     
     lazy var decriptionContentLabel: UILabel = {
         let label = UILabel()
+        label.textColor = .label
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 20, weight: .semibold)
         label.numberOfLines = 4

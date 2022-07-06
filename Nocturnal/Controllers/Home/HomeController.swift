@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseAuth
+import AVKit
 
 class HomeController: UIViewController {
     
@@ -29,6 +30,13 @@ class HomeController: UIViewController {
         return collectionView
     }()
     
+    private let addEventButtonBackgroundView: UIView = {
+       let view = UIView()
+        view.backgroundColor = UIColor.primaryBlue
+        view.setDimensions(height: 60, width: 60)
+        return view
+    }()
+    
     private lazy var addEventButton: UIButton = {
         let button = UIButton()
         button.setDimensions(height: 60, width: 60)
@@ -38,13 +46,13 @@ class HomeController: UIViewController {
         button.addTarget(self, action: #selector(didTapShowEventButton), for: .touchUpInside)
         return button
     }()
-    
+
     var currentUser: User
         
     var events: [Event] = []
     
     var evnetHosts: [User] = []
-    
+        
     // MARK: - Life Cycle
     
     init(currentUser: User) {
@@ -61,17 +69,29 @@ class HomeController: UIViewController {
         setupUI()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        let pulseLayer = PulsingLayer(numberOfPulses: .infinity, radius: 50, view: addEventButtonBackgroundView)
+        self.addEventButtonBackgroundView.layer.addSublayer(pulseLayer)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // fetch all events from firestore
-        print("viewWillAppear called")
         presentLoadingView(shouldPresent: true)
         fetchCurrentUser { [weak self] in
             guard let self = self else {return}
             self.fetchAllEvents()
         }
     }
-        
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        removePulsingLayer()
+        releaseVideoPlayer()
+    }
+
     // MARK: - API
     
     private func fetchCurrentUser(completion: @escaping () -> Void) {
@@ -170,6 +190,23 @@ class HomeController: UIViewController {
     
     // MARK: - Helpers
     
+    private func removePulsingLayer() {
+        self.addEventButtonBackgroundView.layer.sublayers?.forEach({ layer in
+            if layer is PulsingLayer {
+                layer.removeFromSuperlayer()
+            }
+        })
+    }
+    
+    func releaseVideoPlayer() {
+        collectionView.visibleCells.forEach { cell in
+            if let homeCell = cell as? HomeEventCell {
+                homeCell.player?.removeAllItems()
+                homeCell.player = nil
+            }
+        }
+    }
+    
     func setupUI() {
         configureChatNavBar(withTitle: "Home", backgroundColor: UIColor.hexStringToUIColor(hex: "#1C242F"), preferLargeTitles: true)
         navigationController?.navigationBar.prefersLargeTitles = false
@@ -182,16 +219,21 @@ class HomeController: UIViewController {
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
         
-        view.addSubview(addEventButton)
+        view.addSubview(addEventButtonBackgroundView)
+        addEventButtonBackgroundView.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor,
+                                            right: view.rightAnchor,
+                                            paddingBottom: 10,
+                                            paddingRight: 8)
+        addEventButtonBackgroundView.layer.cornerRadius = 60/2
         
+        view.addSubview(addEventButton)
         addEventButton.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor,
                               right: view.rightAnchor,
                               paddingBottom: 10,
                               paddingRight: 8)
-        
         addEventButton.layer.cornerRadius = 60/2
-        addEventButton.layer.masksToBounds = true
-        
+
+//        addEventButton.layer.masksToBounds = true
     }
     
     func filterEventsFromBlockedUsers(events: [Event], completion: @escaping ([Event]) -> Void) {
@@ -224,7 +266,7 @@ extension HomeController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         guard let eventCell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeEventCell.identifier, for: indexPath) as? HomeEventCell else { return UICollectionViewCell() }
-        
+                
         // should have 2 types of config | loggedin user vs no user
         if Auth.auth().currentUser == nil {
             let event = events[indexPath.item]

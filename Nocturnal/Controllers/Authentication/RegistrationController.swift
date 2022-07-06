@@ -127,6 +127,7 @@ class RegistrationController: UIViewController {
             AuthService.shared.registerUser(withUser: user, password: password) { [weak self] error in
                 guard let self = self else { return }
                 guard error == nil else {
+                    self.presentLoadingView(shouldPresent: false)
                     self.presentErrorAlert(title: "Error", message: error!.localizedDescription, completion: nil)
                     return
                 }

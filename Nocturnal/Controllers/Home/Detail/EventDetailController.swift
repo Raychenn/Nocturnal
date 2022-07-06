@@ -197,6 +197,7 @@ class EventDetailController: UIViewController {
     }
     
     private func setupUI() {
+        overrideUserInterfaceStyle = .dark
         guard let uid = Auth.auth().currentUser?.uid else { return }
         setupJoinButtonState()
         navigationController?.navigationBar.isHidden = true
@@ -225,7 +226,7 @@ class EventDetailController: UIViewController {
         }
         
         view.addSubview(backButton)
-        backButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingTop: 8, paddingLeft: 8)
+        backButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingTop: 8, paddingLeft: 16)
     }
     
     private func setupJoinButtonState() {
@@ -458,6 +459,7 @@ extension EventDetailController: DetailInfoCellDelegate {
                 let chatVC = ChatController(user: host)
                 self.navigationController?.pushViewController(chatVC, animated: true)
             case .failure(let error):
+                self.presentLoadingView(shouldPresent: false)
                 self.presentErrorAlert(title: "Error", message: "\(error.localizedDescription)", completion: nil)
                 print("Fail to fetch host \(error)")
             }

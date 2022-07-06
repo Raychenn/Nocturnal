@@ -14,6 +14,10 @@ private enum FontName: String {
 
 extension UIFont {
     
+    static func satisfyRegular(size: CGFloat) -> UIFont? {
+        return UIFont(name: "Satisfy", size: size)
+    }
+    
     static func medium(size: CGFloat) -> UIFont? {
         
         var descriptor = UIFontDescriptor(name: FontName.regular.rawValue, size: size)

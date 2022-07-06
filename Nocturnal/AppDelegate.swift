@@ -15,6 +15,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
         IQKeyboardManager.shared.enable = true
+        
+        UIFont.familyNames.forEach { name in
+            for fontName in UIFont.fontNames(forFamilyName: name) {
+                print("fmaily: \(name)")
+            }
+        }
         return true
     }
 

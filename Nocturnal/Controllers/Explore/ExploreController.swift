@@ -130,6 +130,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
                 }
             }
             case .failure(let error):
+                self.presentLoadingView(shouldPresent: false)
                 self.presentErrorAlert(title: "Error", message: "Fail to fetch events: \(error.localizedDescription)", completion: nil)
             }
         }
@@ -163,6 +164,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
             case .success(let user):
                 completion(user)
             case .failure(let error):
+                self.presentLoadingView(shouldPresent: false)
                 self.presentErrorAlert(title: "Error", message: "\(error.localizedDescription)", completion: nil)
             }
         }

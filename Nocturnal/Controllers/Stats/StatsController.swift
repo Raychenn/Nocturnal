@@ -14,9 +14,25 @@ class StatsController: UIViewController, ChartViewDelegate {
     // MARK: - Properties
     private var user: User
     
+    private let pieChartDescriptionLabel: UILabel = {
+       let label = UILabel()
+        label.text = "Event style distribution"
+        label.font = .systemFont(ofSize: 20, weight: .bold)
+        label.textColor = .white
+        return label
+    }()
+    
     private lazy var pieChartView = PieChartView(frame: .zero)
     
     private lazy var barChartView = BarChartView(frame: .zero)
+    
+    private let barChartDescriptionLabel: UILabel = {
+       let label = UILabel()
+        label.text = "Costs per event"
+        label.font = .systemFont(ofSize: 20, weight: .bold)
+        label.textColor = .white
+        return label
+    }()
     
     private var currentJoinedEvents: [Event] = [] {
         didSet {
@@ -95,6 +111,8 @@ class StatsController: UIViewController, ChartViewDelegate {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
+        pieChartView.removeFromSuperview()
+        barChartView.removeFromSuperview()
         loadingAnimationView.stop()
         emptyWarningLabel.removeFromSuperview()
     }
@@ -190,11 +208,15 @@ class StatsController: UIViewController, ChartViewDelegate {
     }
     
     func setupPieChart() {
+        view.addSubview(pieChartDescriptionLabel)
+        pieChartDescriptionLabel.anchor(top: view.safeAreaLayoutGuide.topAnchor,
+                                        right: view.rightAnchor,
+                                        paddingTop: 10,
+                                        paddingRight: 15)
+        
         view.addSubview(pieChartView)
-        pieChartView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 10, paddingLeft: 15, paddingRight: 15, height: 300)
-        
-        pieChartView.chartDescription.text = "Monthly joined event styles"
-        
+        pieChartView.anchor(top: pieChartDescriptionLabel.topAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 30, paddingLeft: 15, paddingRight: 15, height: 270)
+                
         let dataEntries: [PieChartDataEntry] = [
             PieChartDataEntry(value: rockCounts, label: "Rock"),
             PieChartDataEntry(value: rappingCounts, label: "Rapping"),
@@ -206,7 +228,7 @@ class StatsController: UIViewController, ChartViewDelegate {
             PieChartDataEntry(value: metalCounts, label: "Metal")
         ]
         
-        let pieChartDataSet = PieChartDataSet(entries: dataEntries, label: "Event Types Distribution")
+        let pieChartDataSet = PieChartDataSet(entries: dataEntries)
         pieChartDataSet.colors = ChartColorTemplates.joyful()
         let chartData = PieChartData(dataSet: pieChartDataSet)
         pieChartView.data = chartData
@@ -237,14 +259,16 @@ class StatsController: UIViewController, ChartViewDelegate {
     }
     
     func setupBarChart() {
-        view.addSubview(barChartView)
+        view.addSubview(barChartDescriptionLabel)
+        barChartDescriptionLabel.anchor(top: pieChartView.bottomAnchor, right: view.rightAnchor, paddingTop: 5, paddingRight: 15)
         
-        barChartView.anchor(top: pieChartView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 10, paddingLeft: 15, paddingRight: 15, height: 300)
+        view.addSubview(barChartView)
+        barChartView.anchor(top: barChartDescriptionLabel.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 10, paddingLeft: 15, paddingRight: 15, height: 270)
 
         var entries: [BarChartDataEntry] = []
         
         for index in 0..<currentJoinedEvents.count {
-            entries.append(BarChartDataEntry(x: Double(index), y: costs[index]))
+            entries.append( BarChartDataEntry(x: Double(index + 1), y: costs[index]))
         }
         
         let set = BarChartDataSet(entries: entries, label: "Cost")
@@ -255,5 +279,9 @@ class StatsController: UIViewController, ChartViewDelegate {
         
         barChartView.data = data
         barChartView.delegate = self
+        barChartView.xAxis.drawGridLinesEnabled = false
+        barChartView.leftAxis.drawLabelsEnabled = false
+        barChartView.xAxis.drawLabelsEnabled = false
+        barChartView.legend.enabled = false
     }
 }

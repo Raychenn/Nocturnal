@@ -196,13 +196,15 @@ extension SettingsController: UITableViewDelegate {
             
             switch selectedSetting {
             case .privacy:
-                break
+                let privacyVC = PrivacyPolicyController()
+                self.present(privacyVC, animated: true)
             case .rate:
                 break
             case .feedback:
                 break
             case .eula:
-                break
+                let eulaVC = EULAController()
+                self.present(eulaVC, animated: true)
             case .blockedList:
                 let blockedListVC = BlockedUsersController()
                 navigationController?.pushViewController(blockedListVC, animated: true)

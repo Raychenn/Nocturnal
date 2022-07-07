@@ -28,7 +28,7 @@ class EventDetailController: UIViewController {
             case .joined:
                 return "Joined"
             case .pending:
-                return "Pending"
+                return "Cancel"
             case .denied:
                 return "Denied"
             }
@@ -252,9 +252,9 @@ class EventDetailController: UIViewController {
             joinButton.backgroundColor = .darkGray
             joinButton.setTitle(JoinState.joined.joinButtonTitle, for: .disabled)
         case .pending:
-            joinButton.isEnabled = false
-            joinButton.backgroundColor = .darkGray
-            joinButton.setTitle(JoinState.pending.joinButtonTitle, for: .disabled)
+            joinButton.isEnabled = true
+            joinButton.backgroundColor = .red
+            joinButton.setTitle(JoinState.pending.joinButtonTitle, for: .normal)
         case .denied:
             joinButton.isEnabled = false
             joinButton.backgroundColor = .darkGray
@@ -264,7 +264,6 @@ class EventDetailController: UIViewController {
     
     // MARK: - Selectors
     @objc func didTapJoinButton() {
-        print("Tapped joined")
         let applicantId = currentUser?.id ?? ""
         let eventId = self.event.id ?? ""
         let notificationType = NotificationType.joinEventRequest.rawValue
@@ -275,30 +274,65 @@ class EventDetailController: UIViewController {
                                         sentTime: Timestamp(date: Date()),
                                         type: notificationType, isRequestPermitted: false)
         
-        NotificationService.shared.postNotification(to: event.hostID, notification: notification) { [weak self] error in
-            
-            guard let self = self else { return }
-            
-            if let error = error {
-                print("Error sending notification \(error)")
-                return
-            }
-            // update user requestedEventsId
-            UserService.shared.updateUserEventRequest(eventId: self.event.id ?? "") { error in
-                if let error = error {
-                    print("Fail to updateUserEventRequest \(error)")
-                    return
-                }
-                
-                EventService.shared.updateEventPendingUsers(eventId: self.event.id ?? "", applicantId: uid) { error in
+        if joinState == .pending {
+            let cancelAlert = UIAlertController(title: "Are you are you want to cancel this application?", message: "", preferredStyle: .alert)
+            cancelAlert.addAction(UIAlertAction(title: "NO", style: .default, handler: nil))
+            cancelAlert.addAction(UIAlertAction(title: "YES", style: .destructive, handler: { _ in
+                print("canceling request...")
+                UserService.shared.deleteRequestedEvent(eventId: eventId) { error in
                     if let error = error {
-                        print("Fail to updateEventPendingUsers \(error)")
+                        print("Error deleting RequestedEvent \(error)")
                         return
                     }
                     
-                    self.joinState = .pending
-                    self.setJoinButton(forState: self.joinState)
-                    print("Successfully sending notification, pop up alert")
+                    EventService.shared.removeEventPendingUsers(eventId: eventId, applicantId: applicantId) { error in
+                        if let error = error {
+                            print("Error deleting EventPendingUsers \(error)")
+                            return
+                        }
+                        
+                        NotificationService.shared.deleteNotifications(eventId: eventId) { [weak self] error in
+                            guard let self = self else { return }
+                            if let error = error {
+                                print("Error deleting notification \(error)")
+                                return
+                            }
+                            
+                            self.joinState = .join
+                            self.setJoinButton(forState: self.joinState)
+                            print("Successfully canceling event application, pop up alert")
+                        }
+                    }
+                }
+            }))
+            self.present(cancelAlert, animated: true)
+        } else {
+            print("start joining event")
+            NotificationService.shared.postNotification(to: event.hostID, notification: notification) { [weak self] error in
+                
+                guard let self = self else { return }
+                
+                if let error = error {
+                    print("Error sending notification \(error)")
+                    return
+                }
+                // update user requestedEventsId
+                UserService.shared.updateUserEventRequest(eventId: self.event.id ?? "") { error in
+                    if let error = error {
+                        print("Fail to updateUserEventRequest \(error)")
+                        return
+                    }
+                    
+                    EventService.shared.updateEventPendingUsers(eventId: self.event.id ?? "", applicantId: uid) { error in
+                        if let error = error {
+                            print("Fail to updateEventPendingUsers \(error)")
+                            return
+                        }
+                        
+                        self.joinState = .pending
+                        self.setJoinButton(forState: self.joinState)
+                        print("Successfully sending notification, pop up alert")
+                    }
                 }
             }
         }

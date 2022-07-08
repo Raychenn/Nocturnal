@@ -6,6 +6,7 @@
 //
 import UIKit
 import FirebaseAuth
+import FirebaseFirestore
 
 class SettingsController: UIViewController {
     
@@ -148,6 +149,13 @@ class SettingsController: UIViewController {
         self.present(alert, animated: true)
     }
     
+    private func presentFeedBackAlert() {
+        let alert = UIAlertController(title: "Please send any suggestion or feedback to the developer at r0975929562@gmail.com", message: "Hope you have a nice experience using this App", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        self.present(alert, animated: true)
+    }
+    
     // MARK: - Selectors
     
     @objc func didTapBackButton() {
@@ -201,7 +209,7 @@ extension SettingsController: UITableViewDelegate {
             case .rate:
                 break
             case .feedback:
-                break
+                presentFeedBackAlert()
             case .eula:
                 let eulaVC = EULAController()
                 self.present(eulaVC, animated: true)
@@ -212,7 +220,36 @@ extension SettingsController: UITableViewDelegate {
                 presentLogoutController()
             }
         } else {
-            
+            // delete account
+//            guard let currentUser = Auth.auth().currentUser else {
+//                presentErrorAlert(message: "Can not find current user")
+//                print("current user is nil in setting")
+//                return
+//            }
+//            currentUser.delete { [weak self] error in
+//                guard let self = self else { return }
+//                if let error = error {
+//                    self.presentAlert(title: "Error", message: "\(error.localizedDescription)")
+//                    return
+//                }
+//                
+//                StorageUploader.shared.uploadProfileImage(with: UIImage(systemName: "person")!) { downloadedUrl in
+//                    let emptyUser = User(name: "Unkown User",
+//                                         email: "",
+//                                         country: "",
+//                                         profileImageURL: downloadedUrl,
+//                                         birthday: Timestamp(date: Date()),
+//                                         gender: 2,
+//                                         numberOfHostedEvents: 0,
+//                                         bio: "This account has been deleted",
+//                                         joinedEventsId: [],
+//                                         blockedUsersId: [],
+//                                         requestedEventsId: [])
+//                    UserService.shared.updateUserProfile(newUserData: emptyUser) { error in
+//                        
+//                    }
+//                }
+//            }
         }
     }
     

@@ -252,7 +252,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         view.addSubview(collectionView)
         collectionView.anchor(top: dateSegmentControl.bottomAnchor,
                               left: view.leftAnchor,
-                              bottom: view.safeAreaLayoutGuide.bottomAnchor,
+                              bottom: view.bottomAnchor,
                               right: view.rightAnchor,
                               paddingTop: 8
         )

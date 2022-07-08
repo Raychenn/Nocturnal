@@ -209,7 +209,6 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
         navigationController?.navigationBar.isHidden = true
         tableView.dataSource = self
         tableView.delegate = self
-        view.backgroundColor = .white
         view.addSubview(tableView)
         tableView.fillSuperview()
     }

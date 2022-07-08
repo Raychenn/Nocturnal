@@ -8,6 +8,7 @@
 import UIKit
 import FirebaseAuth
 import FirebaseFirestore
+import SwiftUI
 
 class MainTabBarController: UITabBarController {
 
@@ -26,14 +27,9 @@ class MainTabBarController: UITabBarController {
         self.authenticateUserAndConfigureUI()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-    
     // MARK: - API
     
     func authenticateUserAndConfigureUI() {
-//        try? Auth.auth().signOut()
         
         if Auth.auth().currentUser == nil {
             self.configureViewControllers(with: defaultUser)
@@ -44,13 +40,11 @@ class MainTabBarController: UITabBarController {
             }
         } else {
             // user is logged in
-//            presentLoadingView(shouldPresent: true)
             fetchCurrentUser { [weak self] user in
                 guard let self = self else { return }
                 self.currentUser = user
                 self.configureViewControllers(with: user)
                 self.selectedIndex = 0
-//                self.presentLoadingView(shouldPresent: false)
             }
         }
     }
@@ -71,18 +65,19 @@ class MainTabBarController: UITabBarController {
     
     func configureTabBarStyle() {
         let appearance = UITabBarAppearance()
+        tabBar.isTranslucent = true
+        tabBar.clipsToBounds = true
+        tabBar.backgroundColor = .clear
         appearance.configureWithDefaultBackground()
-        appearance.backgroundEffect = UIBlurEffect(style: .systemThickMaterialDark)
+        appearance.backgroundColor = .clear
+        appearance.backgroundEffect = UIBlurEffect(style: .systemChromeMaterialDark)
         tabBar.scrollEdgeAppearance = appearance
         tabBar.standardAppearance = appearance
     }
     
     func configureViewControllers(with user: User) {
-        tabBar.tintColor = .black
-        tabBar.isTranslucent = false
         self.delegate = self
         
-        view.backgroundColor = .white
         let home = templateNavigationViewController(unselectedImage: UIImage(systemName: "house")!, selectedImage: UIImage(systemName: "house.fill")!, rootViewController: HomeController(currentUser: user))
         
         let explore = templateNavigationViewController(unselectedImage: UIImage(systemName: "magnifyingglass")!, selectedImage: UIImage(systemName: "magnifyingglass")!, rootViewController: ExploreController(user: user))

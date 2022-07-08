@@ -121,11 +121,6 @@ class LoginController: UIViewController {
         super.viewDidLoad()
         
         configureUI()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
         configureNavBar()
         playVideo()
         playSound()
@@ -251,7 +246,6 @@ class LoginController: UIViewController {
                           bottom: view.safeAreaLayoutGuide.bottomAnchor,
                           paddingTop: 8)
         
-
     }
     private func configureNavBar() {
         let appearance = UINavigationBarAppearance()

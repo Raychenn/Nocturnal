@@ -127,6 +127,8 @@ class EventDetailController: UIViewController {
         return view
     }()
     
+    public var headerView: DetailHeader?
+    
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()

@@ -14,7 +14,7 @@ class HomeEventCell: UICollectionViewCell {
     
     // MARK: - Properties
     
-    private let eventImageView: UIImageView = {
+     let eventImageView: UIImageView = {
        let imageView = UIImageView()
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
@@ -100,7 +100,7 @@ class HomeEventCell: UICollectionViewCell {
     }()
     
     var player: AVQueuePlayer?
-    
+        
     var looper: AVPlayerLooper?
     
     var isMuted = false
@@ -127,6 +127,7 @@ class HomeEventCell: UICollectionViewCell {
         super.prepareForReuse()
         
         player = nil
+        player?.removeAllItems()
     }
     
     // MARK: - Selector

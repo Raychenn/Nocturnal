@@ -22,15 +22,6 @@ extension UIViewController {
             .first(where: \.isKeyWindow)
     }
     
-    var isModal: Bool {
-
-        let presentingIsModal = presentingViewController != nil
-        let presentingIsNavigation = navigationController?.presentingViewController?.presentedViewController == navigationController
-        let presentingIsTabBar = tabBarController?.presentingViewController is UITabBarController
-
-        return presentingIsModal || presentingIsNavigation || presentingIsTabBar
-    }
-    
     func presentAlert(title: String?, message: String?, completion: (() -> Void)? = nil) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okAction = UIAlertAction(title: "OK", style: .default) { _ in

@@ -245,7 +245,7 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
           
             let type = NotificationType(rawValue: notification.type)
           
-          return notification.applicantId != currentUid || type == .successJoinedEventResponse || type == .failureJoinedEventResponse
+          return notification.applicantId != currentUid || type == .successJoinedEventResponse || type == .failureJoinedEventResponse || type == .cancelEvent
         }
         return result
     }

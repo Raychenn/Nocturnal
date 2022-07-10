@@ -220,36 +220,59 @@ extension SettingsController: UITableViewDelegate {
                 presentLogoutController()
             }
         } else {
-            // delete account
-//            guard let currentUser = Auth.auth().currentUser else {
-//                presentErrorAlert(message: "Can not find current user")
-//                print("current user is nil in setting")
-//                return
-//            }
-//            currentUser.delete { [weak self] error in
-//                guard let self = self else { return }
-//                if let error = error {
-//                    self.presentAlert(title: "Error", message: "\(error.localizedDescription)")
-//                    return
-//                }
-//                
-//                StorageUploader.shared.uploadProfileImage(with: UIImage(systemName: "person")!) { downloadedUrl in
-//                    let emptyUser = User(name: "Unkown User",
-//                                         email: "",
-//                                         country: "",
-//                                         profileImageURL: downloadedUrl,
-//                                         birthday: Timestamp(date: Date()),
-//                                         gender: 2,
-//                                         numberOfHostedEvents: 0,
-//                                         bio: "This account has been deleted",
-//                                         joinedEventsId: [],
-//                                         blockedUsersId: [],
-//                                         requestedEventsId: [])
-//                    UserService.shared.updateUserProfile(newUserData: emptyUser) { error in
-//                        
-//                    }
-//                }
-//            }
+            let alert = UIAlertController(title: "Are you sure you want to delete this account?", message: "", preferredStyle: .actionSheet)
+            
+            alert.addAction(UIAlertAction(title: "NO", style: .cancel, handler: nil))
+            alert.addAction(UIAlertAction(title: "YES", style: .destructive, handler: { [weak self] _ in
+                guard let self = self else { return }
+                // delete account
+                print("start deleting account")
+                guard let currentUser = Auth.auth().currentUser else {
+                    self.presentErrorAlert(message: "Can not find current user")
+                    print("current user is nil in setting")
+                    return
+                }
+            // MARK: - TODO:
+                currentUser.delete { [weak self] error in
+                    guard let self = self else { return }
+                    if let error = error {
+                        self.presentAlert(title: "Error", message: "\(error.localizedDescription)")
+                        return
+                    }
+            
+                    StorageUploader.shared.uploadProfileImage(with: UIImage(systemName: "person")!) { downloadedUrl in
+                        let emptyUser = User(name: "Unknown User",
+                                             email: "",
+                                             country: "",
+                                             profileImageURL: downloadedUrl,
+                                             birthday: Timestamp(date: Date()),
+                                             gender: 2,
+                                             numberOfHostedEvents: 0,
+                                             bio: "This account has been deleted",
+                                             joinedEventsId: [],
+                                             blockedUsersId: [],
+                                             requestedEventsId: [])
+                        
+                        UserService.shared.updateUserProfileForDeletion(deledtedUserId: currentUser.uid, emptyUser: emptyUser) { error in
+                            if let error = error {
+                                self.presentAlert(title: "Error", message: "\(error.localizedDescription)")
+                                return
+                            }
+                            
+                            NotificationService.shared.updateCancelNotification(deletedUserId: currentUser.uid) { error in
+                                if let error = error {
+                                    self.presentAlert(title: "Error", message: "\(error.localizedDescription)")
+                                    return
+                                }
+                                // remember to present login full screen
+                                print("Successfully deleted user")
+                                self.handleLogout()
+                            }
+                        }
+                    }
+                }
+            }))
+            self.present(alert, animated: true)
         }
     }
     

@@ -86,6 +86,15 @@ struct UserService {
         collection_users.document(uid).updateData(["requestedEventsId": FieldValue.arrayUnion([eventId])], completion: completion)
     }
     
+    func updateUserProfileForDeletion(deledtedUserId: String, emptyUser: User, completion: FirestoreCompletion) {
+        
+        do {
+            try collection_users.document(deledtedUserId).setData(from: emptyUser, encoder: .init(), completion: completion)
+        } catch {
+            print("Fail to encoder deleted user data: \(error)")
+        }
+    }
+    
     /// testing
     func updateUserProfile(newUserData: User, completion: FirestoreCompletion) {
         do {

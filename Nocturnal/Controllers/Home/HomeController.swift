@@ -84,7 +84,11 @@ class HomeController: UIViewController {
         super.viewWillAppear(animated)
         // fetch all events from firestore
         presentLoadingView(shouldPresent: true)
-        self.fetchAllEvents()
+        
+        fetchCurrentUser { [weak self] in
+            guard let self = self else {return}
+            self.fetchAllEvents()
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -121,6 +125,7 @@ class HomeController: UIViewController {
             guard let self = self else { return }
             switch result {
             case .success(let events):
+                
                 if self.currentUser.blockedUsersId.count == 0 {
                     self.events = events
                     self.fetchHostsWhenLoggedin()
@@ -135,27 +140,18 @@ class HomeController: UIViewController {
             }
         }
     }
-    
-    private func fetchHosts(hostsId: [String], completion: @escaping () -> Void) {
-        UserService.shared.fetchUsers(uids: hostsId) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let hosts):
-                self.evnetHosts = hosts
-                completion()
-            case .failure(let error):
-                print("error fetching event hosts \(error)")
-            }
-        }
-    }
-    
+        
     private func fetchHostsWhenLoggedin() {
         if Auth.auth().currentUser != nil {
             // logged in, start fetching user data
             var hostsId: [String] = []
-            events.forEach({hostsId.append($0.hostID)})
+            let sortedEvents = events.sorted(by: { $0.createTime.dateValue().compare($1.createTime.dateValue()) == .orderedDescending })
+            sortedEvents.forEach({hostsId.append($0.hostID)})
+            
             fetchHosts(hostsId: hostsId) { [weak self] in
                 guard let self = self else { return }
+                self.evnetHosts.forEach({ print("got filtered host namesssss \($0.name)") })
+                self.filterEventsForDeletedUser(hosts: self.evnetHosts)
                 self.presentLoadingView(shouldPresent: false)
                 self.collectionView.reloadData()
                 self.refreshControl.endRefreshing()
@@ -168,12 +164,23 @@ class HomeController: UIViewController {
         }
     }
     
+    private func fetchHosts(hostsId: [String], completion: @escaping () -> Void) {
+        UserService.shared.fetchUsers(uids: hostsId) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let hosts):
+                // filter deleted hosts here
+                self.filterDeletedHosts(hosts: hosts)
+                completion()
+            case .failure(let error):
+                print("error fetching event hosts \(error)")
+            }
+        }
+    }
+    
     // MARK: - Selectors
     @objc func refreshData() {
-        fetchCurrentUser { [weak self] in
-            guard let self = self else {return}
-            self.fetchAllEvents()
-        }
+        self.fetchAllEvents()
     }
     
     @objc func didTapShowEventButton() {
@@ -190,6 +197,37 @@ class HomeController: UIViewController {
     }
     
     // MARK: - Helpers
+    
+    private func filterDeletedHosts(hosts: [User]) {
+        var undeletedHosts: [User] = []
+        
+        hosts.forEach { host in
+            if host.name != "Unknown User" {
+                undeletedHosts.append(host)
+            }
+        }
+        self.evnetHosts = undeletedHosts
+    }
+    
+    private func filterEventsForDeletedUser(hosts: [User]) {
+        var undeletedHostsId: Set<String> = []
+        var filteredEvents: [Event] = []
+        hosts.forEach { host in
+            if host.name != "Unknown User" {
+                undeletedHostsId.insert(host.id ?? "")
+            }
+        }
+                
+        events.forEach { event in
+            undeletedHostsId.forEach { undeletedHostId in
+                if undeletedHostId == event.hostID {
+                    filteredEvents.append(event)
+                }
+            }
+        }
+        
+        self.events = filteredEvents
+    }
     
     private func removePulsingLayer() {
         self.addEventButtonBackgroundView.layer.sublayers?.forEach({ layer in
@@ -233,8 +271,6 @@ class HomeController: UIViewController {
                               paddingBottom: 10,
                               paddingRight: 8)
         addEventButton.layer.cornerRadius = 60/2
-
-//        addEventButton.layer.masksToBounds = true
     }
     
     func filterEventsFromBlockedUsers(events: [Event], completion: @escaping ([Event]) -> Void) {

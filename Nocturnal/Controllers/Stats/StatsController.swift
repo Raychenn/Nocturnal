@@ -94,7 +94,6 @@ class StatsController: UIViewController, ChartViewDelegate {
     init(user: User) {
         self.user = user
         super.init(nibName: nil, bundle: nil)
-        self.fetchJoinedEvents()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -135,7 +134,7 @@ class StatsController: UIViewController, ChartViewDelegate {
             case .failure(let error):
                 self.presentLoadingView(shouldPresent: false)
                 self.presentErrorAlert(title: "Error", message: "\(error.localizedDescription)", completion: nil)
-                print("Fail to fetch events \(error)")
+                print("Fail to fetch events in states VC \(error)")
             }
         }
     }

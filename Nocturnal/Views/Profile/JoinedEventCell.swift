@@ -79,7 +79,7 @@ class JoinedEventCell: UICollectionViewCell {
                 self.joinedEvents = events
                 self.collectionView.reloadData()
             case .failure(let error):
-                print("Fail to fetch events \(error)")
+                print("Fail to fetch events in joined cell \(error)")
             }
         }
     }

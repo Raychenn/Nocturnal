@@ -9,6 +9,7 @@ import UIKit
 import Photos
 import PhotosUI
 import FirebaseFirestore
+import FirebaseAuth
 import SwiftUI
 import CoreLocation
 import Lottie
@@ -287,8 +288,14 @@ extension AddEventController: UploadEventInfoCellDelegate {
                 StorageUploader.shared.uploadEventImage(with: selectedEventImage) { downloadedImageURL in
             
                     StorageUploader.shared.uploadEventMusic(with: musicUrlData) { downloadedMusicURL in
+                        
+                        guard let uid = Auth.auth().currentUser?.uid else {
+                            print("current user nil in add EventVC")
+                            return
+                        }
             
                         let newEvent = Event(title: userInputData.eventName,
+                                             createTime: Timestamp(date: Date()),
                                              hostID: uid,
                                              description: userInputData.eventDescription,
                                              startingDate: Timestamp(date: userInputData.eventTime),

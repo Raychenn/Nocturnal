@@ -83,7 +83,7 @@ class ProfileController: UIViewController {
             case .success(let events):
                 events.forEach({ self.joinedEventURLs.append($0.eventImageURL) })
             case .failure(let error):
-                print("Fail to fetch events \(error)")
+                print("Fail to fetch events in profile VC \(error)")
             }
         }
     }

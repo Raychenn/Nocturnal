@@ -12,6 +12,7 @@ import FirebaseFirestore
 struct Event: Codable {
     @DocumentID var id: String?
     let title: String
+    let createTime: Timestamp
     let hostID: String
     let description: String
     let startingDate: Timestamp

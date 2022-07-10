@@ -112,24 +112,33 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
             case .success(let events):
                 if Auth.auth().currentUser == nil {
                     self.events = events
-                    self.originalAllEvents = events
-                    self.generateRandomHeight(eventCount: events.count)
-                    self.refreshControl.endRefreshing()
-                    self.collectionView.reloadData()
-                    self.presentLoadingView(shouldPresent: false)
+                    self.fetchHosts { hosts in
+                        self.filterEventsForDeletedUser(hosts: hosts)
+                        self.originalAllEvents = events
+                        self.generateRandomHeight(eventCount: events.count)
+                        self.refreshControl.endRefreshing()
+                        self.collectionView.reloadData()
+                        self.presentLoadingView(shouldPresent: false)
+                    }
                 } else {
                     self.filterEventsFromBlockedUsers(events: events) { [weak self] filteredEvents in
                         guard let self = self else { return }
                         print("filter events count in explore VC \(filteredEvents.count)")
+                        // filter blocked users' posts first
                         self.events = filteredEvents
-                        self.originalAllEvents = filteredEvents
-                        self.generateRandomHeight(eventCount: filteredEvents.count)
-                        self.refreshControl.endRefreshing()
-                        self.collectionView.reloadData()
-                        self.presentLoadingView(shouldPresent: false)
+                        self.fetchHosts { hosts in
+                            // filter deleted users' posts
+                            self.filterEventsForDeletedUser(hosts: hosts)
+                            self.originalAllEvents = self.events
+                            self.generateRandomHeight(eventCount: self.events.count)
+                            self.refreshControl.endRefreshing()
+                            self.collectionView.reloadData()
+                            self.presentLoadingView(shouldPresent: false)
+                        }
                 }
             }
             case .failure(let error):
+                print("Fail to fetch events in explore VC \(error)")
                 self.presentLoadingView(shouldPresent: false)
                 self.presentErrorAlert(title: "Error", message: "Fail to fetch events: \(error.localizedDescription)", completion: nil)
             }
@@ -166,6 +175,23 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
             case .failure(let error):
                 self.presentLoadingView(shouldPresent: false)
                 self.presentErrorAlert(title: "Error", message: "\(error.localizedDescription)", completion: nil)
+            }
+        }
+    }
+    
+    // MARK: - New
+    
+    private func fetchHosts(completion: @escaping ([User]) -> Void) {
+        var hostsId: [String] = []
+        let sortedEvents = events.sorted(by: { $0.startingDate.dateValue().compare($1.startingDate.dateValue()) == .orderedDescending })
+        sortedEvents.forEach({hostsId.append($0.hostID)})
+        
+        UserService.shared.fetchUsers(uids: hostsId) { result in
+            switch result {
+            case .success(let hosts):
+                completion(hosts)
+            case .failure(let error):
+                print("error fetching event hosts \(error)")
             }
         }
     }
@@ -229,7 +255,30 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     
     // MARK: - Helpers
     
-    func generateRandomHeight(eventCount: Int) {
+    private func filterEventsForDeletedUser(hosts: [User]) {
+        var deletedHostsId: Set<String> = []
+        var filteredEvents: [Event] = []
+        hosts.forEach { host in
+            if host.name == "Unknown User" {
+                deletedHostsId.insert(host.id ?? "")
+            }
+        }
+                
+        deletedHostsId.forEach { deletedHostId in
+            events.forEach { event in
+                if deletedHostId != event.hostID {
+                    filteredEvents.append(event)
+                }
+            }
+        }
+        self.events = filteredEvents
+    }
+    
+    private func generateRandomHeight(eventCount: Int) {
+        if eventCount == 0 {
+            return
+        }
+        
         for _ in 0...eventCount - 1 {
             self.randomHeights.append(CGFloat(Int.random(in: 150...400)))
         }

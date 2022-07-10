@@ -21,8 +21,7 @@ class CacheManager {
 
         let file = directoryFor(stringUrl: stringUrl)
 
-        //return file path if already exists in cache directory
-        guard !fileManager.fileExists(atPath: file.path)  else {
+        guard !fileManager.fileExists(atPath: file.path) else {
             completionHandler(.success(file))
             return
         }

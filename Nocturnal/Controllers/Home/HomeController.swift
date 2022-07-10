@@ -52,6 +52,8 @@ class HomeController: UIViewController {
     var events: [Event] = []
     
     var evnetHosts: [User] = []
+    
+    var currentCell: HomeEventCell?
         
     // MARK: - Life Cycle
     
@@ -66,6 +68,8 @@ class HomeController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    
+//        navigationController?.delegate = self
         setupUI()
     }
     
@@ -102,10 +106,11 @@ class HomeController: UIViewController {
                 UserService.shared.fetchUser(uid: userId) { result in
                     switch result {
                     case .success(let user):
-                        print("current user in home \(user.name)")
                         self.currentUser = user
                         completion()
                     case .failure(let error):
+                        self.presentErrorAlert(message: "\(error.localizedDescription)")
+                        self.presentLoadingView(shouldPresent: false)
                         print("Fail to fetch user in home \(error)")
                     }
                 }
@@ -120,6 +125,7 @@ class HomeController: UIViewController {
             guard let self = self else { return }
             switch result {
             case .success(let events):
+                
                 if self.currentUser.blockedUsersId.count == 0 {
                     self.events = events
                     self.fetchHostsWhenLoggedin()
@@ -130,8 +136,28 @@ class HomeController: UIViewController {
                     }
                 }
             case .failure(let error):
+                self.presentErrorAlert(message: "\(error.localizedDescription)")
+                self.presentLoadingView(shouldPresent: false)
                 print("error fetching all events \(error)")
             }
+        }
+    }
+        
+    private func fetchHostsWhenLoggedin() {
+        if Auth.auth().currentUser != nil {
+            // logged in, start fetching user data
+            var hostsId: [String] = []
+            let sortedEvents = events.sorted(by: { $0.createTime.dateValue().compare($1.createTime.dateValue()) == .orderedDescending })
+            sortedEvents.forEach({hostsId.append($0.hostID)})
+            
+            fetchHosts(hostsId: hostsId) { [weak self] in
+                guard let self = self else { return }
+                self.filterEventsForDeletedUser(hosts: self.evnetHosts)
+                self.endRefreshing()
+            }
+        } else {
+            // not logged in
+            self.endRefreshing()
         }
     }
     
@@ -140,39 +166,20 @@ class HomeController: UIViewController {
             guard let self = self else { return }
             switch result {
             case .success(let hosts):
-                self.evnetHosts = hosts
-                self.collectionView.reloadData()
+                // filter deleted hosts here
+                self.filterDeletedHosts(hosts: hosts)
                 completion()
             case .failure(let error):
+                self.presentErrorAlert(message: "\(error.localizedDescription)")
+                self.presentLoadingView(shouldPresent: false)
                 print("error fetching event hosts \(error)")
             }
         }
     }
     
-    private func fetchHostsWhenLoggedin() {
-        if Auth.auth().currentUser != nil {
-            // logged in, start fetching user data
-            var hostsId: [String] = []
-            events.forEach({hostsId.append($0.hostID)})
-            fetchHosts(hostsId: hostsId) { [weak self] in
-                guard let self = self else { return }
-                self.presentLoadingView(shouldPresent: false)
-                self.refreshControl.endRefreshing()
-            }
-        } else {
-            // not logged in
-            self.presentLoadingView(shouldPresent: false)
-            self.collectionView.reloadData()
-            self.refreshControl.endRefreshing()
-        }
-    }
-    
     // MARK: - Selectors
     @objc func refreshData() {
-        fetchCurrentUser { [weak self] in
-            guard let self = self else {return}
-            self.fetchAllEvents()
-        }
+        self.fetchAllEvents()
     }
     
     @objc func didTapShowEventButton() {
@@ -189,6 +196,43 @@ class HomeController: UIViewController {
     }
     
     // MARK: - Helpers
+    
+    private func endRefreshing() {
+        refreshControl.endRefreshing()
+        collectionView.reloadData()
+        presentLoadingView(shouldPresent: false)
+    }
+    
+    private func filterDeletedHosts(hosts: [User]) {
+        var undeletedHosts: [User] = []
+        
+        hosts.forEach { host in
+            if host.name != "Unknown User" {
+                undeletedHosts.append(host)
+            }
+        }
+        self.evnetHosts = undeletedHosts
+    }
+    
+    private func filterEventsForDeletedUser(hosts: [User]) {
+        var undeletedHostsId: Set<String> = []
+        var filteredEvents: [Event] = []
+        hosts.forEach { host in
+            if host.name != "Unknown User" {
+                undeletedHostsId.insert(host.id ?? "")
+            }
+        }
+                
+        events.forEach { event in
+            undeletedHostsId.forEach { undeletedHostId in
+                if undeletedHostId == event.hostID {
+                    filteredEvents.append(event)
+                }
+            }
+        }
+        
+        self.events = filteredEvents
+    }
     
     private func removePulsingLayer() {
         self.addEventButtonBackgroundView.layer.sublayers?.forEach({ layer in
@@ -213,10 +257,10 @@ class HomeController: UIViewController {
         navigationItem.title = "Home"
         view.addSubview(collectionView)
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         
         view.addSubview(addEventButtonBackgroundView)
@@ -232,12 +276,9 @@ class HomeController: UIViewController {
                               paddingBottom: 10,
                               paddingRight: 8)
         addEventButton.layer.cornerRadius = 60/2
-
-//        addEventButton.layer.masksToBounds = true
     }
     
     func filterEventsFromBlockedUsers(events: [Event], completion: @escaping ([Event]) -> Void) {
-        
         var result: [Event] = []
         
         currentUser.blockedUsersId.forEach { blockedId in
@@ -297,6 +338,10 @@ extension HomeController: UICollectionViewDelegate {
         } else {
             let selectedEvent = events[indexPath.item]
             let detailVC = EventDetailController(event: selectedEvent)
+            if let selectedCell = collectionView.cellForItem(at: indexPath) as? HomeEventCell {
+                self.currentCell = selectedCell
+            }
+            
             detailVC.hidesBottomBarWhenPushed = true
             navigationController?.pushViewController(detailVC, animated: true)
         }
@@ -311,3 +356,15 @@ extension HomeController: UICollectionViewDelegateFlowLayout {
         return CGSize(width: view.frame.size.width - 40, height: 350)
     }
 }
+
+// MARK: - UINavigationControllerDelegate
+
+//extension HomeController: UINavigationControllerDelegate {
+//    func navigationController(
+//        _ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation,
+//        from fromVC: UIViewController,
+//        to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+//
+//        return TransitionManager(duration: 0.5)
+//    }
+//}

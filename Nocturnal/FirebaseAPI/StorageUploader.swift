@@ -74,7 +74,7 @@ struct StorageUploader {
     func uploadEventImage(with image: UIImage, completion: @escaping (String) -> Void) {
         
         // make the file a little smaller
-        guard let imageData = image.jpegData(compressionQuality: 0.75) else { return }
+        guard let imageData = image.jpegData(compressionQuality: 0.6) else { return }
         let fileName = UUID().uuidString
         
         let ref = Storage.storage().reference(withPath: "event_images/\(fileName)")
@@ -126,7 +126,7 @@ struct StorageUploader {
     
     func uploadProfileImage(with image: UIImage, completion: @escaping (String) -> Void) {
         
-        guard let imageData = image.jpegData(compressionQuality: 0.7) else { return }
+        guard let imageData = image.jpegData(compressionQuality: 0.6) else { return }
         let fileName = UUID().uuidString
         
         let ref = Storage.storage().reference(withPath: "profile_images/\(fileName)")

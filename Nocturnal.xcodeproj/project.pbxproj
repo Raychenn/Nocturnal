@@ -57,6 +57,9 @@
 		ED194CBA2859E8F300C9E5D3 /* FirebaseReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CB92859E8F300C9E5D3 /* FirebaseReference.swift */; };
 		ED194CBC2859EB7500C9E5D3 /* StorageUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CBB2859EB7500C9E5D3 /* StorageUploader.swift */; };
 		ED194CBE285A007C00C9E5D3 /* InputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CBD285A007C00C9E5D3 /* InputTextView.swift */; };
+		ED1C94D12876A117006C9775 /* PrivacyPolicyController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1C94D02876A117006C9775 /* PrivacyPolicyController.swift */; };
+		ED1C94D32876A123006C9775 /* EULAController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1C94D22876A123006C9775 /* EULAController.swift */; };
+		ED1C94D52876C6EA006C9775 /* TransitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1C94D42876C6EA006C9775 /* TransitionManager.swift */; };
 		ED204B22285DB16F0016FDCA /* UILabel+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED204B21285DB16F0016FDCA /* UILabel+Ext.swift */; };
 		ED4DB00A28758C5D0051F40F /* Satisfy-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ED4DB00828758C5D0051F40F /* Satisfy-Regular.ttf */; };
 		ED4DB00B28758C5D0051F40F /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = ED4DB00928758C5D0051F40F /* LICENSE.txt */; };
@@ -90,7 +93,6 @@
 		ED847A10285CDE1A00F33C7F /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED847A0F285CDE1A00F33C7F /* LoginController.swift */; };
 		ED847A12285CDE7300F33C7F /* AuthTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED847A11285CDE7300F33C7F /* AuthTextField.swift */; };
 		ED847A14285CDF9C00F33C7F /* RegistrationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED847A13285CDF9C00F33C7F /* RegistrationController.swift */; };
-		ED847A16285CDFAA00F33C7F /* ResetPasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED847A15285CDFAA00F33C7F /* ResetPasswordController.swift */; };
 		ED847A18285CDFEA00F33C7F /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED847A17285CDFEA00F33C7F /* AuthService.swift */; };
 		ED847A1A285CE0BE00F33C7F /* AuthButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED847A19285CE0BE00F33C7F /* AuthButton.swift */; };
 		ED847A1C285CE5E700F33C7F /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED847A1B285CE5E700F33C7F /* User.swift */; };
@@ -179,6 +181,9 @@
 		ED194CB92859E8F300C9E5D3 /* FirebaseReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseReference.swift; sourceTree = "<group>"; };
 		ED194CBB2859EB7500C9E5D3 /* StorageUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageUploader.swift; sourceTree = "<group>"; };
 		ED194CBD285A007C00C9E5D3 /* InputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextView.swift; sourceTree = "<group>"; };
+		ED1C94D02876A117006C9775 /* PrivacyPolicyController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyController.swift; sourceTree = "<group>"; };
+		ED1C94D22876A123006C9775 /* EULAController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EULAController.swift; sourceTree = "<group>"; };
+		ED1C94D42876C6EA006C9775 /* TransitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionManager.swift; sourceTree = "<group>"; };
 		ED204B21285DB16F0016FDCA /* UILabel+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Ext.swift"; sourceTree = "<group>"; };
 		ED4DB00828758C5D0051F40F /* Satisfy-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Satisfy-Regular.ttf"; sourceTree = "<group>"; };
 		ED4DB00928758C5D0051F40F /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
@@ -213,7 +218,6 @@
 		ED847A0F285CDE1A00F33C7F /* LoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
 		ED847A11285CDE7300F33C7F /* AuthTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTextField.swift; sourceTree = "<group>"; };
 		ED847A13285CDF9C00F33C7F /* RegistrationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationController.swift; sourceTree = "<group>"; };
-		ED847A15285CDFAA00F33C7F /* ResetPasswordController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordController.swift; sourceTree = "<group>"; };
 		ED847A17285CDFEA00F33C7F /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		ED847A19285CE0BE00F33C7F /* AuthButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthButton.swift; sourceTree = "<group>"; };
 		ED847A1B285CE5E700F33C7F /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -575,6 +579,7 @@
 			isa = PBXGroup;
 			children = (
 				ED63D50F2873E3E100603515 /* CacheManager.swift */,
+				ED1C94D42876C6EA006C9775 /* TransitionManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -610,7 +615,8 @@
 			children = (
 				ED847A0F285CDE1A00F33C7F /* LoginController.swift */,
 				ED847A13285CDF9C00F33C7F /* RegistrationController.swift */,
-				ED847A15285CDFAA00F33C7F /* ResetPasswordController.swift */,
+				ED1C94D02876A117006C9775 /* PrivacyPolicyController.swift */,
+				ED1C94D22876A123006C9775 /* EULAController.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -693,6 +699,7 @@
 				ED0A4833285873DB004661BB /* Frameworks */,
 				ED0A4834285873DB004661BB /* Resources */,
 				8F5A7DA60C5A182A994E137A /* [CP] Embed Pods Frameworks */,
+				ED2197D52876DE300004F078 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -826,6 +833,25 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/SwiftLint/swiftlint\"\n";
 		};
+		ED2197D52876DE300004F078 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/FirebaseCrashlytics/run\"\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -843,7 +869,6 @@
 				EDF3E2AD285ACAE5000E2218 /* UICollectionView+Ext.swift in Sources */,
 				ED0B424028588697000680C2 /* UITableView+Ext.swift in Sources */,
 				ED1560B3286D4B9A0089121D /* BlockListCell.swift in Sources */,
-				ED847A16285CDFAA00F33C7F /* ResetPasswordController.swift in Sources */,
 				ED0E582528609AEE00064C02 /* MessageCell.swift in Sources */,
 				ED833932285B1BA700236814 /* PreviewMapCell.swift in Sources */,
 				EDC663F228619407007FEF82 /* NTSegmentControl.swift in Sources */,
@@ -888,6 +913,7 @@
 				ED194CBE285A007C00C9E5D3 /* InputTextView.swift in Sources */,
 				ED0B4244285886FC000680C2 /* UIImage+Ext.swift in Sources */,
 				ED194CBA2859E8F300C9E5D3 /* FirebaseReference.swift in Sources */,
+				ED1C94D32876A123006C9775 /* EULAController.swift in Sources */,
 				ED626A8C2862B892003BB636 /* EventPhotosCell.swift in Sources */,
 				ED626A8A2862B41C003BB636 /* JoinedEventCell.swift in Sources */,
 				ED0B423E2858863D000680C2 /* Date+Ext.swift in Sources */,
@@ -901,6 +927,8 @@
 				ED194CB82859E62F00C9E5D3 /* Event.swift in Sources */,
 				ED180EB5286EE2D100FE57DE /* Buzzable+Protocol.swift in Sources */,
 				ED0B424628588750000680C2 /* UIFont+Ext.swift in Sources */,
+				ED1C94D12876A117006C9775 /* PrivacyPolicyController.swift in Sources */,
+				ED1C94D52876C6EA006C9775 /* TransitionManager.swift in Sources */,
 				ED8B1EF32860CC4B008A0ECB /* MessageService.swift in Sources */,
 				ED7D1D1428749245005D31E3 /* PulsatingButton.swift in Sources */,
 				ED0A485928587BDE004661BB /* StatsController.swift in Sources */,
@@ -1072,6 +1100,7 @@
 				CODE_SIGN_ENTITLEMENTS = Nocturnal/Nocturnal.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 3;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 8572WS27HD;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Nocturnal/Info.plist;

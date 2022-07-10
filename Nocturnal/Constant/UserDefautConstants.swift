@@ -10,4 +10,3 @@ import Foundation
 struct UserDefaultConstant {
     static let hasSeenUploadVideoPopup = "hasSeenUploadVideoPopup"
 }
-

@@ -40,7 +40,7 @@ class NotificationCell: UITableViewCell {
     
     private let titleLabel: UILabel = {
        let label = UILabel()
-        label.font = .systemFont(ofSize: 17, weight: .heavy)
+        label.font = .systemFont(ofSize: 16, weight: .heavy)
         label.textColor = .deepBlue
         label.numberOfLines = 0
         label.attributedText(firstPart: "User name", secondPart: "loading description messages")
@@ -144,7 +144,11 @@ class NotificationCell: UITableViewCell {
         if type == .failureJoinedEventResponse || type == .successJoinedEventResponse {
             permissionButton.isHidden = true
             eventImageView.isHidden = false
-            titleLabel.attributedText(firstPart: user.name, secondPart: "\(type.description)")
+            titleLabel.attributedText(firstPart: user.name, secondPart: " \(type.description)")
+        } else if type == .cancelEvent {
+            eventImageView.isHidden = false
+            permissionButton.isHidden = true
+            titleLabel.attributedText(firstPart: "\(event.title)", secondPart: " \(type.description)")
         } else {
             eventImageView.isHidden = true
             permissionButton.isHidden = false

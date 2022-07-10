@@ -9,16 +9,25 @@ import UIKit
 import CryptoKit
 import AuthenticationServices
 import FirebaseAuth
+import AVKit
+import AVFAudio
 
 class LoginController: UIViewController {
     // MARK: - Properties
-        
-    private let iconImageView: UIImageView = {
-       let img = UIImageView()
-        img.contentMode = .scaleAspectFill
-        img.image = UIImage(named: "owl")
-        
-        return img
+    
+    private lazy var videoPlayerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .black
+        return view
+    }()
+    
+    private let appNameLabel: UILabel = {
+       let label = UILabel()
+        label.font = .satisfyRegular(size: 35)
+        label.textColor = .white
+        label.textAlignment = .center
+        label.text = "Nocturnal Human"
+        return label
     }()
     
     private lazy var emailContainerView: InputContainerView = {
@@ -61,14 +70,6 @@ class LoginController: UIViewController {
         return button
     }()
     
-    private lazy var forgotPasswordButton: UIButton = {
-        let button = UIButton(type: .system)
-        
-        button.attributedTitle(for: "Forgot your password? ", secondPart: "Get help here")
-        button.addTarget(self, action: #selector(forgotPasswordButtonTapped), for: .touchUpInside)
-        return button
-    }()
-    
     private lazy var dontHaveAccountButton: UIButton = {
         let button = UIButton(type: .system)
             
@@ -77,24 +78,85 @@ class LoginController: UIViewController {
         return button
     }()
     
+    private let agreementLabel: UILabel = {
+       let label = UILabel()
+        label.text = "By signing in, you agree to our privacy policy and EULA"
+        label.textColor = .white
+        label.numberOfLines = 0
+        label.textAlignment = .center
+        label.font = .systemFont(ofSize: 15)
+        return label
+    }()
+    
+    private lazy var privacyButton: UIButton = {
+       let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("privay policy", for: .normal)
+        button.setTitleColor(UIColor.lightBlue, for: .normal)
+        button.addTarget(self, action: #selector(didTapPrivacy), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var eulaButton: UIButton = {
+       let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("EULA", for: .normal)
+        button.setTitleColor(UIColor.lightBlue, for: .normal)
+        button.addTarget(self, action: #selector(didTapEULA), for: .touchUpInside)
+        return button
+    }()
+    
     let popupVC = PopupAlertController()
     
     var currentNonce: String?
+    
+    var player: AVQueuePlayer?
+    
+    var audioPlayer: AVAudioPlayer?
+    
+    var playerLooper: AVPlayerLooper?
     
     // MARK: - life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         configureUI()
+        configureNavBar()
+        playVideo()
+        playSound()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        resetLoginScreenInitialState()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        animateLogin()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         
-        configureNavBar()
+        player = nil
+        videoPlayerView.layer.sublayers?.removeAll()
+        audioPlayer = nil
     }
     
     // MARK: - selectors
+    
+    @objc func didTapPrivacy() {
+        let privacyVC = PrivacyPolicyController()
+        
+        self.present(privacyVC, animated: true)
+    }
+    
+    @objc func didTapEULA() {
+        let eulaVC = EULAController()
+        
+        self.present(eulaVC, animated: true)
+    }
     
     @objc func handleShowSignUp() {
         let controller = RegistrationController()
@@ -150,41 +212,138 @@ class LoginController: UIViewController {
         startSignInWithAppleFlow()
     }
     
-    @objc func forgotPasswordButtonTapped() {
-        let controller = ResetPasswordController()
-        controller.email = emailTextField.text
-        navigationController?.pushViewController(controller, animated: true)
+    // MARK: - helpers
+    
+    private func resetLoginScreenInitialState() {
+        self.videoPlayerView.alpha = 0.7
+        self.appNameLabel.alpha = 0
+        self.emailContainerView.alpha = 0
+        self.passwordContainerView.alpha = 0
+        self.loginButton.alpha = 0
+        self.signinWithAppleButton.alpha = 0
     }
     
-    // MARK: - helpers
+    private func animateLogin() {
+        UIView.animate(withDuration: 1) {
+            self.videoPlayerView.alpha = 1
+        } completion: { _ in
+            self.showTitle()
+        }
+    }
+    
+    private func showTitle() {
+        UIView.animate(withDuration: 1) {
+            self.appNameLabel.alpha = 1
+        } completion: { _ in
+            self.showTextFields()
+        }
+    }
+    
+    private func showTextFields() {
+        UIView.animate(withDuration: 1) {
+            self.emailContainerView.alpha = 1
+            self.passwordContainerView.alpha = 1
+        } completion: { _ in
+            self.showLoginButtons()
+        }
+    }
+    
+    private func showLoginButtons() {
+        UIView.animate(withDuration: 1) {
+            self.loginButton.alpha = 1
+            self.signinWithAppleButton.alpha = 1
+        }
+    }
+    
     private func configureUI() {
         view.backgroundColor = .white
         navigationController?.navigationBar.barStyle = .black
-        configureGradientLayer()
-        view.addSubview(iconImageView)
-        iconImageView.centerX(inView: view)
-        iconImageView.setDimensions(height: 80, width: 120)
-        iconImageView.anchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: 32)
         
-        let stack = UIStackView(arrangedSubviews: [emailContainerView, passwordContainerView, loginButton, signinWithAppleButton, forgotPasswordButton])
+        view.addSubview(videoPlayerView)
+        videoPlayerView.fillSuperview()
+        
+        view.addSubview(appNameLabel)
+        appNameLabel.centerX(inView: view)
+        appNameLabel.anchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: 32)
+        
+        let stack = UIStackView(arrangedSubviews: [emailContainerView, passwordContainerView, loginButton, signinWithAppleButton])
         stack.axis = .vertical
         stack.spacing = 15
         stack.distribution = .fillEqually
         
         view.addSubview(stack)
-        stack.anchor(top: iconImageView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 32, paddingLeft: 32, paddingRight: 32)
+        stack.anchor(top: appNameLabel.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 32, paddingLeft: 32, paddingRight: 32)
         
         view.addSubview(dontHaveAccountButton)
         dontHaveAccountButton.centerX(inView: view)
-        dontHaveAccountButton.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor)
+        dontHaveAccountButton.anchor(top: stack.bottomAnchor, paddingTop: 15)
+        
+        view.addSubview(agreementLabel)
+        agreementLabel.anchor(left: stack.leftAnchor,
+                              right: stack.rightAnchor)
+        
+        view.addSubview(privacyButton)
+        NSLayoutConstraint.activate([
+            privacyButton.centerXAnchor.constraint(equalTo: agreementLabel.centerXAnchor, constant: -80)
+        ])
+        privacyButton.anchor(top: agreementLabel.bottomAnchor,
+                             bottom: view.safeAreaLayoutGuide.bottomAnchor,
+                             paddingTop: 8)
+        
+        view.addSubview(eulaButton)
+        NSLayoutConstraint.activate([
+            eulaButton.centerXAnchor.constraint(equalTo: agreementLabel.centerXAnchor, constant: 80)
+        ])
+        eulaButton.anchor(top: agreementLabel.bottomAnchor,
+                          bottom: view.safeAreaLayoutGuide.bottomAnchor,
+                          paddingTop: 8)
+        
     }
-    
     private func configureNavBar() {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         navigationController?.navigationBar.compactAppearance = appearance
+    }
+    
+    private func playVideo() {
+        guard let path = Bundle.main.path(forResource: "intro", ofType: "mp4") else {
+            print("no intro resouce")
+            return
+        }
+        self.player = AVQueuePlayer()
+        guard let player = player else { return }
+        let playerItem = AVPlayerItem(url: URL(fileURLWithPath: path))
+        playerLooper = AVPlayerLooper(player: player, templateItem: playerItem)
+        let playerLayer = AVPlayerLayer(player: player)
+        playerLayer.frame = view.bounds
+        playerLayer.videoGravity = .resizeAspectFill
+        self.videoPlayerView.layer.addSublayer(playerLayer)
+        player.play()
+    }
+    
+    private func playSound() {
+        guard let url = Bundle.main.url(forResource: "enigma", withExtension: "mp3") else {
+            print("can not find music resource in log in")
+            return
+        }
+        
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+
+            /* The following line is required for the player to work on iOS 11. Change the file type accordingly*/
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+
+            guard let audioPlayer = audioPlayer else { return }
+
+            audioPlayer.play()
+
+        } catch let error {
+            self.presentErrorAlert(message: "\(error.localizedDescription)")
+            print("Fail to play music \(error)")
+        }
     }
     
     // MARK: - Apple sign in
@@ -273,12 +432,14 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
                                                     rawNonce: nonce)
             presentLoadingView(shouldPresent: true)
           // Sign in with Firebase.
-          Auth.auth().signIn(with: credential) { (authResult, error) in
+          Auth.auth().signIn(with: credential) { [weak self] (authResult, error) in
+              guard let self = self else { return }
               if error != nil {
               // Error. If error.code == .MissingOrInvalidNonce, make sure
               // you're sending the SHA256-hashed nonce as a hex string with
               // your request to Apple.
-                  self.presentErrorAlert(title: "Error", message: "Fail to log in with Apple: \(String(describing: error!.localizedDescription))", completion: nil)
+             self.presentLoadingView(shouldPresent: false)
+             self.presentErrorAlert(title: "Error", message: "Fail to log in with Apple: \(String(describing: error!.localizedDescription))", completion: nil)
               return        
             }
               
@@ -319,6 +480,8 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
                             let email = authResult?.user.email ?? ""
                           AuthService.shared.uploadNewUser(withId: uid, name: username, email: email) { error in
                               guard error == nil else {
+                                  self.presentErrorAlert(message: "\(error!.localizedDescription)")
+                                  self.presentLoadingView(shouldPresent: false)
                                   print("Fail to upload new user \(String(describing: error))")
                                   return
                               }
@@ -329,6 +492,8 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
                           }
                       }
                   case .failure(let error):
+                      self.presentErrorAlert(message: "\(error.localizedDescription)")
+                      self.presentLoadingView(shouldPresent: false)
                       print("Fail to if check user is existed \(error)")
                   }
               }

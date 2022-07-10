@@ -150,6 +150,32 @@ func postDeniedNotification(to applicantUid: String, notification: Notification,
         }
     }
 }
+    
+    func updateCancelNotification(deletedUserId: String, completion: FirestoreCompletion) {
+        collection_notification.getDocuments { snapshot, error in
+            guard let snapshot = snapshot, error == nil else {
+                // completion send error back
+                completion?(error)
+                return
+            }
+
+            snapshot.documents.forEach { document in
+                document.reference.collection("user-notification").whereField("hostId", isEqualTo: deletedUserId).getDocuments { snapshot, error in
+                    guard let snapshot = snapshot, error == nil else {
+                        // completion send error back
+                        completion?(error)
+                        return
+                    }
+                    snapshot.documents.forEach { document in
+                        document.reference.updateData(["type": 3]) { error in
+                            completion?(error)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
 // MARK: - Get
 func fetchNotifications(uid: String, completion: @escaping (Result<[Notification], Error>) -> Void) {
     

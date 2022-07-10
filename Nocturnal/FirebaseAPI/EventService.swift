@@ -87,7 +87,7 @@ func fetchEvents(fromEventIds ids: [String], completion: @escaping (Result<[Even
 }
 
 func fetchAllEvents(completion: @escaping (Result<[Event], Error>) -> Void) {
-    collection_event.getDocuments { snapshot, error in
+    collection_event.order(by: "createTime", descending: true).getDocuments { snapshot, error in
         
         guard let snapshot = snapshot, error == nil else {
             completion(.failure(error!))

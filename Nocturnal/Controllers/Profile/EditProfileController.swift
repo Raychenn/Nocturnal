@@ -95,7 +95,10 @@ class EditProfileController: UIViewController {
     func setupUI() {
         view.backgroundColor = .systemBackground
         view.addSubview(tableView)
-        tableView.fillSuperview()
+        tableView.anchor(top: view.topAnchor,
+                         left: view.leftAnchor,
+                         bottom: view.safeAreaLayoutGuide.bottomAnchor,
+                         right: view.rightAnchor)
         view.addSubview(backButton)
         backButton.anchor(top: view.safeAreaLayoutGuide.topAnchor,
                           left: view.leftAnchor, paddingTop: 8, paddingLeft: 10)
@@ -196,7 +199,9 @@ extension EditProfileController: EditProfileCellDelegate {
 
             UserService.shared.updateUserProfile(newUserData: user) { error in
                 guard error == nil else {
-                    print("Fail to update edit user \(String(describing: error))")
+                    self.view.isUserInteractionEnabled = true
+                    self.presentErrorAlert(message: "\(error!.localizedDescription)")
+                    self.stopAnimationView()
                     return
                 }
                 // Fetch new new user and reload
@@ -210,6 +215,9 @@ extension EditProfileController: EditProfileCellDelegate {
                         self.delegate?.updateProfile()
                         self.navigationController?.popViewController(animated: true)
                     case .failure(let error):
+                        self.view.isUserInteractionEnabled = true
+                        self.presentErrorAlert(message: "\(error.localizedDescription)")
+                        self.stopAnimationView()
                         print("Fail to fetch user \(error)")
                     }
                 }

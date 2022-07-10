@@ -28,7 +28,7 @@ class EventDetailController: UIViewController {
             case .joined:
                 return "Joined"
             case .pending:
-                return "Pending"
+                return "Cancel"
             case .denied:
                 return "Denied"
             }
@@ -76,12 +76,12 @@ class EventDetailController: UIViewController {
     
     private let event: Event
     
-    private var currentUser: User? {
-        didSet {
-            // host can not join his own event
-            tableView.reloadData()
-        }
-    }
+//    private var currentUser: User? {
+//        didSet {
+//            // host can not join his own event
+//            tableView.reloadData()
+//        }
+//    }
     
     private var host: User? {
         didSet {
@@ -127,11 +127,13 @@ class EventDetailController: UIViewController {
         return view
     }()
     
+    public var headerView: DetailHeader?
+    
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         fetchHost()
-        fetchCurrentUser()
+//        fetchCurrentUser()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -158,23 +160,27 @@ class EventDetailController: UIViewController {
     
     // MARK: - API
     
-    private func fetchCurrentUser() {
-        UserService.shared.fetchUser(uid: uid) { result in
-            switch result {
-            case .success(let user):
-                self.currentUser = user
-            case .failure(let error):
-                print("Fail to get user \(error)")
-            }
-        }
-    }
+//    private func fetchCurrentUser() {
+//        UserService.shared.fetchUser(uid: uid) { result in
+//            switch result {
+//            case .success(let user):
+//                self.currentUser = user
+//            case .failure(let error):
+//                print("Fail to get user \(error)")
+//            }
+//        }
+//    }
     
     private func fetchHost() {
+        self.presentLoadingView(shouldPresent: true)
         UserService.shared.fetchUser(uid: event.hostID) { result in
             switch result {
             case .success(let host):
+                self.presentLoadingView(shouldPresent: false)
                 self.host = host
             case .failure(let error):
+                self.presentLoadingView(shouldPresent: false)
+                self.presentErrorAlert(message: "\(error.localizedDescription)")
                 print("Fail to get user \(error)")
             }
         }
@@ -197,6 +203,7 @@ class EventDetailController: UIViewController {
     }
     
     private func setupUI() {
+        overrideUserInterfaceStyle = .dark
         guard let uid = Auth.auth().currentUser?.uid else { return }
         setupJoinButtonState()
         navigationController?.navigationBar.isHidden = true
@@ -225,7 +232,7 @@ class EventDetailController: UIViewController {
         }
         
         view.addSubview(backButton)
-        backButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingTop: 8, paddingLeft: 8)
+        backButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingTop: 8, paddingLeft: 16)
     }
     
     private func setupJoinButtonState() {
@@ -251,9 +258,9 @@ class EventDetailController: UIViewController {
             joinButton.backgroundColor = .darkGray
             joinButton.setTitle(JoinState.joined.joinButtonTitle, for: .disabled)
         case .pending:
-            joinButton.isEnabled = false
-            joinButton.backgroundColor = .darkGray
-            joinButton.setTitle(JoinState.pending.joinButtonTitle, for: .disabled)
+            joinButton.isEnabled = true
+            joinButton.backgroundColor = .red
+            joinButton.setTitle(JoinState.pending.joinButtonTitle, for: .normal)
         case .denied:
             joinButton.isEnabled = false
             joinButton.backgroundColor = .darkGray
@@ -263,8 +270,11 @@ class EventDetailController: UIViewController {
     
     // MARK: - Selectors
     @objc func didTapJoinButton() {
-        print("Tapped joined")
-        let applicantId = currentUser?.id ?? ""
+        guard let currentUid = Auth.auth().currentUser?.uid else {
+            print("current user is nil in DetailVC")
+            return
+        }
+        let applicantId = currentUid
         let eventId = self.event.id ?? ""
         let notificationType = NotificationType.joinEventRequest.rawValue
         
@@ -274,30 +284,79 @@ class EventDetailController: UIViewController {
                                         sentTime: Timestamp(date: Date()),
                                         type: notificationType, isRequestPermitted: false)
         
-        NotificationService.shared.postNotification(to: event.hostID, notification: notification) { [weak self] error in
-            
-            guard let self = self else { return }
-            
-            if let error = error {
-                print("Error sending notification \(error)")
-                return
-            }
-            // update user requestedEventsId
-            UserService.shared.updateUserEventRequest(eventId: self.event.id ?? "") { error in
-                if let error = error {
-                    print("Fail to updateUserEventRequest \(error)")
-                    return
-                }
-                
-                EventService.shared.updateEventPendingUsers(eventId: self.event.id ?? "", applicantId: uid) { error in
+        if joinState == .pending {
+            let cancelAlert = UIAlertController(title: "Are you are you want to cancel this application?", message: "", preferredStyle: .alert)
+            cancelAlert.addAction(UIAlertAction(title: "NO", style: .default, handler: nil))
+            cancelAlert.addAction(UIAlertAction(title: "YES", style: .destructive, handler: { _ in
+                print("canceling request...")
+                self.presentLoadingView(shouldPresent: true)
+                UserService.shared.deleteRequestedEvent(eventId: eventId) { error in
                     if let error = error {
-                        print("Fail to updateEventPendingUsers \(error)")
+                        self.presentLoadingView(shouldPresent: false)
+                        self.presentErrorAlert(message: "\(error.localizedDescription)")
+                        print("Error deleting RequestedEvent \(error)")
                         return
                     }
                     
-                    self.joinState = .pending
-                    self.setJoinButton(forState: self.joinState)
-                    print("Successfully sending notification, pop up alert")
+                    EventService.shared.removeEventPendingUsers(eventId: eventId, applicantId: applicantId) { error in
+                        if let error = error {
+                            self.presentLoadingView(shouldPresent: false)
+                            self.presentErrorAlert(message: "\(error.localizedDescription)")
+                            print("Error deleting EventPendingUsers \(error)")
+                            return
+                        }
+                        
+                        NotificationService.shared.deleteNotifications(eventId: eventId) { [weak self] error in
+                            guard let self = self else { return }
+                            if let error = error {
+                                self.presentLoadingView(shouldPresent: false)
+                                self.presentErrorAlert(message: "\(error.localizedDescription)")
+                                print("Error deleting notification \(error)")
+                                return
+                            }
+                            self.presentLoadingView(shouldPresent: false)
+                            self.joinState = .join
+                            self.setJoinButton(forState: self.joinState)
+                            print("Successfully canceling event application, pop up alert")
+                        }
+                    }
+                }
+            }))
+            self.present(cancelAlert, animated: true)
+        } else {
+            print("start joining event")
+            self.presentLoadingView(shouldPresent: true)
+            NotificationService.shared.postNotification(to: event.hostID, notification: notification) { [weak self] error in
+                
+                guard let self = self else { return }
+                
+                if let error = error {
+                    self.presentLoadingView(shouldPresent: false)
+                    self.presentErrorAlert(message: "\(error.localizedDescription)")
+                    print("Error sending notification \(error)")
+                    return
+                }
+                // update user requestedEventsId
+                UserService.shared.updateUserEventRequest(eventId: self.event.id ?? "") { error in
+                    if let error = error {
+                        self.presentLoadingView(shouldPresent: false)
+                        self.presentErrorAlert(message: "\(error.localizedDescription)")
+                        print("Fail to updateUserEventRequest \(error)")
+                        return
+                    }
+                    
+                    EventService.shared.updateEventPendingUsers(eventId: self.event.id ?? "", applicantId: uid) { error in
+                        if let error = error {
+                            self.presentLoadingView(shouldPresent: false)
+                            self.presentErrorAlert(message: "\(error.localizedDescription)")
+                            print("Fail to updateEventPendingUsers \(error)")
+                            return
+                        }
+                        self.presentLoadingView(shouldPresent: false)
+                        self.joinState = .pending
+                        self.setJoinButton(forState: self.joinState)
+                        print("Successfully sending notification, pop up alert")
+                    }
                 }
             }
         }
@@ -404,24 +463,32 @@ extension EventDetailController: DetailInfoCellDelegate {
             print("start deleteJoinedEvent")
             UserService.shared.deleteJoinedEvent(eventId: eventId) { error in
                 if let error = error {
+                    self.stopAnimationView()
+                    self.presentErrorAlert(message: "\(error.localizedDescription)")
                     print("Fail to delete JoinedEvent for user \(error)")
                     return
                 }
                 print("deleteJoinedEvent done")
                 UserService.shared.deleteRequestedEvent(eventId: eventId) { error in
                     if let error = error {
+                        self.stopAnimationView()
+                        self.presentErrorAlert(message: "\(error.localizedDescription)")
                         print("Fail to delete RequestedEvent for user \(error)")
                         return
                     }
                     print("deleteRequestedEvent done")
                     NotificationService.shared.deleteNotifications(eventId: eventId) { error in
                         if let error = error {
+                            self.stopAnimationView()
+                            self.presentErrorAlert(message: "\(error.localizedDescription)")
                             print("Fail to delete Notifications3 \(error)")
                             return
                         }
                         print("delet notfications done")
                         EventService.shared.deleteEvent(eventId: eventId) { error in
                             if let error = error {
+                                self.stopAnimationView()
+                                self.presentErrorAlert(message: "\(error.localizedDescription)")
                                 print("Fail to delete event \(error)")
                                 return
                             }
@@ -451,13 +518,16 @@ extension EventDetailController: DetailInfoCellDelegate {
     }
     
     func openChatRoom(cell: DetailInfoCell) {
+        self.presentLoadingView(shouldPresent: true)
         UserService.shared.fetchUser(uid: self.event.hostID) { [weak self] result in
             guard let self = self else { return }
+            self.presentLoadingView(shouldPresent: false)
             switch result {
             case .success(let host):
                 let chatVC = ChatController(user: host)
                 self.navigationController?.pushViewController(chatVC, animated: true)
             case .failure(let error):
+                self.presentLoadingView(shouldPresent: false)
                 self.presentErrorAlert(title: "Error", message: "\(error.localizedDescription)", completion: nil)
                 print("Fail to fetch host \(error)")
             }

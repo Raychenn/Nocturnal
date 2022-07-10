@@ -7,38 +7,41 @@
 
 import UIKit
 import FirebaseAuth
+import JGProgressHUD
 
 class ProfileController: UIViewController {
-
+    
     // MARK: - Properties
     
     private lazy var collectionView: UICollectionView = {
-           let layout = UICollectionViewFlowLayout()
-            layout.sectionInset = .init(top: 10, left: 0, bottom: 0, right: 0)
-            let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-            collectionView.translatesAutoresizingMaskIntoConstraints = false
-            collectionView.register(ProfileCell.self, forCellWithReuseIdentifier: ProfileCell.identifier)
-            collectionView.register(BioCell.self, forCellWithReuseIdentifier: BioCell.identifier)
-            collectionView.register(JoinedEventCell.self, forCellWithReuseIdentifier: JoinedEventCell.identifier)
-            collectionView.register(ProfileHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: ProfileHeader.identifier)
-            collectionView.dataSource = self
-            collectionView.delegate = self
-            collectionView.allowsSelection = false
-            collectionView.backgroundColor = .black
-            collectionView.showsVerticalScrollIndicator = false
-            collectionView.contentInsetAdjustmentBehavior = .never
-            return collectionView
-        }()
+        let layout = UICollectionViewFlowLayout()
+        layout.sectionInset = .init(top: 10, left: 0, bottom: 0, right: 0)
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.register(ProfileCell.self, forCellWithReuseIdentifier: ProfileCell.identifier)
+        collectionView.register(BioCell.self, forCellWithReuseIdentifier: BioCell.identifier)
+        collectionView.register(JoinedEventCell.self, forCellWithReuseIdentifier: JoinedEventCell.identifier)
+        collectionView.register(ProfileHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: ProfileHeader.identifier)
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.allowsSelection = false
+        collectionView.backgroundColor = .black
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.contentInsetAdjustmentBehavior = .never
+        return collectionView
+    }()
     
     private var currentUser: User
-        
+    
     private var joinedEventURLs: [String] = [] {
         didSet {
             collectionView.reloadData()
         }
     }
     
-    let gradient = CAGradientLayer()
+    private var joinedEvents: [Event] = []
+    
+    private let gradient = CAGradientLayer()
     
     private lazy var gradientView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 400))
     
@@ -75,14 +78,17 @@ class ProfileController: UIViewController {
     }
     
     // MARK: - API
-
+    
     private func fetchJoinEvents() {
         EventService.shared.fetchEvents(fromEventIds: currentUser.joinedEventsId) { result in
             switch result {
             case .success(let events):
+                self.joinedEvents = events
                 events.forEach({ self.joinedEventURLs.append($0.eventImageURL) })
             case .failure(let error):
-                print("Fail to fetch events \(error)")
+                self.presentErrorAlert(message: "\(error.localizedDescription)")
+                self.presentLoadingView(shouldPresent: false)
+                print("Fail to fetch events in profile VC \(error)")
             }
         }
     }
@@ -100,6 +106,8 @@ class ProfileController: UIViewController {
                     self.collectionView.reloadData()
                 }
             case .failure(let error):
+                self.presentErrorAlert(message: "\(error.localizedDescription)")
+                self.presentLoadingView(shouldPresent: false)
                 print("Fail to fetch user \(error)")
             }
         }
@@ -123,17 +131,22 @@ class ProfileController: UIViewController {
                     }
                 }
             case .failure(let error):
+                self.presentErrorAlert(message: "\(error.localizedDescription)")
+                self.presentLoadingView(shouldPresent: false)
                 print("Fail to fetch user in checkIfIsBlockedUser \(error)")
             }
         }
     }
     
     // MARK: - Helpers
-    func setupUI() {
+    private func setupUI() {
         navigationController?.navigationBar.isHidden = true
         view.backgroundColor = .white
         view.addSubview(collectionView)
-        collectionView.fillSuperview()
+        collectionView.anchor(top: view.topAnchor,
+                              left: view.leftAnchor,
+                              bottom: view.safeAreaLayoutGuide.bottomAnchor,
+                              right: view.rightAnchor)
     }
 }
 
@@ -160,7 +173,7 @@ extension ProfileController: UICollectionViewDataSource {
             bioCell.configureCell(bioText: currentUser.bio)
             return bioCell
         } else {
-            joinedEventCell.user = currentUser
+            joinedEventCell.joinedEvents = self.joinedEvents
             joinedEventCell.configureCell(joinedEventsURL: joinedEventURLs)
             joinedEventCell.delegate = self
             joinedEventCell.isHidden = joinedEventURLs.count == 0 ? true: false
@@ -179,7 +192,7 @@ extension ProfileController: UICollectionViewDelegate {
         profileHeader.user = currentUser
         profileHeader.shouldBlockUser = isBlocked
         profileHeader.configureHeader(user: currentUser)
-
+        
         gradient.frame = gradientView.frame
         gradient.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
         gradient.locations = [0.0, 1.3]
@@ -198,19 +211,12 @@ extension ProfileController: UICollectionViewDelegate {
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension ProfileController: UICollectionViewDelegateFlowLayout {
-
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let approximatedWidthBioTextView = view.frame.width - 20
         let size = CGSize(width: approximatedWidthBioTextView, height: 1000)
         let estimatedFrame = NSString(string: currentUser.bio).boundingRect(with: size, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 18)], context: nil)
         
-//        let frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 50)
-//        let estimatedSizeCell = BioCell(frame: frame)
-//        estimatedSizeCell.bioLabel.text = currentUser.bio
-//        estimatedSizeCell.layoutIfNeeded()
-//        let targetSize = CGSize(width: view.frame.width, height: 500)
-//        let estimatedSize = estimatedSizeCell.systemLayoutSizeFitting(targetSize)
-
         if indexPath.item == 1 {
             return .init(width: view.frame.width - 20, height: estimatedFrame.height + 100)
         } else {
@@ -246,7 +252,7 @@ extension ProfileController: JoinedEventCellDelegate {
         let detailController = EventDetailController(event: event)
         detailController.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(detailController, animated: true)
-
+        
     }
 }
 
@@ -255,28 +261,53 @@ extension ProfileController: ProfileHeaderDelegate {
     
     func profileHeader(_ header: ProfileHeader, wantsToBlockUserWith id: String) {
         print("block user")
-
-        UserService.shared.addUserToBlockedList(blockedUid: id) { error in
-            if let error = error {
-                print("Fail to block user \(error)")
-                return
+        
+        let alert = UIAlertController(title: "Are you sure to block this user?", message: "", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "NO", style: .default, handler: nil))
+        alert.addAction(UIAlertAction(title: "YES", style: .destructive, handler: { _ in
+            self.presentLoadingView(shouldPresent: true)
+            UserService.shared.addUserToBlockedList(blockedUid: id) { error in
+                if let error = error {
+                    self.presentErrorAlert(message: "\(error.localizedDescription)")
+                    self.presentLoadingView(shouldPresent: false)
+                    print("Fail to block user \(error)")
+                    return
+                }
+                self.presentLoadingView(shouldPresent: false)
+                header.blockUserButton.setImage( header.shouldBlockUser ? UIImage(systemName: "eye.slash"): UIImage(systemName: "eye"), for: .normal)
+                header.setNeedsLayout()
+                HudManager.shared.showSuccess(on: self, text: "Success")
+                print("Succussfully blocked user and pop up alert here..")
             }
-            
-            print("Succussfully blocked user and pop up alert here..")
-        }
+        }))
+        
+        self.present(alert, animated: true)
     }
     
     func profileHeader(_ header: ProfileHeader, wantsToUnblockUserWith id: String) {
         print("unblock user")
-
-        UserService.shared.removeUserFromblockedList(blockedUid: id) { error in
-            if let error = error {
-                print("Fail to block user \(error)")
-                return
+        let alert = UIAlertController(title: "Are you sure to unblock this user?", message: "", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "NO", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "YES", style: .default, handler: { _ in
+            self.presentLoadingView(shouldPresent: true)
+            UserService.shared.removeUserFromblockedList(blockedUid: id) { error in
+                if let error = error {
+                    self.presentErrorAlert(message: "\(error.localizedDescription)")
+                    self.presentLoadingView(shouldPresent: false)
+                    print("Fail to block user \(error)")
+                    return
+                }
+                
+                header.blockUserButton.setImage( header.shouldBlockUser ? UIImage(systemName: "eye.slash"): UIImage(systemName: "eye"), for: .normal)
+                
+                header.setNeedsLayout()
+                
+                self.presentLoadingView(shouldPresent: false)
+                HudManager.shared.showSuccess(on: self, text: "Success")
+                print("Succussfully unblocked user and pop up alert here..")
             }
-            
-            print("Succussfully unblocked user and pop up alert here..")
-        }
+        }))
+        self.present(alert, animated: true)
     }
 }
 

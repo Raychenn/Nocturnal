@@ -70,21 +70,25 @@ extension BlockedUsersController: UITableViewDataSource {
             print("no current user in BlockedUsersController")
             return
         }
-        
+        self.presentLoadingView(shouldPresent: true)
         UserService.shared.fetchUser(uid: currentUserId) { [weak self] result in
             guard let self = self else { return }
             
             switch result {
             case .success(let user):
                 UserService.shared.fetchUsers(uids: user.blockedUsersId) {result in
+                    self.presentLoadingView(shouldPresent: false)
                     switch result {
                     case .success(let blockedUsers):
                         self.blockedUsers = blockedUsers
                     case .failure(let error):
+                        self.presentErrorAlert(message: "\(error.localizedDescription)")
                         print("Fail to fetch blocked users \(error)")
                     }
                 }
             case .failure(let error):
+                self.presentErrorAlert(message: "\(error.localizedDescription)")
+                self.presentLoadingView(shouldPresent: false)
                 print("Fail to fetch current users \(error)")
             }
         }

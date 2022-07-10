@@ -12,6 +12,7 @@ import FirebaseFirestore
 struct Event: Codable {
     @DocumentID var id: String?
     let title: String
+    let createTime: Timestamp
     let hostID: String
     let description: String
     let startingDate: Timestamp
@@ -20,6 +21,7 @@ struct Event: Codable {
     let style: String
     let eventImageURL: String
     let eventMusicURL: String
+    let eventVideoURL: String?
     let participants: [String]
     let deniedUsersId: [String]
     let pendingUsersId: [String]

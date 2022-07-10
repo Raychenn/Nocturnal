@@ -193,9 +193,8 @@ class ProfileCell: UICollectionViewCell {
         countryTitleLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
         zodiacLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
         genderLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
-//        ageTitleLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
         
-        countryStack.anchor(left: usernameLabel.leftAnchor)
+        countryStack.anchor(top: usernameLabel.bottomAnchor, left: usernameLabel.leftAnchor, paddingTop: 15)
         genderStack.anchor(top: countryStack.bottomAnchor,
                            left: usernameLabel.leftAnchor,
                            paddingTop: 5)
@@ -205,9 +204,7 @@ class ProfileCell: UICollectionViewCell {
         
         ageStack.anchor(top: zodiacStack.bottomAnchor,
                         left: usernameLabel.leftAnchor,
-                        bottom: contentView.bottomAnchor,
-                        paddingTop: 5,
-                        paddingBottom: 15)
+                        paddingTop: 5)
         
         contentView.addSubview(editProfileButton)
         editProfileButton.setDimensions(height: 25, width: 25)

@@ -51,12 +51,6 @@ class JoinedEventCell: UICollectionViewCell {
     }
     
     var joinedEvents: [Event] = []
-    
-    var user: User? {
-        didSet {
-            fetchEvents()
-        }
-    }
         
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -70,19 +64,19 @@ class JoinedEventCell: UICollectionViewCell {
     
     // MARK: - API
     
-    private func fetchEvents() {
-        guard let user = user else { return }
-        EventService.shared.fetchEvents(fromEventIds: user.joinedEventsId) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let events):
-                self.joinedEvents = events
-                self.collectionView.reloadData()
-            case .failure(let error):
-                print("Fail to fetch events \(error)")
-            }
-        }
-    }
+//    private func fetchEvents() {
+//        guard let user = user else { return }
+//        EventService.shared.fetchEvents(fromEventIds: user.joinedEventsId) { [weak self] result in
+//            guard let self = self else { return }
+//            switch result {
+//            case .success(let events):
+//                self.joinedEvents = events
+//                self.collectionView.reloadData()
+//            case .failure(let error):
+//                print("Fail to fetch events in joined cell \(error)")
+//            }
+//        }
+//    }
     
     // MARK: - Helpers
     

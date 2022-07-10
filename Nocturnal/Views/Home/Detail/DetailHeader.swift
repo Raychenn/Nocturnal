@@ -11,7 +11,7 @@ class DetailHeader: UITableViewHeaderFooterView {
     
     static let identifier = "DetailHeader"
     
-    private let imageView: UIImageView = {
+     let imageView: UIImageView = {
        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.image = UIImage(named: "cat")

@@ -54,6 +54,7 @@ class ConversationsController: UIViewController {
                 self.tableView.reloadData()
                 self.presentLoadingView(shouldPresent: false)
             case .failure(let error):
+                self.presentLoadingView(shouldPresent: false)
                 self.presentErrorAlert(title: "Error", message: "\(error.localizedDescription)", completion: nil)
             }
         }
@@ -66,6 +67,7 @@ class ConversationsController: UIViewController {
             case .success(let user):
                 completion(user)
             case .failure(let error):
+                self.presentLoadingView(shouldPresent: false)
                 self.presentErrorAlert(title: "Error", message: "\(error.localizedDescription)", completion: nil)
             }
         }

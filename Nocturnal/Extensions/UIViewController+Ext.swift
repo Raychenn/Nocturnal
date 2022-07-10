@@ -22,15 +22,6 @@ extension UIViewController {
             .first(where: \.isKeyWindow)
     }
     
-    var isModal: Bool {
-
-        let presentingIsModal = presentingViewController != nil
-        let presentingIsNavigation = navigationController?.presentingViewController?.presentedViewController == navigationController
-        let presentingIsTabBar = tabBarController?.presentingViewController is UITabBarController
-
-        return presentingIsModal || presentingIsNavigation || presentingIsTabBar
-    }
-    
     func presentAlert(title: String?, message: String?, completion: (() -> Void)? = nil) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okAction = UIAlertAction(title: "OK", style: .default) { _ in
@@ -120,7 +111,8 @@ extension UIViewController {
             }
             
             loadingView.addSubview(indicator)
-            indicator.style = .large
+            indicator.style = UIActivityIndicatorView.Style.large
+            indicator.color = .white
             indicator.center = view.center
             indicator.startAnimating()
             

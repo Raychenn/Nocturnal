@@ -40,7 +40,7 @@ class NotificationCell: UITableViewCell {
     
     private let titleLabel: UILabel = {
        let label = UILabel()
-        label.font = .systemFont(ofSize: 17, weight: .heavy)
+        label.font = .systemFont(ofSize: 16, weight: .heavy)
         label.textColor = .deepBlue
         label.numberOfLines = 0
         label.attributedText(firstPart: "User name", secondPart: "loading description messages")
@@ -131,7 +131,9 @@ class NotificationCell: UITableViewCell {
         
         permissionButton.setTitle(notification.isRequestPermitted ? "Deny": "Accept", for: .normal)
         permissionButton.backgroundColor = notification.isRequestPermitted ? .red: .deepBlue
-        timeLabel.text = "\(Date.dateTimeFormatter.string(from: notification.sentTime.dateValue()))"
+        let date = notification.sentTime.dateValue()
+        timeLabel.text = date.displayTimeInSocialMediaStyle()
+        
         guard let profileUrl = URL(string: user.profileImageURL), let eventUrl = URL(string: event.eventImageURL) else {
             print("no profileImageURL")
             return
@@ -142,18 +144,16 @@ class NotificationCell: UITableViewCell {
         if type == .failureJoinedEventResponse || type == .successJoinedEventResponse {
             permissionButton.isHidden = true
             eventImageView.isHidden = false
-            titleLabel.attributedText(firstPart: user.name, secondPart: "\(type.description)")
+            titleLabel.attributedText(firstPart: user.name, secondPart: " \(type.description)")
+        } else if type == .cancelEvent {
+            eventImageView.isHidden = false
+            permissionButton.isHidden = true
+            titleLabel.attributedText(firstPart: "\(event.title)", secondPart: " \(type.description)")
         } else {
             eventImageView.isHidden = true
             permissionButton.isHidden = false
             titleLabel.attributedText(firstPart: user.name, secondPart: " \(type.description) to join \(event.title)")
-//            eventImageView.isHidden = false
         }
-        
-//        if type == .joinEventRequest {
-//
-//        }
-        
     }
     
     private func setupCellUI() {

@@ -152,7 +152,6 @@ class HomeEventCell: UICollectionViewCell {
             guard let self = self else { return }
             switch result {
             case .success(let url):
-                print("vedio urllll \(url)")
                 let playerItem = AVPlayerItem(url: url)
                 self.looper = AVPlayerLooper(player: player, templateItem: playerItem)
                 let playerLayer = AVPlayerLayer(player: player)

@@ -84,7 +84,6 @@ class HomeController: UIViewController {
         super.viewWillAppear(animated)
         // fetch all events from firestore
         presentLoadingView(shouldPresent: true)
-        
         fetchCurrentUser { [weak self] in
             guard let self = self else {return}
             self.fetchAllEvents()
@@ -107,10 +106,11 @@ class HomeController: UIViewController {
                 UserService.shared.fetchUser(uid: userId) { result in
                     switch result {
                     case .success(let user):
-                        print("current user in home \(user.name)")
                         self.currentUser = user
                         completion()
                     case .failure(let error):
+                        self.presentErrorAlert(message: "\(error.localizedDescription)")
+                        self.presentLoadingView(shouldPresent: false)
                         print("Fail to fetch user in home \(error)")
                     }
                 }
@@ -136,6 +136,8 @@ class HomeController: UIViewController {
                     }
                 }
             case .failure(let error):
+                self.presentErrorAlert(message: "\(error.localizedDescription)")
+                self.presentLoadingView(shouldPresent: false)
                 print("error fetching all events \(error)")
             }
         }
@@ -146,21 +148,17 @@ class HomeController: UIViewController {
             // logged in, start fetching user data
             var hostsId: [String] = []
             let sortedEvents = events.sorted(by: { $0.createTime.dateValue().compare($1.createTime.dateValue()) == .orderedDescending })
+            sortedEvents.forEach({ print("sortedEvents id \($0.id ?? "")") })
             sortedEvents.forEach({hostsId.append($0.hostID)})
             
             fetchHosts(hostsId: hostsId) { [weak self] in
                 guard let self = self else { return }
-                self.evnetHosts.forEach({ print("got filtered host namesssss \($0.name)") })
                 self.filterEventsForDeletedUser(hosts: self.evnetHosts)
-                self.presentLoadingView(shouldPresent: false)
-                self.collectionView.reloadData()
-                self.refreshControl.endRefreshing()
+                self.endRefreshing()
             }
         } else {
             // not logged in
-            self.presentLoadingView(shouldPresent: false)
-            self.collectionView.reloadData()
-            self.refreshControl.endRefreshing()
+            self.endRefreshing()
         }
     }
     
@@ -173,6 +171,8 @@ class HomeController: UIViewController {
                 self.filterDeletedHosts(hosts: hosts)
                 completion()
             case .failure(let error):
+                self.presentErrorAlert(message: "\(error.localizedDescription)")
+                self.presentLoadingView(shouldPresent: false)
                 print("error fetching event hosts \(error)")
             }
         }
@@ -197,6 +197,12 @@ class HomeController: UIViewController {
     }
     
     // MARK: - Helpers
+    
+    private func endRefreshing() {
+        refreshControl.endRefreshing()
+        collectionView.reloadData()
+        presentLoadingView(shouldPresent: false)
+    }
     
     private func filterDeletedHosts(hosts: [User]) {
         var undeletedHosts: [User] = []
@@ -274,7 +280,6 @@ class HomeController: UIViewController {
     }
     
     func filterEventsFromBlockedUsers(events: [Event], completion: @escaping ([Event]) -> Void) {
-        
         var result: [Event] = []
         
         currentUser.blockedUsersId.forEach { blockedId in

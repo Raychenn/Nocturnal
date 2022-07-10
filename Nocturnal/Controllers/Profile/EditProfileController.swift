@@ -196,7 +196,9 @@ extension EditProfileController: EditProfileCellDelegate {
 
             UserService.shared.updateUserProfile(newUserData: user) { error in
                 guard error == nil else {
-                    print("Fail to update edit user \(String(describing: error))")
+                    self.view.isUserInteractionEnabled = true
+                    self.presentErrorAlert(message: "\(error!.localizedDescription)")
+                    self.stopAnimationView()
                     return
                 }
                 // Fetch new new user and reload
@@ -210,6 +212,9 @@ extension EditProfileController: EditProfileCellDelegate {
                         self.delegate?.updateProfile()
                         self.navigationController?.popViewController(animated: true)
                     case .failure(let error):
+                        self.view.isUserInteractionEnabled = true
+                        self.presentErrorAlert(message: "\(error.localizedDescription)")
+                        self.stopAnimationView()
                         print("Fail to fetch user \(error)")
                     }
                 }

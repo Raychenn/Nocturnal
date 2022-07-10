@@ -227,6 +227,7 @@ extension SettingsController: UITableViewDelegate {
                 guard let self = self else { return }
                 // delete account
                 print("start deleting account")
+                self.presentLoadingView(shouldPresent: true)
                 guard let currentUser = Auth.auth().currentUser else {
                     self.presentErrorAlert(message: "Can not find current user")
                     print("current user is nil in setting")
@@ -236,7 +237,8 @@ extension SettingsController: UITableViewDelegate {
                 currentUser.delete { [weak self] error in
                     guard let self = self else { return }
                     if let error = error {
-                        self.presentAlert(title: "Error", message: "\(error.localizedDescription)")
+                        self.presentErrorAlert(message: "\(error.localizedDescription)")
+                        self.presentLoadingView(shouldPresent: false)
                         return
                     }
             
@@ -255,15 +257,18 @@ extension SettingsController: UITableViewDelegate {
                         
                         UserService.shared.updateUserProfileForDeletion(deledtedUserId: currentUser.uid, emptyUser: emptyUser) { error in
                             if let error = error {
-                                self.presentAlert(title: "Error", message: "\(error.localizedDescription)")
+                                self.presentErrorAlert(message: "\(error.localizedDescription)")
+                                self.presentLoadingView(shouldPresent: false)
                                 return
                             }
                             
                             NotificationService.shared.updateCancelNotification(deletedUserId: currentUser.uid) { error in
                                 if let error = error {
-                                    self.presentAlert(title: "Error", message: "\(error.localizedDescription)")
+                                    self.presentErrorAlert(message: "\(error.localizedDescription)")
+                                    self.presentLoadingView(shouldPresent: false)
                                     return
                                 }
+                                self.presentLoadingView(shouldPresent: false)
                                 // remember to present login full screen
                                 print("Successfully deleted user")
                                 self.handleLogout()

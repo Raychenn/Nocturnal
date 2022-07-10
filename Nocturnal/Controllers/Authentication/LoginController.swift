@@ -289,6 +289,7 @@ class LoginController: UIViewController {
             audioPlayer.play()
 
         } catch let error {
+            self.presentErrorAlert(message: "\(error.localizedDescription)")
             print("Fail to play music \(error)")
         }
     }
@@ -427,6 +428,8 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
                             let email = authResult?.user.email ?? ""
                           AuthService.shared.uploadNewUser(withId: uid, name: username, email: email) { error in
                               guard error == nil else {
+                                  self.presentErrorAlert(message: "\(error!.localizedDescription)")
+                                  self.presentLoadingView(shouldPresent: false)
                                   print("Fail to upload new user \(String(describing: error))")
                                   return
                               }
@@ -437,6 +440,8 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
                           }
                       }
                   case .failure(let error):
+                      self.presentErrorAlert(message: "\(error.localizedDescription)")
+                      self.presentLoadingView(shouldPresent: false)
                       print("Fail to if check user is existed \(error)")
                   }
               }

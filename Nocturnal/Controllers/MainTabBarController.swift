@@ -56,6 +56,8 @@ class MainTabBarController: UITabBarController {
             case .success(let user):
                 completion(user)
             case .failure(let error):
+                self.presentErrorAlert(message: "\(error.localizedDescription)")
+                self.presentLoadingView(shouldPresent: false)
                 print("Fail to fetch user \(error)")
             }
         }

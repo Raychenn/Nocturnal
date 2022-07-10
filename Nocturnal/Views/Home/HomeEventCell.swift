@@ -14,8 +14,8 @@ class HomeEventCell: UICollectionViewCell {
     
     // MARK: - Properties
     
-     let eventImageView: UIImageView = {
-       let imageView = UIImageView()
+    let eventImageView: UIImageView = {
+        let imageView = UIImageView()
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
         imageView.backgroundColor = .lightGray
@@ -24,15 +24,15 @@ class HomeEventCell: UICollectionViewCell {
     }()
     
     private let eventNameLabel: UILabel = {
-       let label = UILabel()
+        let label = UILabel()
         label.textColor = .white
         label.font = .systemFont(ofSize: 22, weight: .bold)
         
         return label
     }()
-   
+    
     private let dateImageview: UIImageView = {
-       let imageView = UIImageView()
+        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.image = UIImage(systemName: "calendar")
         imageView.tintColor = .lightGray
@@ -40,14 +40,14 @@ class HomeEventCell: UICollectionViewCell {
     }()
     
     private let dateLabel: UILabel = {
-       let label = UILabel()
+        let label = UILabel()
         label.text = "Loading date"
         label.textColor = .lightGray
         return label
     }()
     
     private let feeImageview: UIImageView = {
-       let imageView = UIImageView()
+        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.image = UIImage(systemName: "ticket")
         imageView.tintColor = .lightGray
@@ -55,27 +55,27 @@ class HomeEventCell: UICollectionViewCell {
     }()
     
     private let feeLabel: UILabel = {
-       let label = UILabel()
+        let label = UILabel()
         label.text = "Loading fee"
         label.textColor = .lightGray
         return label
     }()
     
     private let profileImageView: UIImageView = {
-       let imageView = UIImageView()
+        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         return imageView
     }()
     
     private let hostNameLabel: UILabel = {
         let label = UILabel()
-         label.text = "Loading host"
-         label.textColor = .white
-         return label
+        label.text = "Loading host"
+        label.textColor = .white
+        return label
     }()
     
     private let bottomBackgroundView: UIView = {
-       let view = UIView()
+        let view = UIView()
         view.backgroundColor = UIColor.hexStringToUIColor(hex: "#1C242F")
         return view
     }()
@@ -83,7 +83,7 @@ class HomeEventCell: UICollectionViewCell {
     let videoPlayerView = UIView()
     
     private lazy var muteButton: UIButton = {
-       let button = UIButton()
+        let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 25)
         button.setImage(UIImage(systemName: "speaker", withConfiguration: config), for: .normal)
         button.tintColor = .darkGray
@@ -100,11 +100,11 @@ class HomeEventCell: UICollectionViewCell {
     }()
     
     var player: AVQueuePlayer?
-        
+    
     var looper: AVPlayerLooper?
     
     var isMuted = false
-
+    
     // MARK: - Life Cycle
     
     override init(frame: CGRect) {
@@ -152,19 +152,18 @@ class HomeEventCell: UICollectionViewCell {
             guard let self = self else { return }
             switch result {
             case .success(let url):
-                print("cached url \(url)")
                 let playerItem = AVPlayerItem(url: url)
                 self.looper = AVPlayerLooper(player: player, templateItem: playerItem)
-               let playerLayer = AVPlayerLayer(player: player)
-               playerLayer.frame = self.videoPlayerView.bounds
+                let playerLayer = AVPlayerLayer(player: player)
+                playerLayer.frame = self.videoPlayerView.bounds
                 playerLayer.contentsGravity = .resizeAspectFill
-               self.videoPlayerView.layer.addSublayer(playerLayer)
-               player.play()
+                self.videoPlayerView.layer.addSublayer(playerLayer)
+                player.play()
             case .failure(let error):
                 print("Failt to cachce url \(error)")
             }
         }
-   }
+    }
     
     func updateCellForDisplayMode(shouldShowVideo: Bool) {
         videoPlayerView.bringSubviewToFront(muteButton)
@@ -208,7 +207,7 @@ class HomeEventCell: UICollectionViewCell {
             eventImageView.kf.setImage(with: imageUrl)
             updateCellForDisplayMode(shouldShowVideo: false)
         }
-
+        
         guard let profileUrl = URL(string: host.profileImageURL) else { return }
         profileImageView.kf.setImage(with: profileUrl)
         dateLabel.text = Date.dateFormatter.string(from: event.startingDate.dateValue())
@@ -285,5 +284,4 @@ class HomeEventCell: UICollectionViewCell {
         hostNameLabel.centerY(inView: profileImageView)
         hostNameLabel.anchor(left: profileImageView.rightAnchor, paddingLeft: 8)
     }
-
 }

@@ -60,10 +60,10 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         return searchController.isActive && (!isSearchBarEmpty || searchBarScopeIsFiltering)
     }
     
-    var events: [Event] = [] 
+    var events: [Event] = []
     
     var filtedEvents: [Event] = []
-
+    
     var randomHeights: [CGFloat] = []
     
     var originalAllEvents: [Event] = []
@@ -116,14 +116,11 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
                         self.filterEventsForDeletedUser(hosts: hosts)
                         self.originalAllEvents = events
                         self.generateRandomHeight(eventCount: events.count)
-                        self.refreshControl.endRefreshing()
-                        self.collectionView.reloadData()
-                        self.presentLoadingView(shouldPresent: false)
+                        self.endRefreshing()
                     }
                 } else {
                     self.filterEventsFromBlockedUsers(events: events) { [weak self] filteredEvents in
                         guard let self = self else { return }
-                        print("filter events count in explore VC \(filteredEvents.count)")
                         // filter blocked users' posts first
                         self.events = filteredEvents
                         self.fetchHosts { hosts in
@@ -131,12 +128,10 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
                             self.filterEventsForDeletedUser(hosts: hosts)
                             self.originalAllEvents = self.events
                             self.generateRandomHeight(eventCount: self.events.count)
-                            self.refreshControl.endRefreshing()
-                            self.collectionView.reloadData()
-                            self.presentLoadingView(shouldPresent: false)
+                            self.endRefreshing()
                         }
+                    }
                 }
-            }
             case .failure(let error):
                 print("Fail to fetch events in explore VC \(error)")
                 self.presentLoadingView(shouldPresent: false)
@@ -151,17 +146,17 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     
     func filterEventsFromBlockedUsers(events: [Event], completion: @escaping ([Event]) -> Void) {
         var result: [Event] = []
-    
+        
         if currentUser.blockedUsersId.count == 0 {
             completion(events)
         } else {
             currentUser.blockedUsersId.forEach { blockedId in
                 events.forEach { event in
-                        if blockedId != event.hostID {
-                            result.append(event)
-                        }
+                    if blockedId != event.hostID {
+                        result.append(event)
                     }
                 }
+            }
             completion(result)
         }
     }
@@ -179,18 +174,18 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         }
     }
     
-    // MARK: - New
-    
     private func fetchHosts(completion: @escaping ([User]) -> Void) {
         var hostsId: [String] = []
-        let sortedEvents = events.sorted(by: { $0.startingDate.dateValue().compare($1.startingDate.dateValue()) == .orderedDescending })
+        let sortedEvents = events.sorted(by: { $0.createTime.dateValue().compare($1.createTime.dateValue()) == .orderedDescending })
         sortedEvents.forEach({hostsId.append($0.hostID)})
         
         UserService.shared.fetchUsers(uids: hostsId) { result in
             switch result {
             case .success(let hosts):
-                completion(hosts)
+                completion(self.getUnDeletedHosts(hosts: hosts))
             case .failure(let error):
+                self.presentLoadingView(shouldPresent: false)
+                self.presentErrorAlert(message: "\(error.localizedDescription)")
                 print("error fetching event hosts \(error)")
             }
         }
@@ -207,7 +202,6 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         switch sender.selectedButtonIndex {
             
         case 0:
-            print("get all events")
             resetEvents()
             collectionView.reloadData()
         case 1:
@@ -225,12 +219,12 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
             let tomorrow = Calendar(identifier: .gregorian).date(byAdding: .day, value: 1, to: Date()) ?? Date()
             
             let filteredEvents = events.filter({ event in
-                 if event.startingDate.dateValue() >= Date() && event.startingDate.dateValue() <= tomorrow {
-                     return true
-                 } else {
-                     return false
-                 }
-             })
+                if event.startingDate.dateValue() >= Date() && event.startingDate.dateValue() <= tomorrow {
+                    return true
+                } else {
+                    return false
+                }
+            })
             self.events = filteredEvents
             collectionView.reloadData()
         case 3:
@@ -238,7 +232,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
             let today = Date()
             let dateAfterSevenDays = Calendar(identifier: .gregorian).date(byAdding: .day, value: 7, to: Date()) ?? Date()
             
-           let filteredEvents = events.filter({ event in
+            let filteredEvents = events.filter({ event in
                 if event.startingDate.dateValue() >= today && event.startingDate.dateValue() <= dateAfterSevenDays {
                     return true
                 } else {
@@ -255,22 +249,40 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     
     // MARK: - Helpers
     
-    private func filterEventsForDeletedUser(hosts: [User]) {
-        var deletedHostsId: Set<String> = []
-        var filteredEvents: [Event] = []
+    private func endRefreshing() {
+        refreshControl.endRefreshing()
+        collectionView.reloadData()
+        presentLoadingView(shouldPresent: false)
+    }
+    
+    private func getUnDeletedHosts(hosts: [User]) -> [User] {
+        var undeletedHosts: [User] = []
+        
         hosts.forEach { host in
-            if host.name == "Unknown User" {
-                deletedHostsId.insert(host.id ?? "")
+            if host.name != "Unknown User" {
+                undeletedHosts.append(host)
             }
         }
-                
-        deletedHostsId.forEach { deletedHostId in
-            events.forEach { event in
-                if deletedHostId != event.hostID {
+        return undeletedHosts
+    }
+    
+    private func filterEventsForDeletedUser(hosts: [User]) {
+        var undeletedHostsId: Set<String> = []
+        var filteredEvents: [Event] = []
+        hosts.forEach { host in
+            if host.name != "Unknown User" {
+                undeletedHostsId.insert(host.id ?? "")
+            }
+        }
+        
+        events.forEach { event in
+            undeletedHostsId.forEach { undeletedHostId in
+                if undeletedHostId == event.hostID {
                     filteredEvents.append(event)
                 }
             }
         }
+        
         self.events = filteredEvents
     }
     
@@ -340,7 +352,7 @@ extension ExploreController: UICollectionViewDataSource {
         } else {
             event = events[indexPath.row]
         }
-              
+        
         exploreCell.configureCell(with: event)
         
         return exploreCell

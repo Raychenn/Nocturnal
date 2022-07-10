@@ -39,7 +39,9 @@ class ProfileController: UIViewController {
         }
     }
     
-    let gradient = CAGradientLayer()
+    private var joinedEvents: [Event] = []
+    
+    private let gradient = CAGradientLayer()
     
     private lazy var gradientView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 400))
     
@@ -81,8 +83,11 @@ class ProfileController: UIViewController {
         EventService.shared.fetchEvents(fromEventIds: currentUser.joinedEventsId) { result in
             switch result {
             case .success(let events):
+                self.joinedEvents = events
                 events.forEach({ self.joinedEventURLs.append($0.eventImageURL) })
             case .failure(let error):
+                self.presentErrorAlert(message: "\(error.localizedDescription)")
+                self.presentLoadingView(shouldPresent: false)
                 print("Fail to fetch events in profile VC \(error)")
             }
         }
@@ -101,6 +106,8 @@ class ProfileController: UIViewController {
                     self.collectionView.reloadData()
                 }
             case .failure(let error):
+                self.presentErrorAlert(message: "\(error.localizedDescription)")
+                self.presentLoadingView(shouldPresent: false)
                 print("Fail to fetch user \(error)")
             }
         }
@@ -124,6 +131,8 @@ class ProfileController: UIViewController {
                     }
                 }
             case .failure(let error):
+                self.presentErrorAlert(message: "\(error.localizedDescription)")
+                self.presentLoadingView(shouldPresent: false)
                 print("Fail to fetch user in checkIfIsBlockedUser \(error)")
             }
         }
@@ -161,7 +170,7 @@ extension ProfileController: UICollectionViewDataSource {
             bioCell.configureCell(bioText: currentUser.bio)
             return bioCell
         } else {
-            joinedEventCell.user = currentUser
+            joinedEventCell.joinedEvents = self.joinedEvents
             joinedEventCell.configureCell(joinedEventsURL: joinedEventURLs)
             joinedEventCell.delegate = self
             joinedEventCell.isHidden = joinedEventURLs.count == 0 ? true: false
@@ -253,13 +262,17 @@ extension ProfileController: ProfileHeaderDelegate {
         let alert = UIAlertController(title: "Are you sure to block this user?", message: "", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "NO", style: .default, handler: nil))
         alert.addAction(UIAlertAction(title: "YES", style: .destructive, handler: { _ in
+            self.presentLoadingView(shouldPresent: true)
             UserService.shared.addUserToBlockedList(blockedUid: id) { error in
                 if let error = error {
-                    HudManager.shared.showError(on: self, text: "\(error.localizedDescription)")
+                    self.presentErrorAlert(message: "\(error.localizedDescription)")
+                    self.presentLoadingView(shouldPresent: false)
                     print("Fail to block user \(error)")
                     return
                 }
-                
+                self.presentLoadingView(shouldPresent: false)
+                header.blockUserButton.setImage( header.shouldBlockUser ? UIImage(systemName: "eye.slash"): UIImage(systemName: "eye"), for: .normal)
+                header.setNeedsLayout()
                 HudManager.shared.showSuccess(on: self, text: "Success")
                 print("Succussfully blocked user and pop up alert here..")
             }
@@ -273,12 +286,20 @@ extension ProfileController: ProfileHeaderDelegate {
         let alert = UIAlertController(title: "Are you sure to unblock this user?", message: "", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "NO", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "YES", style: .default, handler: { _ in
+            self.presentLoadingView(shouldPresent: true)
             UserService.shared.removeUserFromblockedList(blockedUid: id) { error in
                 if let error = error {
-                    HudManager.shared.showError(on: self, text: "\(error.localizedDescription)")
+                    self.presentErrorAlert(message: "\(error.localizedDescription)")
+                    self.presentLoadingView(shouldPresent: false)
                     print("Fail to block user \(error)")
                     return
                 }
+                
+                header.blockUserButton.setImage( header.shouldBlockUser ? UIImage(systemName: "eye.slash"): UIImage(systemName: "eye"), for: .normal)
+                
+                header.setNeedsLayout()
+                
+                self.presentLoadingView(shouldPresent: false)
                 HudManager.shared.showSuccess(on: self, text: "Success")
                 print("Succussfully unblocked user and pop up alert here..")
             }

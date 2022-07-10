@@ -90,6 +90,7 @@ class ChatController: UICollectionViewController {
     // MARK: - API
     
     private func addMessagesListener() {
+        self.presentLoadingView(shouldPresent: true)
         MessegeService.shared.addMessagesListener(forUser: user) { result in
             switch result {
             case .success(let message):
@@ -98,6 +99,8 @@ class ChatController: UICollectionViewController {
                 print("reloaded")
                 self.collectionView.scrollToItem(at: [0, self.messages.count - 1], at: .bottom, animated: true)
             case .failure(let error):
+                self.presentErrorAlert(message: "\(error.localizedDescription)")
+                self.presentLoadingView(shouldPresent: false)
                 print("Fail to fetch messages \(error)")
             }
         }
@@ -232,6 +235,8 @@ extension ChatController: MessageInputAccessoryViewDelegate {
         MessegeService.shared.uploadMessage(message, to: user) { [weak self] error in
             guard let self = self else { return }
             if let error = error {
+                self.presentErrorAlert(message: "\(error.localizedDescription)")
+                self.presentLoadingView(shouldPresent: false)
                 print("Fail to send message \(error)")
                 return
             }
@@ -264,6 +269,8 @@ extension ChatController: UIImagePickerControllerDelegate, UINavigationControlle
             
             MessegeService.shared.uploadMessage(message, to: self.user) { error in
                 if let error = error {
+                    self.presentErrorAlert(message: "\(error.localizedDescription)")
+                    self.presentLoadingView(shouldPresent: false)
                     print("Fail to send message \(error)")
                     return
                 }

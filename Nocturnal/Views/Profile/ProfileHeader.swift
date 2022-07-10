@@ -29,7 +29,7 @@ class ProfileHeader: UICollectionReusableView {
         return imageView
     }()
     
-    private lazy var blockUserButton: UIButton = {
+     lazy var blockUserButton: UIButton = {
        let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 25)
         button.setImage(UIImage(systemName: "eye", withConfiguration: config), for: .normal)
@@ -68,7 +68,7 @@ class ProfileHeader: UICollectionReusableView {
         
         self.shouldBlockUser = !shouldBlockUser
 
-        blockUserButton.setImage( shouldBlockUser ? UIImage(systemName: "eye.slash"): UIImage(systemName: "eye"), for: .normal)
+//        blockUserButton.setImage( shouldBlockUser ? UIImage(systemName: "eye.slash"): UIImage(systemName: "eye"), for: .normal)
         
         if shouldBlockUser {
             delegate?.profileHeader(self, wantsToBlockUserWith: user.id ?? "")

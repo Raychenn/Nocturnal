@@ -148,7 +148,6 @@ class HomeController: UIViewController {
             // logged in, start fetching user data
             var hostsId: [String] = []
             let sortedEvents = events.sorted(by: { $0.createTime.dateValue().compare($1.createTime.dateValue()) == .orderedDescending })
-            sortedEvents.forEach({ print("sortedEvents id \($0.id ?? "")") })
             sortedEvents.forEach({hostsId.append($0.hostID)})
             
             fetchHosts(hostsId: hostsId) { [weak self] in

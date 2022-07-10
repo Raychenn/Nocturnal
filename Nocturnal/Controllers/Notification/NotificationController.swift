@@ -327,17 +327,17 @@ extension NotificationController: NotificationCellDelegate {
     func cell(_ cell: NotificationCell, wantsToAccept uid: String) {
         print("wantsToAccept called")
         let selectedIndexPath = tableView.indexPath(for: cell) ?? IndexPath()
-        let selectedNotification = notifications[selectedIndexPath.row]
+        let selectedNotification = notifications[selectedIndexPath.section]
         let type = NotificationType.successJoinedEventResponse.rawValue
-        
+
         let notification = Notification(applicantId: uid ,
                                         eventId: selectedNotification.eventId,
                                         hostId: selectedNotification.hostId,
                                         sentTime: Timestamp(date: Date()),
                                         type: type, isRequestPermitted: true)
-        
+
         presentLoadingView(shouldPresent: true)
-        
+
         NotificationService.shared.postAceeptedNotification(to: selectedNotification.applicantId ,
                                                           notification: notification) { [weak self] error in
             guard let self = self else { return }
@@ -355,7 +355,7 @@ extension NotificationController: NotificationCellDelegate {
     func cell(_ cell: NotificationCell, wantsToDeny uid: String) {
         print("wantsToDeny called")
         let selectedIndexPath = tableView.indexPath(for: cell) ?? IndexPath()
-        let selectedNotification = notifications[selectedIndexPath.row]
+        let selectedNotification = notifications[selectedIndexPath.section]
         let type = NotificationType.failureJoinedEventResponse.rawValue
 
         let notification = Notification(applicantId: uid ,

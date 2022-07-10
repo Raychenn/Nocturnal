@@ -228,7 +228,7 @@ class StatsController: UIViewController, ChartViewDelegate {
         ]
         
         let pieChartDataSet = PieChartDataSet(entries: dataEntries)
-        pieChartDataSet.colors = ChartColorTemplates.joyful()
+        pieChartDataSet.colors = ChartColorTemplates.pastel()
         let chartData = PieChartData(dataSet: pieChartDataSet)
         pieChartView.data = chartData
     }

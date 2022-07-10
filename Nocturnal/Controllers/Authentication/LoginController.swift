@@ -126,6 +126,16 @@ class LoginController: UIViewController {
         playSound()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        resetLoginScreenInitialState()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        animateLogin()
+    }
+    
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
@@ -203,6 +213,48 @@ class LoginController: UIViewController {
     }
     
     // MARK: - helpers
+    
+    private func resetLoginScreenInitialState() {
+        self.videoPlayerView.alpha = 0.7
+        self.appNameLabel.alpha = 0
+        self.emailContainerView.alpha = 0
+        self.passwordContainerView.alpha = 0
+        self.loginButton.alpha = 0
+        self.signinWithAppleButton.alpha = 0
+    }
+    
+    private func animateLogin() {
+        UIView.animate(withDuration: 1) {
+            self.videoPlayerView.alpha = 1
+        } completion: { _ in
+            self.showTitle()
+        }
+    }
+    
+    private func showTitle() {
+        UIView.animate(withDuration: 1) {
+            self.appNameLabel.alpha = 1
+        } completion: { _ in
+            self.showTextFields()
+        }
+    }
+    
+    private func showTextFields() {
+        UIView.animate(withDuration: 1) {
+            self.emailContainerView.alpha = 1
+            self.passwordContainerView.alpha = 1
+        } completion: { _ in
+            self.showLoginButtons()
+        }
+    }
+    
+    private func showLoginButtons() {
+        UIView.animate(withDuration: 1) {
+            self.loginButton.alpha = 1
+            self.signinWithAppleButton.alpha = 1
+        }
+    }
+    
     private func configureUI() {
         view.backgroundColor = .white
         navigationController?.navigationBar.barStyle = .black
@@ -256,7 +308,7 @@ class LoginController: UIViewController {
     }
     
     private func playVideo() {
-        guard let path = Bundle.main.path(forResource: "djVideo", ofType: "mp4") else {
+        guard let path = Bundle.main.path(forResource: "intro", ofType: "mp4") else {
             print("no intro resouce")
             return
         }

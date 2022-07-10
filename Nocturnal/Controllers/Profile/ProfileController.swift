@@ -143,7 +143,10 @@ class ProfileController: UIViewController {
         navigationController?.navigationBar.isHidden = true
         view.backgroundColor = .white
         view.addSubview(collectionView)
-        collectionView.fillSuperview()
+        collectionView.anchor(top: view.topAnchor,
+                              left: view.leftAnchor,
+                              bottom: view.safeAreaLayoutGuide.bottomAnchor,
+                              right: view.rightAnchor)
     }
 }
 

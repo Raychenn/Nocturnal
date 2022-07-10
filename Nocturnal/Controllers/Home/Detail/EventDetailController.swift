@@ -314,7 +314,7 @@ class EventDetailController: UIViewController {
                                 print("Error deleting notification \(error)")
                                 return
                             }
-                            
+                            self.presentLoadingView(shouldPresent: false)
                             self.joinState = .join
                             self.setJoinButton(forState: self.joinState)
                             print("Successfully canceling event application, pop up alert")
@@ -352,7 +352,7 @@ class EventDetailController: UIViewController {
                             print("Fail to updateEventPendingUsers \(error)")
                             return
                         }
-                        
+                        self.presentLoadingView(shouldPresent: false)
                         self.joinState = .pending
                         self.setJoinButton(forState: self.joinState)
                         print("Successfully sending notification, pop up alert")

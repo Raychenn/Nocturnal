@@ -22,6 +22,7 @@ class MainTabBarController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         self.configureTabBarStyle()
         self.configureNavigationBarUI()
         self.authenticateUserAndConfigureUI()

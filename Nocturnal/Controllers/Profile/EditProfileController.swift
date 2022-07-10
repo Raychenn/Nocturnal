@@ -95,7 +95,10 @@ class EditProfileController: UIViewController {
     func setupUI() {
         view.backgroundColor = .systemBackground
         view.addSubview(tableView)
-        tableView.fillSuperview()
+        tableView.anchor(top: view.topAnchor,
+                         left: view.leftAnchor,
+                         bottom: view.safeAreaLayoutGuide.bottomAnchor,
+                         right: view.rightAnchor)
         view.addSubview(backButton)
         backButton.anchor(top: view.safeAreaLayoutGuide.topAnchor,
                           left: view.leftAnchor, paddingTop: 8, paddingLeft: 10)

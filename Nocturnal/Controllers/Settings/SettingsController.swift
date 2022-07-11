@@ -156,9 +156,9 @@ class SettingsController: UIViewController {
         if MFMailComposeViewController.canSendMail() {
             let emailVC = MFMailComposeViewController()
             emailVC.delegate = self
-            emailVC.setSubject("Contact Us")
+            emailVC.mailComposeDelegate = self
+            emailVC.setSubject("Contact Developer")
             emailVC.setToRecipients(["r0975929562@gmail.com"])
-            emailVC.setMessageBody("<h1>Send Feedback<h1>", isHTML: true)
             self.present(emailVC, animated: true)
         } else {
             // fallback here if user does not wnat to send email
@@ -320,6 +320,19 @@ extension SettingsController: UITableViewDelegate {
 extension SettingsController: MFMailComposeViewControllerDelegate, UINavigationControllerDelegate {
     
     func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        
+        switch result {
+        case .cancelled:
+            print("email cancelled")
+        case .saved:
+            print("email saved")
+        case .sent:
+            print("sent email")
+        case .failed:
+            print("fail to send email")
+        @unknown default:
+            break
+        }
         
         controller.dismiss(animated: true)
     }

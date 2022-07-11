@@ -310,7 +310,6 @@
 				ED0B425028588AE1000680C2 /* Third party wrapper */,
 				ED0A4851285877F7004661BB /* Resources */,
 				ED0A4850285877D0004661BB /* Extensions */,
-				ED0A484F285877C6004661BB /* Views */,
 				ED0A484E285877BE004661BB /* Models */,
 				ED0A484D285877B5004661BB /* Controllers */,
 				ED0A4839285873DB004661BB /* AppDelegate.swift */,
@@ -318,6 +317,7 @@
 				ED0A483D285873DB004661BB /* ViewController.swift */,
 				ED0A483F285873DB004661BB /* Main.storyboard */,
 				ED0A4842285873DC004661BB /* Assets.xcassets */,
+				ED0A484F285877C6004661BB /* Views */,
 				ED0A4844285873DC004661BB /* LaunchScreen.storyboard */,
 				ED0A4847285873DC004661BB /* Info.plist */,
 				ED1560A6286BF4AD0089121D /* GoogleService-Info.plist */,
@@ -1104,8 +1104,8 @@
 				DEVELOPMENT_TEAM = 8572WS27HD;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Nocturnal/Info.plist;
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Please allow this app to access your location ";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Please allow this app to access your photos ";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Please allow this app to access your location so that you could know the route from current location to the destination";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Please allow this app to access your photos so that you could upload your own event photo";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -1121,7 +1121,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -1137,8 +1137,8 @@
 				DEVELOPMENT_TEAM = 8572WS27HD;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Nocturnal/Info.plist;
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Please allow this app to access your location ";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Please allow this app to access your photos ";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Please allow this app to access your location so that you could know the route from current location to the destination";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Please allow this app to access your photos so that you could upload your own event photo";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -1154,7 +1154,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

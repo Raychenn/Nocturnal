@@ -95,7 +95,7 @@ class AddEventController: UIViewController {
     private func setupNavigationBar() {
         title = "Add Event"
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationController?.navigationBar.tintColor = .black
+        navigationController?.navigationBar.tintColor = .white
         //        tableView.contentInsetAdjustmentBehavior = .never
         //        tableView.setContentOffset(.init(x: 0, y: -2), animated: false)
     }
@@ -191,7 +191,6 @@ extension AddEventController: UIImagePickerControllerDelegate, UINavigationContr
             presentLoadingView(shouldPresent: true)
             StorageUploader.shared.uploadEventVideo(videoUrl: videoUrl) { [weak self] downloadedUrl in
                 guard let self = self, let videoURL = URL(string: downloadedUrl) else { return }
-                print("downloadedUrl \(downloadedUrl)")
                 if let header = self.tableView.headerView(forSection: 0) as? AddEventHeader {
                     self.eventVideoURLString = downloadedUrl
                     header.setupVideoPlayerView(videoURL: videoURL)

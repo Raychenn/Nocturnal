@@ -50,7 +50,7 @@ class CustomPopupView: UIView {
         label.font = UIFont(name: "Avenir", size: 20)
         label.textAlignment = .center
         label.textColor = .darkGray
-        label.text = "Once uploading an event video, home page will show event vedio instead of photo"
+        label.text = "Once uploading an event video, home page will show event video instead of photo"
         return label
     }()
     

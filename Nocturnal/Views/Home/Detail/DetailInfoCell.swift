@@ -46,7 +46,6 @@ class DetailInfoCell: UITableViewCell {
     
     private let dateLabel: UILabel = {
         let label = UILabel()
-//        label.font = .systemFont(ofSize: 15, weight: .medium)
         label.textColor = .lightGray
         label.text = "Jun 4 . 7:00 PM"
         return label
@@ -65,7 +64,6 @@ class DetailInfoCell: UITableViewCell {
         let label = UILabel()
         label.numberOfLines = 0
         label.textColor = .lightGray
-//        label.font = .systemFont(ofSize: 15, weight: .medium)
         label.text = "Loading Address"
         return label
     }()
@@ -82,7 +80,6 @@ class DetailInfoCell: UITableViewCell {
     private let styleLabel: UILabel = {
         let label = UILabel()
         label.textColor = .lightGray
-//        label.font = .systemFont(ofSize: 15, weight: .medium)
         label.text = "Event Style: Loading"
         return label
     }()
@@ -99,8 +96,23 @@ class DetailInfoCell: UITableViewCell {
     private let feeLabel: UILabel = {
         let label = UILabel()
         label.textColor = .lightGray
-//        label.font = .systemFont(ofSize: 15, weight: .medium)
         label.text = "$15.50"
+        return label
+    }()
+    
+    private let playMusicImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.image = UIImage(systemName: "music.note")
+        imageView.setDimensions(height: 20, width: 20)
+        imageView.tintColor = .lightGray
+        return imageView
+    }()
+    
+    private let playMusicLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .lightGray
+        label.text = "Experience Event Music"
         return label
     }()
     
@@ -125,9 +137,7 @@ class DetailInfoCell: UITableViewCell {
     
     private lazy var chatButton: UIButton = {
         let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 25)
-        button.setImage( UIImage(systemName: "message.fill", withConfiguration: config), for: .normal)
-        button.tintColor = .lightGray
+        button.setImage( UIImage(named: "messaging"), for: .normal)
         button.addTarget(self, action: #selector(didTapChatButton), for: .touchUpInside)
         return button
     }()
@@ -294,6 +304,11 @@ class DetailInfoCell: UITableViewCell {
         addressStack.alignment = .center
         addressLabel.setContentCompressionResistancePriority(UILayoutPriority.required, for: .vertical)
         
+        let playMusicStack = UIStackView(arrangedSubviews: [playMusicImageView, playMusicLabel])
+        playMusicStack.axis = .horizontal
+        playMusicStack.spacing = 8
+        playMusicStack.alignment = .center
+        
         let styleStack = UIStackView(arrangedSubviews: [styleImageView, styleLabel])
         styleStack.axis = .horizontal
         styleStack.spacing = 8
@@ -310,7 +325,8 @@ class DetailInfoCell: UITableViewCell {
                                                           styleStack,
                                                           feeStack,
                                                           joinedMemberStack,
-                                                          addressStack
+                                                          addressStack,
+                                                          playMusicStack
                                                           ])
         parentVStack.axis = .vertical
         parentVStack.spacing = 8
@@ -328,14 +344,17 @@ class DetailInfoCell: UITableViewCell {
 
         contentView.addSubview(hostNameLabel)
         hostNameLabel.centerY(inView: hostProfileImageView)
-        hostNameLabel.anchor(left: hostProfileImageView.rightAnchor, paddingLeft: 25)
+        hostNameLabel.anchor(left: hostProfileImageView.rightAnchor, paddingLeft: 10)
 
         contentView.addSubview(chatButton)
-        chatButton.anchor(top: parentVStack.bottomAnchor, left: hostProfileImageView.rightAnchor, paddingTop: 8, paddingLeft: 2)
+        chatButton.centerY(inView: hostNameLabel)
+        chatButton.anchor(right: contentView.rightAnchor, paddingRight: 15)
+        chatButton.setDimensions(height: 30, width: 30)
 
         contentView.addSubview(playMusicButton)
-        playMusicButton.centerY(inView: hostProfileImageView)
-        playMusicButton.anchor(right: contentView.rightAnchor, paddingRight: 8)
+        playMusicButton.centerY(inView: playMusicStack)
+        playMusicButton.anchor(right: contentView.rightAnchor, paddingRight: 15)
+        playMusicButton.setDimensions(height: 33, width: 33)
     }
     
 }

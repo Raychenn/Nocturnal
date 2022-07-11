@@ -7,6 +7,9 @@
 import UIKit
 import FirebaseAuth
 import FirebaseFirestore
+import MessageUI
+import SafariServices
+import StoreKit
 
 class SettingsController: UIViewController {
     
@@ -149,11 +152,28 @@ class SettingsController: UIViewController {
         self.present(alert, animated: true)
     }
     
-    private func presentFeedBackAlert() {
-        let alert = UIAlertController(title: "Please send any suggestion or feedback to the developer at r0975929562@gmail.com", message: "Hope you have a nice experience using this App", preferredStyle: .alert)
-        
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        self.present(alert, animated: true)
+    private func presentSendEmailController() {
+        if MFMailComposeViewController.canSendMail() {
+            let emailVC = MFMailComposeViewController()
+            emailVC.delegate = self
+            emailVC.setSubject("Contact Us")
+            emailVC.setToRecipients(["r0975929562@gmail.com"])
+            emailVC.setMessageBody("<h1>Send Feedback<h1>", isHTML: true)
+            self.present(emailVC, animated: true)
+        } else {
+            // fallback here if user does not wnat to send email
+            guard let googleUrl = URL(string: "https://www.google.com") else { return  }
+            let fallbackVC = SFSafariViewController(url: googleUrl)
+            self.present(fallbackVC, animated: true)
+        }
+    }
+    
+    private func presentRatingController() {
+        guard let windowScene = view.window?.windowScene else {
+            print("Can not find window scene in setting VC")
+            return
+        }
+        SKStoreReviewController.requestReview(in: windowScene)
     }
     
     // MARK: - Selectors
@@ -207,9 +227,9 @@ extension SettingsController: UITableViewDelegate {
                 let privacyVC = PrivacyPolicyController()
                 self.present(privacyVC, animated: true)
             case .rate:
-                break
+                presentRatingController()
             case .feedback:
-                presentFeedBackAlert()
+                presentSendEmailController()
             case .eula:
                 let eulaVC = EULAController()
                 self.present(eulaVC, animated: true)
@@ -233,7 +253,7 @@ extension SettingsController: UITableViewDelegate {
                     print("current user is nil in setting")
                     return
                 }
-            // MARK: - TODO:
+                
                 currentUser.delete { [weak self] error in
                     guard let self = self else { return }
                     if let error = error {
@@ -294,4 +314,14 @@ extension SettingsController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return section == 0 ? 270: 15
     }
+}
+
+// MARK: - MFMailComposeViewControllerDelegate
+extension SettingsController: MFMailComposeViewControllerDelegate, UINavigationControllerDelegate {
+    
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        
+        controller.dismiss(animated: true)
+    }
+    
 }

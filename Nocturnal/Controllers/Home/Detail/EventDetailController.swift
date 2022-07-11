@@ -418,7 +418,7 @@ extension EventDetailController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
         if indexPath.row == 0 {
-            return 310
+            return 360
         } else if indexPath.row == 1 {
             return 200
         }

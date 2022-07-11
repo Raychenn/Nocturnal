@@ -16,7 +16,7 @@ class SettingHeader: UITableViewHeaderFooterView {
     
     private let topBackgroundView: UIView = {
        let view = UIView()
-        view.backgroundColor = .systemPink
+        view.backgroundColor = .deepBlue
         return view
     }()
     

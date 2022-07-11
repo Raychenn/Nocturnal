@@ -221,6 +221,7 @@ class LoginController: UIViewController {
         self.passwordContainerView.alpha = 0
         self.loginButton.alpha = 0
         self.signinWithAppleButton.alpha = 0
+        self.dontHaveAccountButton.alpha = 0
     }
     
     private func animateLogin() {
@@ -252,6 +253,7 @@ class LoginController: UIViewController {
         UIView.animate(withDuration: 1) {
             self.loginButton.alpha = 1
             self.signinWithAppleButton.alpha = 1
+            self.dontHaveAccountButton.alpha = 1
         }
     }
     

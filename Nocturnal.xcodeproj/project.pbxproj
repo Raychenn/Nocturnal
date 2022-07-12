@@ -301,6 +301,7 @@
 		ED0A4838285873DB004661BB /* Nocturnal */ = {
 			isa = PBXGroup;
 			children = (
+				ED0A484F285877C6004661BB /* Views */,
 				ED4DB00728758C5D0051F40F /* Satisfy */,
 				ED63D5132874176700603515 /* Constant */,
 				ED63D50E2873E3D500603515 /* Managers */,
@@ -317,7 +318,6 @@
 				ED0A483D285873DB004661BB /* ViewController.swift */,
 				ED0A483F285873DB004661BB /* Main.storyboard */,
 				ED0A4842285873DC004661BB /* Assets.xcassets */,
-				ED0A484F285877C6004661BB /* Views */,
 				ED0A4844285873DC004661BB /* LaunchScreen.storyboard */,
 				ED0A4847285873DC004661BB /* Info.plist */,
 				ED1560A6286BF4AD0089121D /* GoogleService-Info.plist */,

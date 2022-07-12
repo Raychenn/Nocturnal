@@ -308,7 +308,7 @@ extension HomeController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         guard let eventCell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeEventCell.identifier, for: indexPath) as? HomeEventCell else { return UICollectionViewCell() }
-                
+                    
         // should have 2 types of config | loggedin user vs no user
         if Auth.auth().currentUser == nil {
             let event = events[indexPath.item]

@@ -88,7 +88,7 @@ class HomeEventCell: UICollectionViewCell {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 25)
         button.setImage(UIImage(systemName: "speaker.slash", withConfiguration: config), for: .normal)
-         button.tintColor = .red
+         button.tintColor = .deepBlue
         button.isHidden = true
         button.addTarget(self, action: #selector(muteVideo), for: .touchUpInside)
         return button
@@ -160,6 +160,7 @@ class HomeEventCell: UICollectionViewCell {
                 playerLayer.frame = self.videoPlayerView.bounds
                 playerLayer.contentsGravity = .resizeAspectFill
                 self.videoPlayerView.layer.addSublayer(playerLayer)
+                self.videoPlayerView.bringSubviewToFront(self.muteButton)
                 player.play()
             case .failure(let error):
                 print("Failt to cachce url \(error)")

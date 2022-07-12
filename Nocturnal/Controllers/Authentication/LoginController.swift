@@ -476,8 +476,8 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
                           self.dismiss(animated: true)
                       } else {
                         // Create new user
-                          let firstname = appleIDCredential.fullName?.givenName ?? "Unkown"
-                          let familyname = appleIDCredential.fullName?.familyName ?? "Unkown family name"
+                          let firstname = appleIDCredential.fullName?.givenName ?? "default"
+                          let familyname = appleIDCredential.fullName?.familyName ?? "name"
                           let username = "\(firstname) \(familyname)"
                             let email = authResult?.user.email ?? ""
                           AuthService.shared.uploadNewUser(withId: uid, name: username, email: email) { error in
@@ -502,6 +502,7 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
           }
         }
       }
+    
       func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
           
           switch error {

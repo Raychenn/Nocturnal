@@ -265,8 +265,8 @@ extension AddEventController: UploadEventInfoCellDelegate {
             return
         }
             // upload video
-            let geoCoder = CLGeocoder()
             configureAnimationView()
+            let geoCoder = CLGeocoder()
             self.view.isUserInteractionEnabled = false
             geoCoder.geocodeAddressString(userInputData.eventAddress) { [weak self] (placemarks, error) in
                 guard let self = self else { return }

@@ -167,7 +167,6 @@ class ProfileCell: UICollectionViewCell {
         conversationButton.isHidden = user.id ?? "" == currentUid ? false: true
     }
     func setupCellUI() {
-        usernameLabel.backgroundColor = .red
         backgroundColor = UIColor.darkGray
         layer.cornerRadius = 25
         layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner]

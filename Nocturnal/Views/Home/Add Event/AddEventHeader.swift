@@ -96,7 +96,8 @@ class AddEventHeader: UITableViewHeaderFooterView {
         newEventImageView.anchor(top: uploadImageLabel.bottomAnchor,
                                  left: contentView.leftAnchor,
                                  right: contentView.rightAnchor,
-                                 paddingTop: 10, height: 150)
+                                 paddingTop: 10, paddingLeft: 20,
+                                 paddingRight: 20, height: 150)
         
         contentView.addSubview(newPhotoButton)
         newPhotoButton.centerX(inView: newEventImageView)
@@ -111,7 +112,9 @@ class AddEventHeader: UITableViewHeaderFooterView {
                                  left: contentView.leftAnchor,
                                  bottom: contentView.bottomAnchor,
                                  right: contentView.rightAnchor,
-                                 paddingTop: 10, height: 150)
+                                 paddingTop: 20,
+                                 paddingLeft: 20,
+                                 paddingBottom: 20, paddingRight: 10, height: 150)
         
         contentView.addSubview(newVideoButton)
         newVideoButton.centerX(inView: videoPlayerView)

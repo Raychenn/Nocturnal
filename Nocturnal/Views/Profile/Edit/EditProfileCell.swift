@@ -66,7 +66,7 @@ class EditProfileCell: UITableViewCell {
     
     let genders: [Gender] = [.male, .female]
     
-    let countries: [Country] = [.china, .france, .germany, .india, .italy, .japan, .korea, .australia, .usa, .spain]
+    let countries: [Country] = [ .taiwan, .china, .france, .germany, .india, .italy, .japan, .korea, .australia, .usa, .spain]
     
     private lazy var saveButton: UIButton = {
        let button = UIButton()

@@ -51,7 +51,7 @@ class HomeController: UIViewController {
         
     var events: [Event] = []
     
-    var evnetHosts: [User] = []
+    var evnetHosts: [User] = [] 
     
     var currentCell: HomeEventCell?
         
@@ -69,7 +69,6 @@ class HomeController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     
-//        navigationController?.delegate = self
         setupUI()
     }
     
@@ -147,8 +146,7 @@ class HomeController: UIViewController {
         if Auth.auth().currentUser != nil {
             // logged in, start fetching user data
             var hostsId: [String] = []
-            let sortedEvents = events.sorted(by: { $0.createTime.dateValue().compare($1.createTime.dateValue()) == .orderedDescending })
-            sortedEvents.forEach({hostsId.append($0.hostID)})
+            events.forEach({hostsId.append($0.hostID)})
             
             fetchHosts(hostsId: hostsId) { [weak self] in
                 guard let self = self else { return }
@@ -179,7 +177,10 @@ class HomeController: UIViewController {
     
     // MARK: - Selectors
     @objc func refreshData() {
-        self.fetchAllEvents()
+        fetchCurrentUser { [weak self] in
+            guard let self = self else {return}
+            self.fetchAllEvents()
+        }
     }
     
     @objc func didTapShowEventButton() {
@@ -316,7 +317,6 @@ extension HomeController: UICollectionViewDataSource {
         } else {
             let event = events[indexPath.item]
             let host = evnetHosts[indexPath.item]
-
             eventCell.configureCellForLoggedInUser(event: event, host: host)
         }
         

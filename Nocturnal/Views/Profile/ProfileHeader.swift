@@ -23,7 +23,7 @@ class ProfileHeader: UICollectionReusableView {
      let profileImageView: UIImageView = {
        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
-         imageView.clipsToBounds = true
+        imageView.clipsToBounds = true
         imageView.backgroundColor = .lightBlue
         imageView.image = UIImage(named: "profileImage")
         return imageView
@@ -81,8 +81,11 @@ class ProfileHeader: UICollectionReusableView {
     // MARK: - Helpers
     
     func configureHeader(user: User) {
-        guard let profileUrl = URL(string: user.profileImageURL) else { return }
-        profileImageView.kf.setImage(with: profileUrl)
+        if let profileUrl = URL(string: user.profileImageURL) {
+            profileImageView.kf.setImage(with: profileUrl)
+        } else {
+            profileImageView.image = UIImage(named: "profileImage")
+        }
         
         guard let currentUserId = Auth.auth().currentUser?.uid, let userId = user.id else {
             print("no current user id")

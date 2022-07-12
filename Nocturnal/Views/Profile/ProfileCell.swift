@@ -167,9 +167,28 @@ class ProfileCell: UICollectionViewCell {
         conversationButton.isHidden = user.id ?? "" == currentUid ? false: true
     }
     func setupCellUI() {
+        usernameLabel.backgroundColor = .red
         backgroundColor = UIColor.darkGray
         layer.cornerRadius = 25
         layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+        
+        contentView.addSubview(conversationButton)
+        conversationButton.anchor(top: contentView.topAnchor,
+                                  right: contentView.rightAnchor,
+                                  paddingTop: 20,
+                                  paddingRight: 10)
+        conversationButton.setDimensions(height: 25, width: 25)
+        
+        contentView.addSubview(editProfileButton)
+        editProfileButton.centerY(inView: conversationButton)
+        editProfileButton.anchor(right: conversationButton.leftAnchor, paddingRight: 12)
+        editProfileButton.setDimensions(height: 25, width: 25)
+            
+        contentView.addSubview(settingsButton)
+        settingsButton.centerY(inView: conversationButton)
+        settingsButton.setDimensions(height: 25, width: 25)
+        settingsButton.anchor(right: editProfileButton.leftAnchor, paddingRight: 12)
+        
         let countryStack = UIStackView(arrangedSubviews: [countryTitleLabel, countryLabel])
         countryStack.axis = .horizontal
         countryStack.spacing = 5
@@ -188,8 +207,9 @@ class ProfileCell: UICollectionViewCell {
         [countryStack, genderStack, zodiacStack, ageStack].forEach({ contentView.addSubview($0) })
         
         contentView.addSubview(usernameLabel)
-        usernameLabel.anchor(top: contentView.topAnchor, left: contentView.leftAnchor, paddingTop: 20, paddingLeft: 20)
+        usernameLabel.anchor(top: contentView.topAnchor, left: contentView.leftAnchor, right: settingsButton.leftAnchor, paddingTop: 20, paddingLeft: 20, paddingRight: 10)
         usernameLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        
         countryTitleLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
         zodiacLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
         genderLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
@@ -205,20 +225,6 @@ class ProfileCell: UICollectionViewCell {
         ageStack.anchor(top: zodiacStack.bottomAnchor,
                         left: usernameLabel.leftAnchor,
                         paddingTop: 5)
-        
-        contentView.addSubview(editProfileButton)
-        editProfileButton.setDimensions(height: 25, width: 25)
-        editProfileButton.centerY(inView: usernameLabel)
-        
-        contentView.addSubview(conversationButton)
-        conversationButton.centerY(inView: usernameLabel)
-        conversationButton.anchor(left: editProfileButton.rightAnchor, right: contentView.rightAnchor, paddingLeft: 12, paddingRight: 15)
-        conversationButton.setDimensions(height: 25, width: 25)
-        
-        contentView.addSubview(settingsButton)
-        settingsButton.centerY(inView: usernameLabel)
-        settingsButton.setDimensions(height: 25, width: 25)
-        settingsButton.anchor(right: editProfileButton.leftAnchor, paddingRight: 12)
     }
     
     func calculateAge() -> Int {

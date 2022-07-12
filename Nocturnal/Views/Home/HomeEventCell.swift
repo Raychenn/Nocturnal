@@ -64,6 +64,8 @@ class HomeEventCell: UICollectionViewCell {
     private let profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
+        imageView.tintColor = .lightGray
+        imageView.image = UIImage(systemName: "person")
         return imageView
     }()
     
@@ -208,11 +210,12 @@ class HomeEventCell: UICollectionViewCell {
             eventImageView.kf.setImage(with: imageUrl)
         }
         
-        guard let profileUrl = URL(string: host.profileImageURL) else {
-            print("profile url in home cell nil")
-            return
+        if let profileUrl = URL(string: host.profileImageURL) {
+            profileImageView.kf.setImage(with: profileUrl)
+        } else {
+            profileImageView.image = UIImage(systemName: "person")
         }
-        profileImageView.kf.setImage(with: profileUrl)
+        
         dateLabel.text = Date.dateFormatter.string(from: event.startingDate.dateValue())
         eventNameLabel.text = event.title
         feeLabel.text = "$\(event.fee)"

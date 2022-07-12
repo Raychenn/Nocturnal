@@ -23,6 +23,7 @@ class MainTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+//        try? Auth.auth().signOut()
         self.configureTabBarStyle()
         self.configureNavigationBarUI()
         self.authenticateUserAndConfigureUI()

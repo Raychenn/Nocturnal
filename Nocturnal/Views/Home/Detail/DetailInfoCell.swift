@@ -123,7 +123,6 @@ class DetailInfoCell: UITableViewCell {
         imageView.setDimensions(height: 50, width: 50)
         let tap = UITapGestureRecognizer(target: self, action: #selector(didTapUserProfile))
         imageView.addGestureRecognizer(tap)
-        imageView.backgroundColor = .lightGray
         return imageView
     }()
     
@@ -248,7 +247,11 @@ class DetailInfoCell: UITableViewCell {
 
     func configureCell(with event: Event, host: User) {
         backgroundColor = UIColor.hexStringToUIColor(hex: "#161616")
-        self.hostProfileImageView.kf.setImage(with: URL(string: host.profileImageURL)!)
+        if let profileUrl = URL(string: host.profileImageURL) {
+            self.hostProfileImageView.kf.setImage(with: profileUrl, placeholder: UIImage(systemName: "person"))
+        } else {
+            self.hostProfileImageView.image = UIImage(systemName: "person")
+        }
         self.hostNameLabel.text = host.name
         self.event = event
         titleLabel.text = event.title

@@ -67,8 +67,6 @@ class ProfileHeader: UICollectionReusableView {
         }
         
         self.shouldBlockUser = !shouldBlockUser
-
-//        blockUserButton.setImage( shouldBlockUser ? UIImage(systemName: "eye.slash"): UIImage(systemName: "eye"), for: .normal)
         
         if shouldBlockUser {
             delegate?.profileHeader(self, wantsToBlockUserWith: user.id ?? "")

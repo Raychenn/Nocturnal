@@ -310,7 +310,7 @@ class LoginController: UIViewController {
     }
     
     private func playVideo() {
-        guard let path = Bundle.main.path(forResource: "intro", ofType: "mp4") else {
+        guard let path = Bundle.main.path(forResource: "djVideo", ofType: "mp4") else {
             print("no intro resouce")
             return
         }

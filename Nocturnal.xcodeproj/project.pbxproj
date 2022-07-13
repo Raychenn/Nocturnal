@@ -75,7 +75,6 @@
 		ED63D5152874177600603515 /* UserDefautConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED63D5142874177600603515 /* UserDefautConstants.swift */; };
 		ED63D517287421AA00603515 /* PulsingLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED63D516287421AA00603515 /* PulsingLayer.swift */; };
 		ED7D1D1428749245005D31E3 /* PulsatingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7D1D1328749245005D31E3 /* PulsatingButton.swift */; };
-		ED7D1D1628757065005D31E3 /* intro.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = ED7D1D1528756F9B005D31E3 /* intro.mp4 */; };
 		ED81C3D4285D7F0F004C12EA /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED81C3D3285D7F0F004C12EA /* UserService.swift */; };
 		ED81C3D7285D93D3004C12EA /* Firebase+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED81C3D6285D93D3004C12EA /* Firebase+Ext.swift */; };
 		ED81C3D9285D9464004C12EA /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED81C3D8285D9464004C12EA /* Notification.swift */; };
@@ -98,12 +97,6 @@
 		ED847A1C285CE5E700F33C7F /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED847A1B285CE5E700F33C7F /* User.swift */; };
 		ED8B1EF32860CC4B008A0ECB /* MessageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED8B1EF22860CC4B008A0ECB /* MessageService.swift */; };
 		ED8B1EF52860E2D8008A0ECB /* Conversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED8B1EF42860E2D8008A0ECB /* Conversation.swift */; };
-		EDC336172859DC4100A6A95A /* betterdays.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336112859DC3F00A6A95A /* betterdays.mp3 */; };
-		EDC336182859DC4100A6A95A /* creativeminds.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336122859DC4000A6A95A /* creativeminds.mp3 */; };
-		EDC336192859DC4100A6A95A /* dreams.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336132859DC4000A6A95A /* dreams.mp3 */; };
-		EDC3361A2859DC4100A6A95A /* relaxing.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336142859DC4000A6A95A /* relaxing.mp3 */; };
-		EDC3361B2859DC4100A6A95A /* allthat.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336152859DC4100A6A95A /* allthat.mp3 */; };
-		EDC3361C2859DC4100A6A95A /* slowmotion.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EDC336162859DC4100A6A95A /* slowmotion.mp3 */; };
 		EDC663EB28614FB8007FEF82 /* ConservasationsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC663EA28614FB8007FEF82 /* ConservasationsController.swift */; };
 		EDC663ED28615D8D007FEF82 /* ConversationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC663EC28615D8D007FEF82 /* ConversationCell.swift */; };
 		EDC663F028617465007FEF82 /* ExploreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC663EF28617465007FEF82 /* ExploreCell.swift */; };
@@ -200,7 +193,6 @@
 		ED63D516287421AA00603515 /* PulsingLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulsingLayer.swift; sourceTree = "<group>"; };
 		ED7627B6285F6922005EB15C /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
 		ED7D1D1328749245005D31E3 /* PulsatingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulsatingButton.swift; sourceTree = "<group>"; };
-		ED7D1D1528756F9B005D31E3 /* intro.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = intro.mp4; sourceTree = "<group>"; };
 		ED81C3D3285D7F0F004C12EA /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
 		ED81C3D6285D93D3004C12EA /* Firebase+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firebase+Ext.swift"; sourceTree = "<group>"; };
 		ED81C3D8285D9464004C12EA /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
@@ -223,12 +215,6 @@
 		ED847A1B285CE5E700F33C7F /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		ED8B1EF22860CC4B008A0ECB /* MessageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageService.swift; sourceTree = "<group>"; };
 		ED8B1EF42860E2D8008A0ECB /* Conversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Conversation.swift; sourceTree = "<group>"; };
-		EDC336112859DC3F00A6A95A /* betterdays.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = betterdays.mp3; sourceTree = "<group>"; };
-		EDC336122859DC4000A6A95A /* creativeminds.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = creativeminds.mp3; sourceTree = "<group>"; };
-		EDC336132859DC4000A6A95A /* dreams.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = dreams.mp3; sourceTree = "<group>"; };
-		EDC336142859DC4000A6A95A /* relaxing.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = relaxing.mp3; sourceTree = "<group>"; };
-		EDC336152859DC4100A6A95A /* allthat.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = allthat.mp3; sourceTree = "<group>"; };
-		EDC336162859DC4100A6A95A /* slowmotion.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = slowmotion.mp3; sourceTree = "<group>"; };
 		EDC663EA28614FB8007FEF82 /* ConservasationsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConservasationsController.swift; sourceTree = "<group>"; };
 		EDC663EC28615D8D007FEF82 /* ConversationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationCell.swift; sourceTree = "<group>"; };
 		EDC663EF28617465007FEF82 /* ExploreCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreCell.swift; sourceTree = "<group>"; };
@@ -308,7 +294,6 @@
 				EDED0AC92872C790008ECDE4 /* JGProgressHudWrapper */,
 				ED1560A5286BF3020089121D /* Nocturnal.entitlements */,
 				ED194CB42859E51000C9E5D3 /* FirebaseAPI */,
-				ED0B425028588AE1000680C2 /* Third party wrapper */,
 				ED0A4851285877F7004661BB /* Resources */,
 				ED0A4850285877D0004661BB /* Extensions */,
 				ED0A484E285877BE004661BB /* Models */,
@@ -323,7 +308,6 @@
 				ED1560A6286BF4AD0089121D /* GoogleService-Info.plist */,
 				ED180EB6286EFC2F00FE57DE /* empty-box.json */,
 				ED180EAA286ECA3200FE57DE /* cheers.json */,
-				ED7D1D1528756F9B005D31E3 /* intro.mp4 */,
 				ED4DB00C28758EDA0051F40F /* djVideo.mp4 */,
 			);
 			path = Nocturnal;
@@ -464,13 +448,6 @@
 				ED7D1D1328749245005D31E3 /* PulsatingButton.swift */,
 			);
 			path = CustomViews;
-			sourceTree = "<group>";
-		};
-		ED0B425028588AE1000680C2 /* Third party wrapper */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = "Third party wrapper";
 			sourceTree = "<group>";
 		};
 		ED0B4254285986DC000680C2 /* Home */ = {
@@ -630,12 +607,6 @@
 				EDEF690E28687D3C00F944BF /* summertime.mp3 */,
 				EDEF691128687D3D00F944BF /* urbanhiphop.mp3 */,
 				EDEF691028687D3D00F944BF /* yourstory.mp3 */,
-				EDC336152859DC4100A6A95A /* allthat.mp3 */,
-				EDC336112859DC3F00A6A95A /* betterdays.mp3 */,
-				EDC336122859DC4000A6A95A /* creativeminds.mp3 */,
-				EDC336132859DC4000A6A95A /* dreams.mp3 */,
-				EDC336142859DC4000A6A95A /* relaxing.mp3 */,
-				EDC336162859DC4100A6A95A /* slowmotion.mp3 */,
 			);
 			path = "Music Samples";
 			sourceTree = "<group>";
@@ -755,20 +726,13 @@
 				EDEF691928687D3E00F944BF /* extreme.mp3 in Resources */,
 				ED180EB7286EFC2F00FE57DE /* empty-box.json in Resources */,
 				ED4DB00B28758C5D0051F40F /* LICENSE.txt in Resources */,
-				EDC3361C2859DC4100A6A95A /* slowmotion.mp3 in Resources */,
-				EDC3361A2859DC4100A6A95A /* relaxing.mp3 in Resources */,
 				ED0A4843285873DC004661BB /* Assets.xcassets in Resources */,
-				EDC3361B2859DC4100A6A95A /* allthat.mp3 in Resources */,
 				ED0A4841285873DB004661BB /* Main.storyboard in Resources */,
 				ED1560A7286BF4AD0089121D /* GoogleService-Info.plist in Resources */,
 				EDEF691628687D3E00F944BF /* yourstory.mp3 in Resources */,
-				ED7D1D1628757065005D31E3 /* intro.mp4 in Resources */,
-				EDC336172859DC4100A6A95A /* betterdays.mp3 in Resources */,
-				EDC336192859DC4100A6A95A /* dreams.mp3 in Resources */,
 				EDEF691728687D3E00F944BF /* urbanhiphop.mp3 in Resources */,
 				ED4DB00A28758C5D0051F40F /* Satisfy-Regular.ttf in Resources */,
 				EDEF691428687D3E00F944BF /* summertime.mp3 in Resources */,
-				EDC336182859DC4100A6A95A /* creativeminds.mp3 in Resources */,
 				ED4DB00D28758EDA0051F40F /* djVideo.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

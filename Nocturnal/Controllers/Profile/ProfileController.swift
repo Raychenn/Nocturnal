@@ -100,7 +100,7 @@ class ProfileController: UIViewController {
             case .success(let user):
                 print("current user name in profile \(user.name)")
                 self.currentUser = user
-                self.collectionView.reloadData()
+//                self.collectionView.reloadData()
                 self.checkIfIsBlockedUser { isBlocked in
                     self.isBlocked = isBlocked
                     self.collectionView.reloadData()

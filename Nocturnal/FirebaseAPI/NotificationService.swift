@@ -152,7 +152,6 @@ func postDeniedNotification(to applicantUid: String, notification: Notification,
 }
     
     func updateCancelNotification(deletedUserId: String, completion: FirestoreCompletion) {
-        print("inside updateCancelNotification")
         collection_notification.getDocuments { snapshot, error in
 
             guard let snapshot = snapshot, error == nil else {

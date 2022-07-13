@@ -141,7 +141,7 @@ class ProfileController: UIViewController {
     // MARK: - Helpers
     private func setupUI() {
         navigationController?.navigationBar.isHidden = true
-        view.backgroundColor = .white
+        view.backgroundColor = .black
         view.addSubview(collectionView)
         collectionView.anchor(top: view.topAnchor,
                               left: view.leftAnchor,

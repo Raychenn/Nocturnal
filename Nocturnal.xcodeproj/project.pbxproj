@@ -73,7 +73,6 @@
 		ED63D5122874145B00603515 /* CustomPopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED63D5112874145B00603515 /* CustomPopupView.swift */; };
 		ED63D5152874177600603515 /* UserDefautConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED63D5142874177600603515 /* UserDefautConstants.swift */; };
 		ED63D517287421AA00603515 /* PulsingLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED63D516287421AA00603515 /* PulsingLayer.swift */; };
-		ED7D1D1428749245005D31E3 /* PulsatingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7D1D1328749245005D31E3 /* PulsatingButton.swift */; };
 		ED81C3D4285D7F0F004C12EA /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED81C3D3285D7F0F004C12EA /* UserService.swift */; };
 		ED81C3D7285D93D3004C12EA /* Firebase+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED81C3D6285D93D3004C12EA /* Firebase+Ext.swift */; };
 		ED81C3D9285D9464004C12EA /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED81C3D8285D9464004C12EA /* Notification.swift */; };
@@ -114,6 +113,7 @@
 		EDF3E2A8285AC563000E2218 /* EventDetailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF3E2A7285AC563000E2218 /* EventDetailController.swift */; };
 		EDF3E2AB285ACA91000E2218 /* DetailInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF3E2AA285ACA91000E2218 /* DetailInfoCell.swift */; };
 		EDF3E2AD285ACAE5000E2218 /* UICollectionView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF3E2AC285ACAE5000E2218 /* UICollectionView+Ext.swift */; };
+		EDFC4F52287FE77D00440149 /* CustomBlurEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDFC4F51287FE77D00440149 /* CustomBlurEffectView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -189,7 +189,6 @@
 		ED63D5142874177600603515 /* UserDefautConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefautConstants.swift; sourceTree = "<group>"; };
 		ED63D516287421AA00603515 /* PulsingLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulsingLayer.swift; sourceTree = "<group>"; };
 		ED7627B6285F6922005EB15C /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
-		ED7D1D1328749245005D31E3 /* PulsatingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulsatingButton.swift; sourceTree = "<group>"; };
 		ED81C3D3285D7F0F004C12EA /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
 		ED81C3D6285D93D3004C12EA /* Firebase+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firebase+Ext.swift"; sourceTree = "<group>"; };
 		ED81C3D8285D9464004C12EA /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
@@ -230,6 +229,7 @@
 		EDF3E2A7285AC563000E2218 /* EventDetailController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailController.swift; sourceTree = "<group>"; };
 		EDF3E2AA285ACA91000E2218 /* DetailInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailInfoCell.swift; sourceTree = "<group>"; };
 		EDF3E2AC285ACAE5000E2218 /* UICollectionView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+Ext.swift"; sourceTree = "<group>"; };
+		EDFC4F51287FE77D00440149 /* CustomBlurEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBlurEffectView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -441,7 +441,7 @@
 				ED180EB2286EDAD100FE57DE /* PopupAlertController.swift */,
 				ED63D5112874145B00603515 /* CustomPopupView.swift */,
 				ED63D516287421AA00603515 /* PulsingLayer.swift */,
-				ED7D1D1328749245005D31E3 /* PulsatingButton.swift */,
+				EDFC4F51287FE77D00440149 /* CustomBlurEffectView.swift */,
 			);
 			path = CustomViews;
 			sourceTree = "<group>";
@@ -874,6 +874,7 @@
 				ED626A8C2862B892003BB636 /* EventPhotosCell.swift in Sources */,
 				ED626A8A2862B41C003BB636 /* JoinedEventCell.swift in Sources */,
 				ED0B423E2858863D000680C2 /* Date+Ext.swift in Sources */,
+				EDFC4F52287FE77D00440149 /* CustomBlurEffectView.swift in Sources */,
 				ED204B22285DB16F0016FDCA /* UILabel+Ext.swift in Sources */,
 				EDC663ED28615D8D007FEF82 /* ConversationCell.swift in Sources */,
 				ED626A8E2862BA97003BB636 /* ProfileHeader.swift in Sources */,
@@ -886,7 +887,6 @@
 				ED0B424628588750000680C2 /* UIFont+Ext.swift in Sources */,
 				ED1C94D12876A117006C9775 /* PrivacyPolicyController.swift in Sources */,
 				ED8B1EF32860CC4B008A0ECB /* MessageService.swift in Sources */,
-				ED7D1D1428749245005D31E3 /* PulsatingButton.swift in Sources */,
 				ED0A485928587BDE004661BB /* StatsController.swift in Sources */,
 				ED0B425828598718000680C2 /* UploadEventInfoCell.swift in Sources */,
 				ED0B4242285886D7000680C2 /* UIScrollView+Ext.swift in Sources */,

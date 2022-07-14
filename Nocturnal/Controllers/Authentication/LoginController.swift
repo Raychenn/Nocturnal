@@ -122,18 +122,20 @@ class LoginController: UIViewController {
         
         configureUI()
         configureNavBar()
+        resetLoginScreenInitialState()
+        animateLogin()
         playVideo()
         playSound()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        resetLoginScreenInitialState()
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        animateLogin()
+        
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -160,6 +162,7 @@ class LoginController: UIViewController {
     
     @objc func handleShowSignUp() {
         let controller = RegistrationController()
+        controller.delegate = self
         navigationController?.pushViewController(controller, animated: true)
     }
     
@@ -524,10 +527,20 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
       }
 }
 
+// MARK: - PopupAlertControllerDelegate
 extension LoginController: PopupAlertControllerDelegate {
     
     func handleDismissal() {
         popupVC.dismiss(animated: true)
     }
+}
 
+extension LoginController: RegistrationControllerDelegate {
+    
+    func didPopController() {
+        resetLoginScreenInitialState()
+        animateLogin()
+        playVideo()
+        playSound()
+    }
 }

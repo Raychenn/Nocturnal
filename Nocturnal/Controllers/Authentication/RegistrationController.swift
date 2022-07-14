@@ -6,10 +6,16 @@
 //
 import UIKit
 import FirebaseFirestore
+ 
+protocol RegistrationControllerDelegate: AnyObject {
+    func didPopController()
+}
 
 class RegistrationController: UIViewController {
     
     // MARK: - Properties
+    
+    weak var delegate: RegistrationControllerDelegate?
     
     private var profileImage: UIImage?
     
@@ -69,6 +75,14 @@ class RegistrationController: UIViewController {
         return button
     }()
     
+    private let backgroundImageView: UIImageView = {
+       let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.image = UIImage(named: "registerBg")
+        return imageView
+    }()
+    
     // MARK: - life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -83,7 +97,6 @@ class RegistrationController: UIViewController {
     }
     
     @objc func didTapplusPhotoButton() {
-        print("present photo library and let user select")
         let picker = UIImagePickerController()
         picker.delegate = self
         picker.allowsEditing = true
@@ -161,7 +174,16 @@ class RegistrationController: UIViewController {
     // MARK: - helpers
     
     private func confiureUI() {
-        configureGradientLayer()
+        self.navigationController?.delegate = self
+//        configureGradientLayer()
+        
+        view.addSubview(backgroundImageView)
+        backgroundImageView.alpha = 1
+        backgroundImageView.fillSuperview()
+        
+        let blurView = CustomBlurEffectView()
+        blurView.frame = view.bounds
+        view.addSubview(blurView)
         
         view.addSubview(plusPhotoButton)
         plusPhotoButton.centerX(inView: view)
@@ -207,5 +229,14 @@ extension RegistrationController: PopupAlertControllerDelegate {
     func handleDismissal() {
         popupVC.dismiss(animated: true)
     }
+}
 
+extension RegistrationController {
+    
+    override func willMove(toParent parent: UIViewController?) {
+   
+        /*You can detect here when the viewcontroller is being popped*/
+        delegate?.didPopController()
+    }
+    
 }

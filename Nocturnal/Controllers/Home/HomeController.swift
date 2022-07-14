@@ -8,6 +8,7 @@
 import UIKit
 import FirebaseAuth
 import AVKit
+import Lottie
 
 class HomeController: UIViewController {
     
@@ -46,12 +47,31 @@ class HomeController: UIViewController {
         button.addTarget(self, action: #selector(didTapShowEventButton), for: .touchUpInside)
         return button
     }()
+    
+    private let emptyAnimationView: AnimationView = {
+       let view = AnimationView(name: "empty-box")
+        view.loopMode = .loop
+        view.contentMode = .scaleAspectFill
+        view.animationSpeed = 1
+        view.backgroundColor = .clear
+        view.play()
+        return view
+    }()
+    
+    private let emptyWarningLabel: UILabel = {
+       let label = UILabel()
+        label.text = "No Events yet, click the + button to add new event"
+        label.font = .satisfyRegular(size: 25)
+        label.textAlignment = .center
+        label.textColor = .white
+        return label
+    }()
 
     var currentUser: User
         
     var events: [Event] = []
     
-    var evnetHosts: [User] = [] 
+    var evnetHosts: [User] = []
     
     var currentCell: HomeEventCell?
         
@@ -93,6 +113,8 @@ class HomeController: UIViewController {
         super.viewDidDisappear(animated)
         removePulsingLayer()
         releaseVideoPlayer()
+        emptyAnimationView.stop()
+        emptyWarningLabel.removeFromSuperview()
     }
 
     // MARK: - API
@@ -151,6 +173,7 @@ class HomeController: UIViewController {
             fetchHosts(hostsId: hostsId) { [weak self] in
                 guard let self = self else { return }
                 self.filterEventsForDeletedUser(hosts: self.evnetHosts)
+                self.presentEmptyViewIfNecessary()
                 self.endRefreshing()
             }
         } else {
@@ -194,6 +217,39 @@ class HomeController: UIViewController {
     }
     
     // MARK: - Helpers
+    
+    private func presentEmptyViewIfNecessary() {
+        if evnetHosts.count == 0 {
+            configureEmptyAnimationView()
+            configureEmptyWarningLabel()
+            collectionView.isHidden = true
+        } else {
+            stopAnimationView()
+            emptyWarningLabel.removeFromSuperview()
+            collectionView.isHidden = false
+        }
+    }
+    
+    private func configureEmptyAnimationView() {
+        view.addSubview(emptyAnimationView)
+        emptyAnimationView.centerY(inView: view)
+        emptyAnimationView.centerX(inView: view)
+        emptyAnimationView.widthAnchor.constraint(equalToConstant: view.frame.size.width - 20).isActive = true
+        emptyAnimationView.heightAnchor.constraint(equalTo: emptyAnimationView.widthAnchor).isActive = true
+        emptyAnimationView.play()
+    }
+    
+    private func stopAnimationView() {
+        emptyAnimationView.stop()
+        emptyAnimationView.alpha = 0
+        emptyAnimationView.removeFromSuperview()
+    }
+    
+    private func configureEmptyWarningLabel() {
+        view.addSubview(emptyWarningLabel)
+        emptyWarningLabel.centerX(inView: emptyAnimationView)
+        emptyWarningLabel.anchor(top: emptyAnimationView.bottomAnchor, paddingTop: 15)
+    }
     
     private func showReportAlert() {
         let reportAlert = UIAlertController(title: "Please select a problem", message: "If someone is in immediate problem danger, get help before reporting to NocturnalHuman", preferredStyle: .alert)

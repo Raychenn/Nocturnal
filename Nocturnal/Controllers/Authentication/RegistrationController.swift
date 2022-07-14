@@ -37,7 +37,7 @@ class RegistrationController: UIViewController {
      
     private lazy var passwordContainerView: InputContainerView = {
        let containerView = InputContainerView(image: UIImage(named: "lock")!, textField: passwordTextField)
-
+        
         return containerView
     }()
     

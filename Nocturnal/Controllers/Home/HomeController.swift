@@ -177,10 +177,7 @@ class HomeController: UIViewController {
     
     // MARK: - Selectors
     @objc func refreshData() {
-        fetchCurrentUser { [weak self] in
-            guard let self = self else {return}
-            self.fetchAllEvents()
-        }
+        self.fetchAllEvents()
     }
     
     @objc func didTapShowEventButton() {
@@ -197,6 +194,53 @@ class HomeController: UIViewController {
     }
     
     // MARK: - Helpers
+    
+    private func showReportAlert() {
+        let reportAlert = UIAlertController(title: "Please select a problem", message: "If someone is in immediate problem danger, get help before reporting to NocturnalHuman", preferredStyle: .alert)
+        
+        let responseAlert = UIAlertController(title: "Thanks for reporting this event", message: "We will review this event and remove anything that does not follow our standards as quickly as possible", preferredStyle: .alert)
+        responseAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        
+        reportAlert.addAction(UIAlertAction(title: "Nudity", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Violence", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Harassment", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Suicide or self-injury", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "False information", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Spam", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Hate speech", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Terrorism", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Something else", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        self.present(reportAlert, animated: true)
+    }
     
     private func endRefreshing() {
         refreshControl.endRefreshing()
@@ -308,7 +352,9 @@ extension HomeController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         guard let eventCell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeEventCell.identifier, for: indexPath) as? HomeEventCell else { return UICollectionViewCell() }
-                    
+        
+        eventCell.delegate = self
+        
         // should have 2 types of config | loggedin user vs no user
         if Auth.auth().currentUser == nil {
             let event = events[indexPath.item]
@@ -357,14 +403,11 @@ extension HomeController: UICollectionViewDelegateFlowLayout {
     }
 }
 
-// MARK: - UINavigationControllerDelegate
-
-//extension HomeController: UINavigationControllerDelegate {
-//    func navigationController(
-//        _ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation,
-//        from fromVC: UIViewController,
-//        to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-//
-//        return TransitionManager(duration: 0.5)
-//    }
-//}
+// MARK: - HomeEventCellDelegate
+extension HomeController: HomeEventCellDelegate {
+    
+    func didTapReportButton(cell: HomeEventCell) {
+        showReportAlert()
+    }
+    
+}

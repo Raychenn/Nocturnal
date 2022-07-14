@@ -22,7 +22,7 @@ class ProfileCell: UICollectionViewCell {
     
     private let genderLabel: UILabel = {
        let label = UILabel()
-        label.font = .systemFont(ofSize: 18)
+        label.font = .systemFont(ofSize: 20)
         label.textColor = .lightGray
         label.text = "Gender: "
         return label
@@ -41,7 +41,7 @@ class ProfileCell: UICollectionViewCell {
         let imageView = UIImageView()
          imageView.contentMode = .scaleAspectFill
          imageView.tintColor = .white
-         imageView.setDimensions(height: 15, width: 15)
+         imageView.setDimensions(height: 18, width: 18)
          return imageView
     }()
     
@@ -105,7 +105,8 @@ class ProfileCell: UICollectionViewCell {
     
     private lazy var settingsButton: UIButton = {
         let button = UIButton()
-         button.setImage(UIImage(named: "settings")?.withRenderingMode(.alwaysTemplate), for: .normal)
+         let config = UIImage.SymbolConfiguration(pointSize: 30)
+         button.setImage(UIImage(systemName: "gear", withConfiguration: config), for: .normal)
          button.tintColor = .black
          button.addTarget(self, action: #selector(didTapSettingsButton), for: .touchUpInside)
          return button
@@ -185,7 +186,7 @@ class ProfileCell: UICollectionViewCell {
             
         contentView.addSubview(settingsButton)
         settingsButton.centerY(inView: conversationButton)
-        settingsButton.setDimensions(height: 25, width: 25)
+        settingsButton.setDimensions(height: 30, width: 30)
         settingsButton.anchor(right: editProfileButton.leftAnchor, paddingRight: 12)
         
         let countryStack = UIStackView(arrangedSubviews: [countryTitleLabel, countryLabel])
@@ -211,7 +212,7 @@ class ProfileCell: UICollectionViewCell {
         
         countryTitleLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
         zodiacLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
-        genderLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        genderLabel.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
         
         countryStack.anchor(top: usernameLabel.bottomAnchor, left: usernameLabel.leftAnchor, paddingTop: 15)
         genderStack.anchor(top: countryStack.bottomAnchor,
@@ -220,7 +221,6 @@ class ProfileCell: UICollectionViewCell {
         zodiacStack.anchor(top: genderStack.bottomAnchor,
                            left: usernameLabel.leftAnchor,
                            paddingTop: 5)
-        
         ageStack.anchor(top: zodiacStack.bottomAnchor,
                         left: usernameLabel.leftAnchor,
                         paddingTop: 5)

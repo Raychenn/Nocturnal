@@ -8,13 +8,28 @@
 import UIKit
 import Kingfisher
 
+protocol StretchyTableHeaderViewDelegate: AnyObject {
+    func didTapBackButton(header: StretchyTableHeaderView)
+}
+
 final class StretchyTableHeaderView: UIView {
+    
+    weak var delegate: StretchyTableHeaderViewDelegate?
     
     public let imageView: UIImageView = {
        let imageView = UIImageView()
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
         return imageView
+    }()
+    
+    private lazy var backButton: UIButton = {
+        let button = UIButton()
+        let config = UIImage.SymbolConfiguration(pointSize: 30)
+        button.setImage(UIImage(systemName: "chevron.backward.circle.fill", withConfiguration: config), for: .normal)
+        button.tintColor = .darkGray
+        button.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
+        return button
     }()
     
     private var imageViewHeightConst = NSLayoutConstraint()
@@ -33,6 +48,12 @@ final class StretchyTableHeaderView: UIView {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Selector
+    
+    @objc func didTapBackButton() {
+        delegate?.didTapBackButton(header: self)
     }
     
     // MARK: - Helpers
@@ -65,6 +86,10 @@ final class StretchyTableHeaderView: UIView {
         imageViewBottonConst.isActive = true
         imageViewHeightConst = imageView.heightAnchor.constraint(equalTo: containerView.heightAnchor)
         imageViewHeightConst.isActive = true
+        
+        addSubview(backButton)
+        backButton.anchor(top: topAnchor, left: leftAnchor, paddingTop: 35, paddingLeft: 15)
+        backButton.setDimensions(height: 30, width: 30)
     }
     
     // Notify view of scroll view

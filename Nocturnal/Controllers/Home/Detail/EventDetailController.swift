@@ -47,6 +47,7 @@ class EventDetailController: UIViewController {
         table.register(PreviewMapCell.self, forCellReuseIdentifier: PreviewMapCell.identifier)
         table.register(DetailDescriptionCell.self, forCellReuseIdentifier: DetailDescriptionCell.identifier)
         let header = StretchyTableHeaderView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: view.frame.size.width))
+        header.delegate = self
         header.backgroundColor = UIColor.hexStringToUIColor(hex: "#161616")
         header.layer.cornerRadius = 15
         header.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
@@ -63,14 +64,6 @@ class EventDetailController: UIViewController {
         button.setHeight(50)
         button.backgroundColor = .primaryBlue
         button.addTarget(self, action: #selector(didTapJoinButton), for: .touchUpInside)
-        return button
-    }()
-    
-    private lazy var backButton: UIButton = {
-        let button = UIButton()
-        button.setImage( UIImage(systemName: "chevron.left"), for: .normal)
-        button.tintColor = .white
-        button.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
         return button
     }()
     
@@ -126,9 +119,7 @@ class EventDetailController: UIViewController {
         view.play()
         return view
     }()
-    
-    public var headerView: DetailHeader?
-    
+        
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -230,9 +221,6 @@ class EventDetailController: UIViewController {
             
             setJoinButton(forState: joinState)
         }
-        
-        view.addSubview(backButton)
-        backButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingTop: 8, paddingLeft: 16)
     }
     
     private func setupJoinButtonState() {
@@ -360,10 +348,6 @@ class EventDetailController: UIViewController {
                 }
             }
         }
-    }
-    
-    @objc func didTapBackButton() {
-        navigationController?.popViewController(animated: true)
     }
 }
 
@@ -556,5 +540,13 @@ extension EventDetailController: DetailDescriptionCellDelegate {
         tableView.beginUpdates()
         cell.decriptionContentLabel.numberOfLines = 0
         tableView.endUpdates()
+    }
+}
+
+// MARK: - StretchyTableHeaderViewDelegate
+extension EventDetailController: StretchyTableHeaderViewDelegate {
+    
+    func didTapBackButton(header: StretchyTableHeaderView) {
+        navigationController?.popViewController(animated: true)
     }
 }

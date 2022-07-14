@@ -59,7 +59,6 @@
 		ED194CBE285A007C00C9E5D3 /* InputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED194CBD285A007C00C9E5D3 /* InputTextView.swift */; };
 		ED1C94D12876A117006C9775 /* PrivacyPolicyController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1C94D02876A117006C9775 /* PrivacyPolicyController.swift */; };
 		ED1C94D32876A123006C9775 /* EULAController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1C94D22876A123006C9775 /* EULAController.swift */; };
-		ED1C94D52876C6EA006C9775 /* TransitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1C94D42876C6EA006C9775 /* TransitionManager.swift */; };
 		ED204B22285DB16F0016FDCA /* UILabel+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED204B21285DB16F0016FDCA /* UILabel+Ext.swift */; };
 		ED4DB00A28758C5D0051F40F /* Satisfy-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ED4DB00828758C5D0051F40F /* Satisfy-Regular.ttf */; };
 		ED4DB00B28758C5D0051F40F /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = ED4DB00928758C5D0051F40F /* LICENSE.txt */; };
@@ -80,7 +79,6 @@
 		ED81C3D9285D9464004C12EA /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED81C3D8285D9464004C12EA /* Notification.swift */; };
 		ED81C3DB285D9804004C12EA /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED81C3DA285D9804004C12EA /* NotificationService.swift */; };
 		ED81C3DE285DA50D004C12EA /* NotificationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED81C3DD285DA50D004C12EA /* NotificationCell.swift */; };
-		ED83392C285AD57600236814 /* DetailHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED83392B285AD57600236814 /* DetailHeader.swift */; };
 		ED83392E285ADC4B00236814 /* DetailDescriptionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED83392D285ADC4B00236814 /* DetailDescriptionCell.swift */; };
 		ED833932285B1BA700236814 /* PreviewMapCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED833931285B1BA700236814 /* PreviewMapCell.swift */; };
 		ED833934285B25C000236814 /* FullMapController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED833933285B25C000236814 /* FullMapController.swift */; };
@@ -176,7 +174,6 @@
 		ED194CBD285A007C00C9E5D3 /* InputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextView.swift; sourceTree = "<group>"; };
 		ED1C94D02876A117006C9775 /* PrivacyPolicyController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyController.swift; sourceTree = "<group>"; };
 		ED1C94D22876A123006C9775 /* EULAController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EULAController.swift; sourceTree = "<group>"; };
-		ED1C94D42876C6EA006C9775 /* TransitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionManager.swift; sourceTree = "<group>"; };
 		ED204B21285DB16F0016FDCA /* UILabel+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Ext.swift"; sourceTree = "<group>"; };
 		ED4DB00828758C5D0051F40F /* Satisfy-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Satisfy-Regular.ttf"; sourceTree = "<group>"; };
 		ED4DB00928758C5D0051F40F /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
@@ -198,7 +195,6 @@
 		ED81C3D8285D9464004C12EA /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
 		ED81C3DA285D9804004C12EA /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		ED81C3DD285DA50D004C12EA /* NotificationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCell.swift; sourceTree = "<group>"; };
-		ED83392B285AD57600236814 /* DetailHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailHeader.swift; sourceTree = "<group>"; };
 		ED83392D285ADC4B00236814 /* DetailDescriptionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailDescriptionCell.swift; sourceTree = "<group>"; };
 		ED833931285B1BA700236814 /* PreviewMapCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewMapCell.swift; sourceTree = "<group>"; };
 		ED833933285B25C000236814 /* FullMapController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullMapController.swift; sourceTree = "<group>"; };
@@ -556,7 +552,6 @@
 			isa = PBXGroup;
 			children = (
 				ED63D50F2873E3E100603515 /* CacheManager.swift */,
-				ED1C94D42876C6EA006C9775 /* TransitionManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -642,7 +637,6 @@
 			isa = PBXGroup;
 			children = (
 				EDF3E2AA285ACA91000E2218 /* DetailInfoCell.swift */,
-				ED83392B285AD57600236814 /* DetailHeader.swift */,
 				ED83392D285ADC4B00236814 /* DetailDescriptionCell.swift */,
 				ED833931285B1BA700236814 /* PreviewMapCell.swift */,
 			);
@@ -850,7 +844,6 @@
 				ED1560AD286CA0AA0089121D /* SettingHeader.swift in Sources */,
 				ED0A483E285873DB004661BB /* ViewController.swift in Sources */,
 				ED191D0F2865873E009A10CC /* String+Ext.swift in Sources */,
-				ED83392C285AD57600236814 /* DetailHeader.swift in Sources */,
 				ED0B424928588845000680C2 /* UIButton+Ext.swift in Sources */,
 				ED81C3DE285DA50D004C12EA /* NotificationCell.swift in Sources */,
 				ED63D5152874177600603515 /* UserDefautConstants.swift in Sources */,
@@ -892,7 +885,6 @@
 				ED180EB5286EE2D100FE57DE /* Buzzable+Protocol.swift in Sources */,
 				ED0B424628588750000680C2 /* UIFont+Ext.swift in Sources */,
 				ED1C94D12876A117006C9775 /* PrivacyPolicyController.swift in Sources */,
-				ED1C94D52876C6EA006C9775 /* TransitionManager.swift in Sources */,
 				ED8B1EF32860CC4B008A0ECB /* MessageService.swift in Sources */,
 				ED7D1D1428749245005D31E3 /* PulsatingButton.swift in Sources */,
 				ED0A485928587BDE004661BB /* StatsController.swift in Sources */,

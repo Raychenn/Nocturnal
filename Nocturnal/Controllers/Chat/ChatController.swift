@@ -58,6 +58,7 @@ class ChatController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+       
         setupUI()
     }
     
@@ -128,6 +129,10 @@ class ChatController: UICollectionViewController {
         collectionView.register(MessageCell.self, forCellWithReuseIdentifier: MessageCell.identifier)
         collectionView.alwaysBounceVertical = true
         collectionView.keyboardDismissMode = .interactive
+    }
+    
+    private func groupMessagesBasedOnDates() {
+        
     }
 
     private func estimatedFrameForText(text: String) -> CGRect {

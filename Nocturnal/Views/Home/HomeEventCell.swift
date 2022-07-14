@@ -10,9 +10,15 @@ import Kingfisher
 import FirebaseFirestore
 import AVKit
 
+protocol HomeEventCellDelegate: AnyObject {
+    func didTapReportButton(cell: HomeEventCell)
+}
+
 class HomeEventCell: UICollectionViewCell {
     
     // MARK: - Properties
+    
+    weak var delegate: HomeEventCellDelegate?
     
     let eventImageView: UIImageView = {
         let imageView = UIImageView()
@@ -94,6 +100,15 @@ class HomeEventCell: UICollectionViewCell {
         return button
     }()
     
+    private lazy var reportButton: UIButton = {
+       let button = UIButton()
+        let config = UIImage.SymbolConfiguration(pointSize: 25)
+        button.setImage(UIImage(systemName: "exclamationmark.circle", withConfiguration: config), for: .normal)
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(didTapReportButton), for: .touchUpInside)
+        return button
+    }()
+    
     private let blurEffectView: UIVisualEffectView = {
         
         let blurEffect = UIBlurEffect(style: .systemUltraThinMaterialDark)
@@ -136,6 +151,10 @@ class HomeEventCell: UICollectionViewCell {
     @objc func muteVideo() {
         isMuted = !isMuted
         muteSound(shouldMute: isMuted)
+    }
+    
+    @objc func didTapReportButton() {
+        delegate?.didTapReportButton(cell: self)
     }
     
     // MARK: - Heleprs
@@ -290,5 +309,10 @@ class HomeEventCell: UICollectionViewCell {
         bottomBackgroundView.addSubview(hostNameLabel)
         hostNameLabel.centerY(inView: profileImageView)
         hostNameLabel.anchor(left: profileImageView.rightAnchor, paddingLeft: 8)
+        
+        contentView.addSubview(reportButton)
+        reportButton.centerY(inView: eventNameLabel, constant: -5)
+        reportButton.anchor(right: contentView.rightAnchor, paddingRight: 15)
+        reportButton.setDimensions(height: 25, width: 25)
     }
 }

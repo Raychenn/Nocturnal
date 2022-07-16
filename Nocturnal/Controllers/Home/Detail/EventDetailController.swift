@@ -118,7 +118,7 @@ class EventDetailController: UIViewController {
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        print("viewDidLoad in detailVC called")
         fetchJoinedMemebers { [weak self] joinedMembers in
             guard let self = self else { return }
             self.joinedMembers = joinedMembers

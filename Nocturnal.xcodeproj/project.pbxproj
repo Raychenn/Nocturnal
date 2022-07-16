@@ -60,6 +60,7 @@
 		ED1C94D12876A117006C9775 /* PrivacyPolicyController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1C94D02876A117006C9775 /* PrivacyPolicyController.swift */; };
 		ED1C94D32876A123006C9775 /* EULAController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1C94D22876A123006C9775 /* EULAController.swift */; };
 		ED204B22285DB16F0016FDCA /* UILabel+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED204B21285DB16F0016FDCA /* UILabel+Ext.swift */; };
+		ED24FB882882A7340009CF9F /* HomeProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED24FB872882A7340009CF9F /* HomeProfileCell.swift */; };
 		ED4DB00A28758C5D0051F40F /* Satisfy-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ED4DB00828758C5D0051F40F /* Satisfy-Regular.ttf */; };
 		ED4DB00B28758C5D0051F40F /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = ED4DB00928758C5D0051F40F /* LICENSE.txt */; };
 		ED4DB00D28758EDA0051F40F /* djVideo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = ED4DB00C28758EDA0051F40F /* djVideo.mp4 */; };
@@ -177,6 +178,7 @@
 		ED1C94D02876A117006C9775 /* PrivacyPolicyController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyController.swift; sourceTree = "<group>"; };
 		ED1C94D22876A123006C9775 /* EULAController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EULAController.swift; sourceTree = "<group>"; };
 		ED204B21285DB16F0016FDCA /* UILabel+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Ext.swift"; sourceTree = "<group>"; };
+		ED24FB872882A7340009CF9F /* HomeProfileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeProfileCell.swift; sourceTree = "<group>"; };
 		ED4DB00828758C5D0051F40F /* Satisfy-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Satisfy-Regular.ttf"; sourceTree = "<group>"; };
 		ED4DB00928758C5D0051F40F /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		ED4DB00C28758EDA0051F40F /* djVideo.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = djVideo.mp4; sourceTree = "<group>"; };
@@ -456,6 +458,7 @@
 				ED180E5F286DF4D800FE57DE /* Add Event */,
 				EDF3E2A9285ACA76000E2218 /* Detail */,
 				EDEF690A286750BC00F944BF /* HomeEventCell.swift */,
+				ED24FB872882A7340009CF9F /* HomeProfileCell.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -907,6 +910,7 @@
 				ED0A485528587A27004661BB /* HomeController.swift in Sources */,
 				ED626A902862DA20003BB636 /* EditProfileController.swift in Sources */,
 				ED81C3D7285D93D3004C12EA /* Firebase+Ext.swift in Sources */,
+				ED24FB882882A7340009CF9F /* HomeProfileCell.swift in Sources */,
 				ED83392E285ADC4B00236814 /* DetailDescriptionCell.swift in Sources */,
 				ED0A485728587A7C004661BB /* ExploreController.swift in Sources */,
 				ED5D192A286A11750054AC56 /* SettingsController.swift in Sources */,

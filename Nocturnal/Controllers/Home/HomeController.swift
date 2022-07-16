@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseAuth
+import Kingfisher
 import AVKit
 import Lottie
 
@@ -18,7 +19,6 @@ class HomeController: UIViewController {
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 40, left: 0, bottom: 0, right: 0)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.showsVerticalScrollIndicator = false
@@ -28,6 +28,7 @@ class HomeController: UIViewController {
         collectionView.refreshControl = refreshControl
         collectionView.refreshControl?.addTarget(self, action: #selector(refreshData), for: .valueChanged)
         collectionView.register(HomeEventCell.self, forCellWithReuseIdentifier: HomeEventCell.identifier)
+        collectionView.register(HomeProfileCell.self, forCellWithReuseIdentifier: HomeProfileCell.identifier)
         return collectionView
     }()
     
@@ -66,6 +67,30 @@ class HomeController: UIViewController {
         label.textColor = .white
         return label
     }()
+    
+    private let currentUserNameLabel: UILabel = {
+       let label = UILabel()
+        label.text = "Loading Name"
+        label.textColor = .white
+        label.font = .satisfyRegular(size: 18)
+        return label
+    }()
+    
+    private let currentUserProfileImageView: UIImageView = {
+       let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.backgroundColor = .lightGray
+        imageView.tintColor = .black
+        imageView.clipsToBounds = true
+        return imageView
+    }()
+    
+    private let profileView: UIView = {
+       let view = UIView()
+        view.backgroundColor = .black
+        view.alpha = 0
+        return view
+    }()
 
     var currentUser: User
         
@@ -95,6 +120,8 @@ class HomeController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
+        currentUserProfileImageView.layer.cornerRadius = 35/2
+        
         let pulseLayer = PulsingLayer(numberOfPulses: .infinity, radius: 50, view: addEventButtonBackgroundView)
         self.addEventButtonBackgroundView.layer.addSublayer(pulseLayer)
     }
@@ -106,6 +133,12 @@ class HomeController: UIViewController {
         fetchCurrentUser { [weak self] in
             guard let self = self else {return}
             self.fetchAllEvents()
+            self.currentUserNameLabel.text = self.currentUser.name
+            if let profileURL = URL(string: self.currentUser.profileImageURL) {
+                self.currentUserProfileImageView.kf.setImage(with: profileURL)
+            } else {
+                self.currentUserProfileImageView.image = UIImage(systemName: "person")
+            }
         }
     }
     
@@ -353,12 +386,25 @@ class HomeController: UIViewController {
     }
     
     func setupUI() {
-        configureChatNavBar(withTitle: "Home", backgroundColor: UIColor.hexStringToUIColor(hex: "#1C242F"), preferLargeTitles: true)
-        navigationController?.navigationBar.prefersLargeTitles = false
-        navigationItem.title = "Home"
+        navigationController?.navigationBar.isHidden = true
+        view.addSubview(profileView)
+        profileView.isHidden = true
+        profileView.alpha = 0
+        profileView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor,
+                           right: view.rightAnchor, height: 55)
+        
+        profileView.addSubview(currentUserProfileImageView)
+        currentUserProfileImageView.centerY(inView: profileView)
+        currentUserProfileImageView.anchor(left: profileView.leftAnchor, paddingLeft: 20)
+        currentUserProfileImageView.setDimensions(height: 35, width: 35)
+        
+        profileView.addSubview(currentUserNameLabel)
+        currentUserNameLabel.centerY(inView: currentUserProfileImageView)
+        currentUserNameLabel.anchor(left: currentUserProfileImageView.rightAnchor, paddingLeft: 10)
+        
         view.addSubview(collectionView)
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            collectionView.topAnchor.constraint(equalTo: profileView.bottomAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
@@ -398,38 +444,48 @@ class HomeController: UIViewController {
 extension HomeController: UICollectionViewDataSource {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        1
+        2
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return events.count
+        return section == 0 ? 1: events.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        guard let eventCell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeEventCell.identifier, for: indexPath) as? HomeEventCell else { return UICollectionViewCell() }
-        
-        eventCell.delegate = self
-        
-        // should have 2 types of config | loggedin user vs no user
-        if Auth.auth().currentUser == nil {
-            let event = events[indexPath.item]
-
-            eventCell.configureCell(event: event)
+        if indexPath.section == 0 {
+            
+            guard let profileCell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeProfileCell.identifier, for: indexPath) as? HomeProfileCell else { return UICollectionViewCell() }
+            
+            profileCell.configureCell(user: self.currentUser)
+            
+            return profileCell
+            
         } else {
-            let event = events[indexPath.item]
-            let host = evnetHosts[indexPath.item]
-            eventCell.configureCellForLoggedInUser(event: event, host: host)
+            guard let eventCell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeEventCell.identifier, for: indexPath) as? HomeEventCell else { return UICollectionViewCell() }
+            
+            eventCell.delegate = self
+            
+            // should have 2 types of config | loggedin user vs no user
+            if Auth.auth().currentUser == nil {
+                let event = events[indexPath.item]
+
+                eventCell.configureCell(event: event)
+            } else {
+                let event = events[indexPath.item]
+                let host = evnetHosts[indexPath.item]
+                eventCell.configureCellForLoggedInUser(event: event, host: host)
+            }
+            
+            return eventCell
         }
-        
-        return eventCell
     }
 }
 
 // MARK: - UICollectionViewDelegate
 
 extension HomeController: UICollectionViewDelegate {
-    
+        
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if Auth.auth().currentUser == nil {
             DispatchQueue.main.async {
@@ -453,9 +509,38 @@ extension HomeController: UICollectionViewDelegate {
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension HomeController: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        insetForSectionAt section: Int
+    ) -> UIEdgeInsets {
+        
+        return section == 0 ? UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0): UIEdgeInsets(top: 20, left: 0, bottom: 0, right: 0)
+    }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        return CGSize(width: view.frame.size.width - 40, height: 350)
+        return indexPath.section == 0 ? CGSize(width: view.frame.width, height: 60) : CGSize(width: view.frame.size.width - 40, height: 350)
+    }
+}
+
+// MARK: - UIScrollViewDelegate
+extension HomeController: UIScrollViewDelegate {
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView.contentOffset.y >= 110 && profileView.alpha != 1 {
+            profileView.isHidden = false
+            profileView.alpha = 0
+            UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, animations: {
+                self.profileView.alpha = 1
+            })
+        } else if scrollView.contentOffset.y < 110 && profileView.alpha == 1 {
+            profileView.alpha = 1
+            UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, animations: {
+                self.profileView.alpha = 0
+            })
+        }
     }
 }
 
@@ -465,5 +550,4 @@ extension HomeController: HomeEventCellDelegate {
     func didTapReportButton(cell: HomeEventCell) {
         showReportAlert()
     }
-    
 }

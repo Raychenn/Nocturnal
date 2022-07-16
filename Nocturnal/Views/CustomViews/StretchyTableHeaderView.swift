@@ -25,7 +25,7 @@ final class StretchyTableHeaderView: UIView {
     
     private lazy var backButton: UIButton = {
         let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 30)
+        let config = UIImage.SymbolConfiguration(pointSize: 40)
         button.setImage(UIImage(systemName: "chevron.backward.circle.fill", withConfiguration: config), for: .normal)
         button.tintColor = .darkGray
         button.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
@@ -88,8 +88,8 @@ final class StretchyTableHeaderView: UIView {
         imageViewHeightConst.isActive = true
         
         addSubview(backButton)
-        backButton.anchor(top: topAnchor, left: leftAnchor, paddingTop: 35, paddingLeft: 15)
-        backButton.setDimensions(height: 30, width: 30)
+        backButton.anchor(top: topAnchor, left: leftAnchor, paddingTop: 50, paddingLeft: 15)
+        backButton.setDimensions(height: 40, width: 40)
     }
     
     // Notify view of scroll view

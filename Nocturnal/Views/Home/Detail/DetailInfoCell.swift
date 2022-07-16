@@ -368,7 +368,7 @@ class DetailInfoCell: UITableViewCell {
                             paddingRight: 8)
         
         contentView.addSubview(whosComingLabel)
-        whosComingLabel.anchor(top: parentVStack.bottomAnchor, left: contentView.leftAnchor, paddingTop: 10, paddingLeft: 10)
+        whosComingLabel.anchor(top: parentVStack.bottomAnchor, left: contentView.leftAnchor, paddingTop: 25, paddingLeft: 10)
         
         contentView.addSubview(emptyJoinedMembersLabel)
         emptyJoinedMembersLabel.centerY(inView: whosComingLabel)

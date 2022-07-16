@@ -495,14 +495,16 @@ extension HomeController: UICollectionViewDelegate {
                 self.present(nav, animated: true, completion: nil)
             }
         } else {
-            let selectedEvent = events[indexPath.item]
-            let detailVC = EventDetailController(event: selectedEvent)
-            if let selectedCell = collectionView.cellForItem(at: indexPath) as? HomeEventCell {
-                self.currentCell = selectedCell
+            if indexPath.section == 1 {
+                let selectedEvent = events[indexPath.item]
+                let detailVC = EventDetailController(event: selectedEvent)
+                if let selectedCell = collectionView.cellForItem(at: indexPath) as? HomeEventCell {
+                    self.currentCell = selectedCell
+                }
+                
+                detailVC.hidesBottomBarWhenPushed = true
+                navigationController?.pushViewController(detailVC, animated: true)
             }
-            
-            detailVC.hidesBottomBarWhenPushed = true
-            navigationController?.pushViewController(detailVC, animated: true)
         }
     }
 }

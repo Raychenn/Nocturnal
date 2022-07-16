@@ -128,6 +128,8 @@ class HomeController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        navigationController?.navigationBar.isHidden = true
+        
         // fetch all events from firestore
         presentLoadingView(shouldPresent: true)
         fetchCurrentUser { [weak self] in
@@ -386,7 +388,6 @@ class HomeController: UIViewController {
     }
     
     func setupUI() {
-        navigationController?.navigationBar.isHidden = true
         view.addSubview(profileView)
         profileView.isHidden = true
         profileView.alpha = 0

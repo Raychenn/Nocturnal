@@ -80,6 +80,13 @@ class AddEventController: UIViewController {
         setupUI()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.navigationBar.isHidden = false
+        configureChatNavBar(withTitle: "", preferLargeTitles: false)
+    }
+    
     // MARK: - Helpers
     
     private func setupUI() {
@@ -93,9 +100,6 @@ class AddEventController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        title = "Add Event"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationController?.navigationBar.tintColor = .white
         //        tableView.contentInsetAdjustmentBehavior = .never
         //        tableView.setContentOffset(.init(x: 0, y: -2), animated: false)
     }

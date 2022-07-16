@@ -62,6 +62,12 @@ class ChatController: UICollectionViewController {
         setupUI()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        configureChatNavBar(withTitle: user.name, preferLargeTitles: false)
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
@@ -125,7 +131,6 @@ class ChatController: UICollectionViewController {
     
     private func setupUI() {
         IQKeyboardManager.shared.enable = false
-        navigationItem.title = user.name
         collectionView.register(MessageCell.self, forCellWithReuseIdentifier: MessageCell.identifier)
         collectionView.alwaysBounceVertical = true
         collectionView.keyboardDismissMode = .interactive

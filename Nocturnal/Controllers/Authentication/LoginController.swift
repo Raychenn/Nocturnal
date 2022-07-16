@@ -228,7 +228,7 @@ class LoginController: UIViewController {
     }
     
     private func animateLogin() {
-        UIView.animate(withDuration: 1) {
+        UIView.animate(withDuration: 0.9) {
             self.videoPlayerView.alpha = 1
         } completion: { _ in
             self.showTitle()
@@ -236,7 +236,7 @@ class LoginController: UIViewController {
     }
     
     private func showTitle() {
-        UIView.animate(withDuration: 1) {
+        UIView.animate(withDuration: 0.5) {
             self.appNameLabel.alpha = 1
         } completion: { _ in
             self.showTextFields()
@@ -244,7 +244,7 @@ class LoginController: UIViewController {
     }
     
     private func showTextFields() {
-        UIView.animate(withDuration: 1) {
+        UIView.animate(withDuration: 0.5) {
             self.emailContainerView.alpha = 1
             self.passwordContainerView.alpha = 1
         } completion: { _ in
@@ -253,7 +253,7 @@ class LoginController: UIViewController {
     }
     
     private func showLoginButtons() {
-        UIView.animate(withDuration: 1) {
+        UIView.animate(withDuration: 0.5) {
             self.loginButton.alpha = 1
             self.signinWithAppleButton.alpha = 1
             self.dontHaveAccountButton.alpha = 1
@@ -510,14 +510,19 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
           
           switch error {
           case ASAuthorizationError.canceled:
+              self.presentLoadingView(shouldPresent: false)
               break
           case ASAuthorizationError.failed:
+              self.presentLoadingView(shouldPresent: false)
               break
           case ASAuthorizationError.invalidResponse:
+              self.presentLoadingView(shouldPresent: false)
               break
           case ASAuthorizationError.notHandled:
+              self.presentLoadingView(shouldPresent: false)
               break
           case ASAuthorizationError.unknown:
+              self.presentLoadingView(shouldPresent: false)
               break
           default:
               break

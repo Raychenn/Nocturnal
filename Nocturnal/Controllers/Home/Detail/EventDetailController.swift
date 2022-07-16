@@ -69,13 +69,6 @@ class EventDetailController: UIViewController {
     
     private let event: Event
     
-//    private var currentUser: User? {
-//        didSet {
-//            // host can not join his own event
-//            tableView.reloadData()
-//        }
-//    }
-    
     private var host: User? {
         didSet {
             tableView.reloadData()
@@ -119,12 +112,18 @@ class EventDetailController: UIViewController {
         view.play()
         return view
     }()
+    
+    private var joinedMembers: [User] = []
         
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        fetchHost()
-//        fetchCurrentUser()
+        
+        fetchJoinedMemebers { [weak self] joinedMembers in
+            guard let self = self else { return }
+            self.joinedMembers = joinedMembers
+            self.fetchHost()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -151,16 +150,20 @@ class EventDetailController: UIViewController {
     
     // MARK: - API
     
-//    private func fetchCurrentUser() {
-//        UserService.shared.fetchUser(uid: uid) { result in
-//            switch result {
-//            case .success(let user):
-//                self.currentUser = user
-//            case .failure(let error):
-//                print("Fail to get user \(error)")
-//            }
-//        }
-//    }
+    private func fetchJoinedMemebers(completion: @escaping ([User]) -> Void) {
+        self.presentLoadingView(shouldPresent: true)
+        UserService.shared.fetchUsers(uids: event.participants) { result in
+            switch result {
+            case .success(let joinedMembers):
+                self.presentLoadingView(shouldPresent: false)
+                completion(joinedMembers)
+            case .failure(let error):
+                self.presentLoadingView(shouldPresent: false)
+                self.presentErrorAlert(message: "\(error.localizedDescription)")
+                print("Fail to get joined members \(error)")
+            }
+        }
+    }
     
     private func fetchHost() {
         self.presentLoadingView(shouldPresent: true)
@@ -366,10 +369,13 @@ extension EventDetailController: UITableViewDataSource {
         guard let descriptionCell = tableView.dequeueReusableCell(withIdentifier: DetailDescriptionCell.identifier) as? DetailDescriptionCell else { return UITableViewCell() }
         
         guard let host = host else { return UITableViewCell() }
+    
+        let joinedMemberProfileURLs = joinedMembers.map({ $0.profileImageURL })
         
         switch indexPath.row {
         case 0:
-            infoCell.configureCell(with: event, host: host)
+            infoCell.configureCell(with: event, host: host, joinedMemberProfileURLs: joinedMemberProfileURLs)
+            infoCell.joinedMemberProfileURLs = joinedMemberProfileURLs
             infoCell.delegate = self
             return infoCell
         case 1:

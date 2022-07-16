@@ -114,6 +114,8 @@
 		EDF3E2AB285ACA91000E2218 /* DetailInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF3E2AA285ACA91000E2218 /* DetailInfoCell.swift */; };
 		EDF3E2AD285ACAE5000E2218 /* UICollectionView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF3E2AC285ACAE5000E2218 /* UICollectionView+Ext.swift */; };
 		EDFC4F52287FE77D00440149 /* CustomBlurEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDFC4F51287FE77D00440149 /* CustomBlurEffectView.swift */; };
+		EDFC4F5828806DB900440149 /* HapticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDFC4F5728806DB900440149 /* HapticsManager.swift */; };
+		EDFC4F7C28813E4F00440149 /* JoinedMemberCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDFC4F7B28813E4F00440149 /* JoinedMemberCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -230,6 +232,8 @@
 		EDF3E2AA285ACA91000E2218 /* DetailInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailInfoCell.swift; sourceTree = "<group>"; };
 		EDF3E2AC285ACAE5000E2218 /* UICollectionView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+Ext.swift"; sourceTree = "<group>"; };
 		EDFC4F51287FE77D00440149 /* CustomBlurEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBlurEffectView.swift; sourceTree = "<group>"; };
+		EDFC4F5728806DB900440149 /* HapticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsManager.swift; sourceTree = "<group>"; };
+		EDFC4F7B28813E4F00440149 /* JoinedMemberCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinedMemberCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -552,6 +556,7 @@
 			isa = PBXGroup;
 			children = (
 				ED63D50F2873E3E100603515 /* CacheManager.swift */,
+				EDFC4F5728806DB900440149 /* HapticsManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -639,6 +644,7 @@
 				EDF3E2AA285ACA91000E2218 /* DetailInfoCell.swift */,
 				ED83392D285ADC4B00236814 /* DetailDescriptionCell.swift */,
 				ED833931285B1BA700236814 /* PreviewMapCell.swift */,
+				EDFC4F7B28813E4F00440149 /* JoinedMemberCell.swift */,
 			);
 			path = Detail;
 			sourceTree = "<group>";
@@ -883,6 +889,7 @@
 				ED847A02285B7FCA00F33C7F /* MKPlacemark+Ext.swift in Sources */,
 				ED847A06285C6EBA00F33C7F /* MediaPlayerView.swift in Sources */,
 				ED194CB82859E62F00C9E5D3 /* Event.swift in Sources */,
+				EDFC4F5828806DB900440149 /* HapticsManager.swift in Sources */,
 				ED180EB5286EE2D100FE57DE /* Buzzable+Protocol.swift in Sources */,
 				ED0B424628588750000680C2 /* UIFont+Ext.swift in Sources */,
 				ED1C94D12876A117006C9775 /* PrivacyPolicyController.swift in Sources */,
@@ -896,6 +903,7 @@
 				ED847A10285CDE1A00F33C7F /* LoginController.swift in Sources */,
 				ED1560A9286C4C7B0089121D /* UIWindow+Ext.swift in Sources */,
 				ED0B423C28588611000680C2 /* UIColor+Ext.swift in Sources */,
+				EDFC4F7C28813E4F00440149 /* JoinedMemberCell.swift in Sources */,
 				ED0A485528587A27004661BB /* HomeController.swift in Sources */,
 				ED626A902862DA20003BB636 /* EditProfileController.swift in Sources */,
 				ED81C3D7285D93D3004C12EA /* Firebase+Ext.swift in Sources */,

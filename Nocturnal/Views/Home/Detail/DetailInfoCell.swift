@@ -153,21 +153,9 @@ class DetailInfoCell: UITableViewCell {
     private let joinedMembersLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 15, weight: .medium)
-        label.text = "Joined Members: 7"
+        label.text = "Joined Members: 0"
         label.textColor = .lightGray
         return label
-    }()
-    
-    private lazy var viewAllMemberButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("View All", for: .normal)
-        button.setTitleColor(.black, for: .normal)
-        button.backgroundColor = .clear
-        button.layer.borderColor = UIColor.deepBlue.cgColor
-        button.layer.borderWidth = 1.3
-        button.addTarget(self, action: #selector(didTapViewAllButton), for: .touchUpInside)
-        
-        return button
     }()
     
     private let musicLabel: UILabel = {
@@ -199,6 +187,45 @@ class DetailInfoCell: UITableViewCell {
         return imageView
     }()
     
+    private let whosComingLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Who's coming: "
+        label.textColor = .lightGray
+        return label
+    }()
+    
+    private let emptyJoinedMembersLabel: UILabel = {
+        let label = UILabel()
+        label.text = "No joined member yet"
+        label.textColor = .lightGray
+        return label
+    }()
+    
+    private lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.minimumInteritemSpacing = 8
+        layout.scrollDirection = .horizontal
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
+        collectionView.register(JoinedMemberCell.self, forCellWithReuseIdentifier: JoinedMemberCell.id)
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        return collectionView
+    }()
+        
+    var joinedMemberProfileURLs: [String] = [] {
+        didSet {
+            if joinedMemberProfileURLs.count == 0 {
+                emptyJoinedMembersLabel.isHidden = false
+                collectionView.isHidden = true
+            } else {
+                emptyJoinedMembersLabel.isHidden = true
+                collectionView.isHidden = false
+                collectionView.reloadData()
+            }
+        }
+    }
+    
     // MARK: - Life Cycle
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -222,10 +249,6 @@ class DetailInfoCell: UITableViewCell {
     
     // MARK: - Selectors
     
-    @objc func didTapViewAllButton() {
-        print("view all")
-    }
-    
     @objc func didPlayMusicButton() {
         guard let event = event else { return }
         delegate?.playMusic(cell: self, musicURL: event.eventMusicURL)
@@ -245,7 +268,7 @@ class DetailInfoCell: UITableViewCell {
     
     // MARK: - Heleprs
 
-    func configureCell(with event: Event, host: User) {
+    func configureCell(with event: Event, host: User, joinedMemberProfileURLs: [String]) {
         backgroundColor = UIColor.hexStringToUIColor(hex: "#161616")
         if let profileUrl = URL(string: host.profileImageURL) {
             self.hostProfileImageView.kf.setImage(with: profileUrl, placeholder: UIImage(systemName: "person"))
@@ -258,7 +281,24 @@ class DetailInfoCell: UITableViewCell {
         titleLabel.setContentHuggingPriority(.required, for: .vertical)
         let formattedDateString = Date.dateTimeFormatter.string(from: event.startingDate.dateValue())
         dateLabel.text = "\(formattedDateString)"
+        
         let location = CLLocation(latitude: event.destinationLocation.latitude, longitude: event.destinationLocation.longitude)
+        configureAddressLabel(with: location)
+        
+        styleLabel.text = "Event Style: \(event.style)"
+        feeLabel.text = "$\(String(event.fee))"
+        joinedMembersLabel.text = "Joined Members: \(event.participants.count)"
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("uid in detail cell is nil")
+            return
+        }
+        chatButton.isHidden = uid == event.hostID
+        deleteImageView.isHidden = uid != event.hostID
+
+        self.joinedMemberProfileURLs = joinedMemberProfileURLs
+    }
+    
+    private func configureAddressLabel(with location: CLLocation) {
         CLGeocoder().reverseGeocodeLocation(location, preferredLocale: nil) { [weak self] (clPlacemark: [CLPlacemark]?, error: Error?) in
             guard let place = clPlacemark?.first else {
                 print("No placemark from Apple: \(String(describing: error))")
@@ -269,18 +309,8 @@ class DetailInfoCell: UITableViewCell {
             
             self?.addressLabel.text = mkPlacemark.title ?? "no address"
         }
-        
-        styleLabel.text = "Event Style: \(event.style)"
-        feeLabel.text = "$\(String(event.fee))"
-        joinedMembersLabel.text = "Joined Members: \(event.participants.count)"
-        guard let uid = Auth.auth().currentUser?.uid else {
-            print("uid in nil")
-            return
-        }
-        chatButton.isHidden = uid == event.hostID
-        deleteImageView.isHidden = uid != event.hostID
     }
-    
+
     private func setupCellUI() {
         contentView.addSubview(titleLabel)
         titleLabel.anchor(top: contentView.topAnchor,
@@ -320,14 +350,9 @@ class DetailInfoCell: UITableViewCell {
         feeStack.axis = .horizontal
         feeStack.spacing = 8
         
-        let joinedMemberStack = UIStackView(arrangedSubviews: [joinedMembersImageView, joinedMembersLabel])
-        joinedMemberStack.axis = .horizontal
-        joinedMemberStack.spacing = 8
-        
         let parentVStack = UIStackView(arrangedSubviews: [dateStack,
                                                           styleStack,
                                                           feeStack,
-                                                          joinedMemberStack,
                                                           addressStack,
                                                           playMusicStack
                                                           ])
@@ -342,8 +367,19 @@ class DetailInfoCell: UITableViewCell {
                             paddingLeft: 8,
                             paddingRight: 8)
         
+        contentView.addSubview(whosComingLabel)
+        whosComingLabel.anchor(top: parentVStack.bottomAnchor, left: contentView.leftAnchor, paddingTop: 10, paddingLeft: 10)
+        
+        contentView.addSubview(emptyJoinedMembersLabel)
+        emptyJoinedMembersLabel.centerY(inView: whosComingLabel)
+        emptyJoinedMembersLabel.anchor(left: whosComingLabel.rightAnchor, paddingLeft: 5)
+        
+        contentView.addSubview(collectionView)
+        collectionView.centerY(inView: whosComingLabel)
+        collectionView.anchor(left: whosComingLabel.rightAnchor, right: contentView.rightAnchor, paddingLeft: 10, paddingRight: 10, height: 40)
+        
         contentView.addSubview(hostProfileImageView)
-        hostProfileImageView.anchor(top: parentVStack.bottomAnchor, left: contentView.leftAnchor, bottom: contentView.bottomAnchor, paddingTop: 30, paddingLeft: 8, paddingBottom: 10)
+        hostProfileImageView.anchor(top: collectionView.bottomAnchor, left: contentView.leftAnchor, bottom: contentView.bottomAnchor, paddingTop: 30, paddingLeft: 8, paddingBottom: 10)
 
         contentView.addSubview(hostNameLabel)
         hostNameLabel.centerY(inView: hostProfileImageView)
@@ -358,6 +394,32 @@ class DetailInfoCell: UITableViewCell {
         playMusicButton.centerY(inView: playMusicStack)
         playMusicButton.anchor(right: contentView.rightAnchor, paddingRight: 15)
         playMusicButton.setDimensions(height: 33, width: 33)
+    }
+    
+}
+
+extension DetailInfoCell: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return joinedMemberProfileURLs.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        guard let profileCell = collectionView.dequeueReusableCell(withReuseIdentifier: JoinedMemberCell.id, for: indexPath) as? JoinedMemberCell else {
+            return UICollectionViewCell()
+        }
+        
+        let profileImageURL = self.joinedMemberProfileURLs[indexPath.item]
+        
+        profileCell.configureCell(imageURLString: profileImageURL)
+        
+        return profileCell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        return CGSize(width: 40, height: 40)
     }
     
 }

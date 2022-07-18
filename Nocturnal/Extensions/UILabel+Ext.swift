@@ -28,4 +28,13 @@ extension UILabel {
         label.text = text
         return label
     }
+    
+    func makeSatisfyLabel(text: String, size: CGFloat, textAlighment: NSTextAlignment = NSTextAlignment.natural) -> UILabel {
+        let label = UILabel()
+         label.text = text
+         label.font = .satisfyRegular(size: size)
+         label.textAlignment = textAlighment
+         label.textColor = .white
+         return label
+    }
 }

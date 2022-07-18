@@ -9,6 +9,53 @@ import UIKit
 
 extension UIViewController {
     
+     func showReportAlert() {
+        let reportAlert = UIAlertController(title: "Please select a problem", message: "If someone is in immediate problem danger, get help before reporting to NocturnalHuman", preferredStyle: .alert)
+        
+        let responseAlert = UIAlertController(title: "Thanks for reporting this event", message: "We will review this event and remove anything that does not follow our standards as quickly as possible", preferredStyle: .alert)
+        responseAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        
+        reportAlert.addAction(UIAlertAction(title: "Nudity", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Violence", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Harassment", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Suicide or self-injury", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "False information", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Spam", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Hate speech", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Terrorism", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Something else", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        self.present(reportAlert, animated: true)
+    }
+    
     var keyWindow: UIWindow? {
         // Get connected scenes
         return UIApplication.shared.connectedScenes
@@ -77,8 +124,6 @@ extension UIViewController {
         let appearance = UINavigationBarAppearance()
         appearance.backgroundColor = bgColor
         appearance.titleTextAttributes = [NSAttributedString.Key.font: UIFont.medium(size: size) as Any, NSAttributedString.Key.foregroundColor: textColor]
-//        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-//        navigationController?.navigationBar.shadowImage = UIImage()
         appearance.shadowColor = .clear
         appearance.configureWithDefaultBackground()
         navigationController?.navigationBar.tintColor = tintColor

@@ -10,9 +10,15 @@ import Kingfisher
 import FirebaseFirestore
 import AVKit
 
+protocol HomeEventCellDelegate: AnyObject {
+    func didTapReportButton(cell: HomeEventCell)
+}
+
 class HomeEventCell: UICollectionViewCell {
     
     // MARK: - Properties
+    
+    weak var delegate: HomeEventCellDelegate?
     
     let eventImageView: UIImageView = {
         let imageView = UIImageView()
@@ -64,6 +70,8 @@ class HomeEventCell: UICollectionViewCell {
     private let profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
+        imageView.tintColor = .lightGray
+        imageView.image = UIImage(systemName: "person")
         return imageView
     }()
     
@@ -86,9 +94,18 @@ class HomeEventCell: UICollectionViewCell {
         let button = UIButton()
         let config = UIImage.SymbolConfiguration(pointSize: 25)
         button.setImage(UIImage(systemName: "speaker.slash", withConfiguration: config), for: .normal)
-         button.tintColor = .red
+         button.tintColor = .deepBlue
         button.isHidden = true
         button.addTarget(self, action: #selector(muteVideo), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var reportButton: UIButton = {
+       let button = UIButton()
+        let config = UIImage.SymbolConfiguration(pointSize: 25)
+        button.setImage(UIImage(systemName: "exclamationmark.circle", withConfiguration: config), for: .normal)
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(didTapReportButton), for: .touchUpInside)
         return button
     }()
     
@@ -136,6 +153,10 @@ class HomeEventCell: UICollectionViewCell {
         muteSound(shouldMute: isMuted)
     }
     
+    @objc func didTapReportButton() {
+        delegate?.didTapReportButton(cell: self)
+    }
+    
     // MARK: - Heleprs
     
     func setupVideoPlayerView(videoURLString: String) {
@@ -158,6 +179,7 @@ class HomeEventCell: UICollectionViewCell {
                 playerLayer.frame = self.videoPlayerView.bounds
                 playerLayer.contentsGravity = .resizeAspectFill
                 self.videoPlayerView.layer.addSublayer(playerLayer)
+                self.videoPlayerView.bringSubviewToFront(self.muteButton)
                 player.play()
             case .failure(let error):
                 print("Failt to cachce url \(error)")
@@ -208,11 +230,12 @@ class HomeEventCell: UICollectionViewCell {
             eventImageView.kf.setImage(with: imageUrl)
         }
         
-        guard let profileUrl = URL(string: host.profileImageURL) else {
-            print("profile url in home cell nil")
-            return
+        if let profileUrl = URL(string: host.profileImageURL) {
+            profileImageView.kf.setImage(with: profileUrl)
+        } else {
+            profileImageView.image = UIImage(systemName: "person")
         }
-        profileImageView.kf.setImage(with: profileUrl)
+        
         dateLabel.text = Date.dateFormatter.string(from: event.startingDate.dateValue())
         eventNameLabel.text = event.title
         feeLabel.text = "$\(event.fee)"
@@ -286,5 +309,10 @@ class HomeEventCell: UICollectionViewCell {
         bottomBackgroundView.addSubview(hostNameLabel)
         hostNameLabel.centerY(inView: profileImageView)
         hostNameLabel.anchor(left: profileImageView.rightAnchor, paddingLeft: 8)
+        
+        contentView.addSubview(reportButton)
+        reportButton.centerY(inView: eventNameLabel, constant: -5)
+        reportButton.anchor(right: contentView.rightAnchor, paddingRight: 15)
+        reportButton.setDimensions(height: 25, width: 25)
     }
 }

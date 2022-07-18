@@ -153,22 +153,43 @@ func postDeniedNotification(to applicantUid: String, notification: Notification,
     
     func updateCancelNotification(deletedUserId: String, completion: FirestoreCompletion) {
         collection_notification.getDocuments { snapshot, error in
+
             guard let snapshot = snapshot, error == nil else {
+                print("snapshot in collection_notification.getDocuments nil")
                 // completion send error back
                 completion?(error)
                 return
             }
-
+            
+            print("snapshot documets \(snapshot.documents)")
+            
             snapshot.documents.forEach { document in
-                document.reference.collection("user-notification").whereField("hostId", isEqualTo: deletedUserId).getDocuments { snapshot, error in
+                let query = document.reference.collection("user-notification").whereField("hostId", isEqualTo: deletedUserId)
+
+                query.getDocuments { snapshot, error in
+                    
                     guard let snapshot = snapshot, error == nil else {
+                        print("snapshot in query nil")
                         // completion send error back
                         completion?(error)
                         return
                     }
+                    
+                    if snapshot.documents.count == 0 {
+                        print("no document")
+                        completion?(nil)
+                    }
+                    
                     snapshot.documents.forEach { document in
-                        document.reference.updateData(["type": 3]) { error in
-                            completion?(error)
+                        if document.exists {
+                            print("doc exist")
+                            document.reference.updateData(["type": 3]) { error in
+                                completion?(error)
+                            }
+                        } else {
+                            print("doc does not exist")
+                            completion?(nil)
+                            return
                         }
                     }
                 }

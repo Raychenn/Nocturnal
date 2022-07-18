@@ -16,7 +16,7 @@ class SettingHeader: UITableViewHeaderFooterView {
     
     private let topBackgroundView: UIView = {
        let view = UIView()
-        view.backgroundColor = .systemPink
+        view.backgroundColor = .deepBlue
         return view
     }()
     
@@ -64,8 +64,12 @@ class SettingHeader: UITableViewHeaderFooterView {
     // MARK: - Helpers
     
     func configureHeader(user: User) {
-        guard let profileUrl = URL(string: user.profileImageURL) else { return }
-        profileImageView.kf.setImage(with: profileUrl)
+        if let profileUrl = URL(string: user.profileImageURL) {
+            profileImageView.kf.setImage(with: profileUrl)
+        } else {
+            profileImageView.image = UIImage(systemName: "person")
+        }
+        
         nameLabel.text = user.name
     }
     

@@ -80,6 +80,13 @@ class AddEventController: UIViewController {
         setupUI()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.navigationBar.isHidden = false
+        configureChatNavBar(withTitle: "", preferLargeTitles: false)
+    }
+    
     // MARK: - Helpers
     
     private func setupUI() {
@@ -93,9 +100,6 @@ class AddEventController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        title = "Add Event"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationController?.navigationBar.tintColor = .black
         //        tableView.contentInsetAdjustmentBehavior = .never
         //        tableView.setContentOffset(.init(x: 0, y: -2), animated: false)
     }
@@ -191,7 +195,6 @@ extension AddEventController: UIImagePickerControllerDelegate, UINavigationContr
             presentLoadingView(shouldPresent: true)
             StorageUploader.shared.uploadEventVideo(videoUrl: videoUrl) { [weak self] downloadedUrl in
                 guard let self = self, let videoURL = URL(string: downloadedUrl) else { return }
-                print("downloadedUrl \(downloadedUrl)")
                 if let header = self.tableView.headerView(forSection: 0) as? AddEventHeader {
                     self.eventVideoURLString = downloadedUrl
                     header.setupVideoPlayerView(videoURL: videoURL)
@@ -266,8 +269,8 @@ extension AddEventController: UploadEventInfoCellDelegate {
             return
         }
             // upload video
-            let geoCoder = CLGeocoder()
             configureAnimationView()
+            let geoCoder = CLGeocoder()
             self.view.isUserInteractionEnabled = false
             geoCoder.geocodeAddressString(userInputData.eventAddress) { [weak self] (placemarks, error) in
                 guard let self = self else { return }

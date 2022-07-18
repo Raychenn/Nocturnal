@@ -8,6 +8,7 @@
 import UIKit
 import CHTCollectionViewWaterfallLayout
 import FirebaseAuth
+import Lottie
 
 class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLayout {
     
@@ -29,6 +30,25 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         collectionView.refreshControl?.addTarget(self, action: #selector(refreshData), for: .valueChanged)
         collectionView.register(ExploreCell.self, forCellWithReuseIdentifier: ExploreCell.identifier)
         return collectionView
+    }()
+    
+    private let emptyAnimationView: AnimationView = {
+       let view = AnimationView(name: "empty-box")
+        view.loopMode = .loop
+        view.contentMode = .scaleAspectFill
+        view.animationSpeed = 1
+        view.backgroundColor = .clear
+        view.play()
+        return view
+    }()
+    
+    private let emptyWarningLabel: UILabel = {
+       let label = UILabel()
+        label.text = "No Events yet, click the + button to add new event"
+        label.font = .satisfyRegular(size: 25)
+        label.textAlignment = .center
+        label.textColor = .white
+        return label
     }()
     
     private lazy var dateSegmentControl: NTSegmentedControl = {
@@ -102,6 +122,12 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         }
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        emptyAnimationView.stop()
+        emptyWarningLabel.removeFromSuperview()
+    }
+    
     // MARK: - API
     private func fetchEvents() {
         refreshControl.beginRefreshing()
@@ -116,6 +142,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
                         self.filterEventsForDeletedUser(hosts: hosts)
                         self.originalAllEvents = events
                         self.generateRandomHeight(eventCount: events.count)
+                        self.presentEmptyViewIfNecessary()
                         self.endRefreshing()
                     }
                 } else {
@@ -128,6 +155,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
                             self.filterEventsForDeletedUser(hosts: hosts)
                             self.originalAllEvents = self.events
                             self.generateRandomHeight(eventCount: self.events.count)
+                            self.presentEmptyViewIfNecessary()
                             self.endRefreshing()
                         }
                     }
@@ -248,6 +276,39 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     }
     
     // MARK: - Helpers
+    
+    private func presentEmptyViewIfNecessary() {
+        if events.count == 0 {
+            configureEmptyAnimationView()
+            configureEmptyWarningLabel()
+            collectionView.isHidden = true
+        } else {
+            stopAnimationView()
+            emptyWarningLabel.removeFromSuperview()
+            collectionView.isHidden = false
+        }
+    }
+    
+    private func configureEmptyAnimationView() {
+        view.addSubview(emptyAnimationView)
+        emptyAnimationView.centerY(inView: view)
+        emptyAnimationView.centerX(inView: view)
+        emptyAnimationView.widthAnchor.constraint(equalToConstant: view.frame.size.width - 20).isActive = true
+        emptyAnimationView.heightAnchor.constraint(equalTo: emptyAnimationView.widthAnchor).isActive = true
+        emptyAnimationView.play()
+    }
+    
+    private func stopAnimationView() {
+        emptyAnimationView.stop()
+        emptyAnimationView.alpha = 0
+        emptyAnimationView.removeFromSuperview()
+    }
+    
+    private func configureEmptyWarningLabel() {
+        view.addSubview(emptyWarningLabel)
+        emptyWarningLabel.centerX(inView: emptyAnimationView)
+        emptyWarningLabel.anchor(top: emptyAnimationView.bottomAnchor, paddingTop: 15)
+    }
     
     private func endRefreshing() {
         refreshControl.endRefreshing()

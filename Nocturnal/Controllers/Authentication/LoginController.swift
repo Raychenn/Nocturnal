@@ -122,18 +122,20 @@ class LoginController: UIViewController {
         
         configureUI()
         configureNavBar()
+        resetLoginScreenInitialState()
+        animateLogin()
         playVideo()
         playSound()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        resetLoginScreenInitialState()
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        animateLogin()
+        
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -160,6 +162,7 @@ class LoginController: UIViewController {
     
     @objc func handleShowSignUp() {
         let controller = RegistrationController()
+        controller.delegate = self
         navigationController?.pushViewController(controller, animated: true)
     }
     
@@ -221,10 +224,11 @@ class LoginController: UIViewController {
         self.passwordContainerView.alpha = 0
         self.loginButton.alpha = 0
         self.signinWithAppleButton.alpha = 0
+        self.dontHaveAccountButton.alpha = 0
     }
     
     private func animateLogin() {
-        UIView.animate(withDuration: 1) {
+        UIView.animate(withDuration: 0.9) {
             self.videoPlayerView.alpha = 1
         } completion: { _ in
             self.showTitle()
@@ -232,7 +236,7 @@ class LoginController: UIViewController {
     }
     
     private func showTitle() {
-        UIView.animate(withDuration: 1) {
+        UIView.animate(withDuration: 0.5) {
             self.appNameLabel.alpha = 1
         } completion: { _ in
             self.showTextFields()
@@ -240,7 +244,7 @@ class LoginController: UIViewController {
     }
     
     private func showTextFields() {
-        UIView.animate(withDuration: 1) {
+        UIView.animate(withDuration: 0.5) {
             self.emailContainerView.alpha = 1
             self.passwordContainerView.alpha = 1
         } completion: { _ in
@@ -249,9 +253,10 @@ class LoginController: UIViewController {
     }
     
     private func showLoginButtons() {
-        UIView.animate(withDuration: 1) {
+        UIView.animate(withDuration: 0.5) {
             self.loginButton.alpha = 1
             self.signinWithAppleButton.alpha = 1
+            self.dontHaveAccountButton.alpha = 1
         }
     }
     
@@ -308,7 +313,7 @@ class LoginController: UIViewController {
     }
     
     private func playVideo() {
-        guard let path = Bundle.main.path(forResource: "intro", ofType: "mp4") else {
+        guard let path = Bundle.main.path(forResource: "djVideo", ofType: "mp4") else {
             print("no intro resouce")
             return
         }
@@ -474,8 +479,8 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
                           self.dismiss(animated: true)
                       } else {
                         // Create new user
-                          let firstname = appleIDCredential.fullName?.givenName ?? "Unkown"
-                          let familyname = appleIDCredential.fullName?.familyName ?? "Unkown family name"
+                          let firstname = appleIDCredential.fullName?.givenName ?? "default"
+                          let familyname = appleIDCredential.fullName?.familyName ?? "name"
                           let username = "\(firstname) \(familyname)"
                             let email = authResult?.user.email ?? ""
                           AuthService.shared.uploadNewUser(withId: uid, name: username, email: email) { error in
@@ -500,19 +505,20 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
           }
         }
       }
+    
       func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
           
           switch error {
           case ASAuthorizationError.canceled:
-              break
+              self.presentLoadingView(shouldPresent: false)
           case ASAuthorizationError.failed:
-              break
+              self.presentLoadingView(shouldPresent: false)
           case ASAuthorizationError.invalidResponse:
-              break
+              self.presentLoadingView(shouldPresent: false)
           case ASAuthorizationError.notHandled:
-              break
+              self.presentLoadingView(shouldPresent: false)
           case ASAuthorizationError.unknown:
-              break
+              self.presentLoadingView(shouldPresent: false)
           default:
               break
           }
@@ -521,10 +527,20 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
       }
 }
 
+// MARK: - PopupAlertControllerDelegate
 extension LoginController: PopupAlertControllerDelegate {
     
     func handleDismissal() {
         popupVC.dismiss(animated: true)
     }
+}
 
+extension LoginController: RegistrationControllerDelegate {
+    
+    func didPopController() {
+        resetLoginScreenInitialState()
+        animateLogin()
+        playVideo()
+        playSound()
+    }
 }

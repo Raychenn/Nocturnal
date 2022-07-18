@@ -7,7 +7,9 @@
 
 import UIKit
 import FirebaseAuth
+import Kingfisher
 import AVKit
+import Lottie
 
 class HomeController: UIViewController {
     
@@ -17,7 +19,6 @@ class HomeController: UIViewController {
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 40, left: 0, bottom: 0, right: 0)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.showsVerticalScrollIndicator = false
@@ -27,6 +28,7 @@ class HomeController: UIViewController {
         collectionView.refreshControl = refreshControl
         collectionView.refreshControl?.addTarget(self, action: #selector(refreshData), for: .valueChanged)
         collectionView.register(HomeEventCell.self, forCellWithReuseIdentifier: HomeEventCell.identifier)
+        collectionView.register(HomeProfileCell.self, forCellWithReuseIdentifier: HomeProfileCell.identifier)
         return collectionView
     }()
     
@@ -45,6 +47,49 @@ class HomeController: UIViewController {
         button.backgroundColor = UIColor.primaryBlue
         button.addTarget(self, action: #selector(didTapShowEventButton), for: .touchUpInside)
         return button
+    }()
+    
+    private let emptyAnimationView: AnimationView = {
+       let view = AnimationView(name: "empty-box")
+        view.loopMode = .loop
+        view.contentMode = .scaleAspectFill
+        view.animationSpeed = 1
+        view.backgroundColor = .clear
+        view.play()
+        return view
+    }()
+    
+    private let emptyWarningLabel: UILabel = {
+       let label = UILabel()
+        label.text = "No Events yet, click the + button to add new event"
+        label.font = .satisfyRegular(size: 25)
+        label.textAlignment = .center
+        label.textColor = .white
+        return label
+    }()
+    
+    private let currentUserNameLabel: UILabel = {
+       let label = UILabel()
+        label.text = "Loading Name"
+        label.textColor = .white
+        label.font = .satisfyRegular(size: 18)
+        return label
+    }()
+    
+    private let currentUserProfileImageView: UIImageView = {
+       let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.backgroundColor = .lightGray
+        imageView.tintColor = .black
+        imageView.clipsToBounds = true
+        return imageView
+    }()
+    
+    private let profileView: UIView = {
+       let view = UIView()
+        view.backgroundColor = .black
+        view.alpha = 0
+        return view
     }()
 
     var currentUser: User
@@ -69,12 +114,13 @@ class HomeController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     
-//        navigationController?.delegate = self
         setupUI()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        currentUserProfileImageView.layer.cornerRadius = 35/2
         
         let pulseLayer = PulsingLayer(numberOfPulses: .infinity, radius: 50, view: addEventButtonBackgroundView)
         self.addEventButtonBackgroundView.layer.addSublayer(pulseLayer)
@@ -82,11 +128,19 @@ class HomeController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        navigationController?.navigationBar.isHidden = true
+        
         // fetch all events from firestore
         presentLoadingView(shouldPresent: true)
         fetchCurrentUser { [weak self] in
             guard let self = self else {return}
             self.fetchAllEvents()
+            self.currentUserNameLabel.text = self.currentUser.name
+            if let profileURL = URL(string: self.currentUser.profileImageURL) {
+                self.currentUserProfileImageView.kf.setImage(with: profileURL)
+            } else {
+                self.currentUserProfileImageView.image = UIImage(systemName: "person")
+            }
         }
     }
     
@@ -94,6 +148,8 @@ class HomeController: UIViewController {
         super.viewDidDisappear(animated)
         removePulsingLayer()
         releaseVideoPlayer()
+        emptyAnimationView.stop()
+        emptyWarningLabel.removeFromSuperview()
     }
 
     // MARK: - API
@@ -147,12 +203,12 @@ class HomeController: UIViewController {
         if Auth.auth().currentUser != nil {
             // logged in, start fetching user data
             var hostsId: [String] = []
-            let sortedEvents = events.sorted(by: { $0.createTime.dateValue().compare($1.createTime.dateValue()) == .orderedDescending })
-            sortedEvents.forEach({hostsId.append($0.hostID)})
+            events.forEach({hostsId.append($0.hostID)})
             
             fetchHosts(hostsId: hostsId) { [weak self] in
                 guard let self = self else { return }
                 self.filterEventsForDeletedUser(hosts: self.evnetHosts)
+                self.presentEmptyViewIfNecessary()
                 self.endRefreshing()
             }
         } else {
@@ -196,6 +252,86 @@ class HomeController: UIViewController {
     }
     
     // MARK: - Helpers
+    
+    private func presentEmptyViewIfNecessary() {
+        if evnetHosts.count == 0 {
+            configureEmptyAnimationView()
+            configureEmptyWarningLabel()
+            collectionView.isHidden = true
+        } else {
+            stopAnimationView()
+            emptyWarningLabel.removeFromSuperview()
+            collectionView.isHidden = false
+        }
+    }
+    
+    private func configureEmptyAnimationView() {
+        view.addSubview(emptyAnimationView)
+        emptyAnimationView.centerY(inView: view)
+        emptyAnimationView.centerX(inView: view)
+        emptyAnimationView.widthAnchor.constraint(equalToConstant: view.frame.size.width - 20).isActive = true
+        emptyAnimationView.heightAnchor.constraint(equalTo: emptyAnimationView.widthAnchor).isActive = true
+        emptyAnimationView.play()
+    }
+    
+    private func stopAnimationView() {
+        emptyAnimationView.stop()
+        emptyAnimationView.alpha = 0
+        emptyAnimationView.removeFromSuperview()
+    }
+    
+    private func configureEmptyWarningLabel() {
+        view.addSubview(emptyWarningLabel)
+        emptyWarningLabel.centerX(inView: emptyAnimationView)
+        emptyWarningLabel.anchor(top: emptyAnimationView.bottomAnchor, paddingTop: 15)
+    }
+    
+    private func showReportAlert() {
+        let reportAlert = UIAlertController(title: "Please select a problem", message: "If someone is in immediate problem danger, get help before reporting to NocturnalHuman", preferredStyle: .alert)
+        
+        let responseAlert = UIAlertController(title: "Thanks for reporting this event", message: "We will review this event and remove anything that does not follow our standards as quickly as possible", preferredStyle: .alert)
+        responseAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        
+        reportAlert.addAction(UIAlertAction(title: "Nudity", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Violence", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Harassment", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Suicide or self-injury", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "False information", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Spam", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Hate speech", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Terrorism", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Something else", style: .default, handler: { _ in
+            self.present(responseAlert, animated: true)
+        }))
+        
+        reportAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        self.present(reportAlert, animated: true)
+    }
     
     private func endRefreshing() {
         refreshControl.endRefreshing()
@@ -252,12 +388,24 @@ class HomeController: UIViewController {
     }
     
     func setupUI() {
-        configureChatNavBar(withTitle: "Home", backgroundColor: UIColor.hexStringToUIColor(hex: "#1C242F"), preferLargeTitles: true)
-        navigationController?.navigationBar.prefersLargeTitles = false
-        navigationItem.title = "Home"
+        view.addSubview(profileView)
+        profileView.isHidden = true
+        profileView.alpha = 0
+        profileView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor,
+                           right: view.rightAnchor, height: 55)
+        
+        profileView.addSubview(currentUserProfileImageView)
+        currentUserProfileImageView.centerY(inView: profileView)
+        currentUserProfileImageView.anchor(left: profileView.leftAnchor, paddingLeft: 20)
+        currentUserProfileImageView.setDimensions(height: 35, width: 35)
+        
+        profileView.addSubview(currentUserNameLabel)
+        currentUserNameLabel.centerY(inView: currentUserProfileImageView)
+        currentUserNameLabel.anchor(left: currentUserProfileImageView.rightAnchor, paddingLeft: 10)
+        
         view.addSubview(collectionView)
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            collectionView.topAnchor.constraint(equalTo: profileView.bottomAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
@@ -297,37 +445,48 @@ class HomeController: UIViewController {
 extension HomeController: UICollectionViewDataSource {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        1
+        2
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return events.count
+        return section == 0 ? 1: events.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        guard let eventCell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeEventCell.identifier, for: indexPath) as? HomeEventCell else { return UICollectionViewCell() }
-                
-        // should have 2 types of config | loggedin user vs no user
-        if Auth.auth().currentUser == nil {
-            let event = events[indexPath.item]
-
-            eventCell.configureCell(event: event)
+        if indexPath.section == 0 {
+            
+            guard let profileCell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeProfileCell.identifier, for: indexPath) as? HomeProfileCell else { return UICollectionViewCell() }
+            
+            profileCell.configureCell(user: self.currentUser)
+            
+            return profileCell
+            
         } else {
-            let event = events[indexPath.item]
-            let host = evnetHosts[indexPath.item]
+            guard let eventCell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeEventCell.identifier, for: indexPath) as? HomeEventCell else { return UICollectionViewCell() }
+            
+            eventCell.delegate = self
+            
+            // should have 2 types of config | loggedin user vs no user
+            if Auth.auth().currentUser == nil {
+                let event = events[indexPath.item]
 
-            eventCell.configureCellForLoggedInUser(event: event, host: host)
+                eventCell.configureCell(event: event)
+            } else {
+                let event = events[indexPath.item]
+                let host = evnetHosts[indexPath.item]
+                eventCell.configureCellForLoggedInUser(event: event, host: host)
+            }
+            
+            return eventCell
         }
-        
-        return eventCell
     }
 }
 
 // MARK: - UICollectionViewDelegate
 
 extension HomeController: UICollectionViewDelegate {
-    
+        
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if Auth.auth().currentUser == nil {
             DispatchQueue.main.async {
@@ -336,14 +495,16 @@ extension HomeController: UICollectionViewDelegate {
                 self.present(nav, animated: true, completion: nil)
             }
         } else {
-            let selectedEvent = events[indexPath.item]
-            let detailVC = EventDetailController(event: selectedEvent)
-            if let selectedCell = collectionView.cellForItem(at: indexPath) as? HomeEventCell {
-                self.currentCell = selectedCell
+            if indexPath.section == 1 {
+                let selectedEvent = events[indexPath.item]
+                let detailVC = EventDetailController(event: selectedEvent)
+                if let selectedCell = collectionView.cellForItem(at: indexPath) as? HomeEventCell {
+                    self.currentCell = selectedCell
+                }
+                
+                detailVC.hidesBottomBarWhenPushed = true
+                navigationController?.pushViewController(detailVC, animated: true)
             }
-            
-            detailVC.hidesBottomBarWhenPushed = true
-            navigationController?.pushViewController(detailVC, animated: true)
         }
     }
 }
@@ -351,20 +512,45 @@ extension HomeController: UICollectionViewDelegate {
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension HomeController: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        insetForSectionAt section: Int
+    ) -> UIEdgeInsets {
+        
+        return section == 0 ? UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0): UIEdgeInsets(top: 20, left: 0, bottom: 0, right: 0)
+    }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        return CGSize(width: view.frame.size.width - 40, height: 350)
+        return indexPath.section == 0 ? CGSize(width: view.frame.width, height: 60) : CGSize(width: view.frame.size.width - 40, height: 350)
     }
 }
 
-// MARK: - UINavigationControllerDelegate
+// MARK: - UIScrollViewDelegate
+extension HomeController: UIScrollViewDelegate {
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView.contentOffset.y >= 110 && profileView.alpha != 1 {
+            profileView.isHidden = false
+            profileView.alpha = 0
+            UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, animations: {
+                self.profileView.alpha = 1
+            })
+        } else if scrollView.contentOffset.y < 110 && profileView.alpha == 1 {
+            profileView.alpha = 1
+            UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, animations: {
+                self.profileView.alpha = 0
+            })
+        }
+    }
+}
 
-//extension HomeController: UINavigationControllerDelegate {
-//    func navigationController(
-//        _ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation,
-//        from fromVC: UIViewController,
-//        to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-//
-//        return TransitionManager(duration: 0.5)
-//    }
-//}
+// MARK: - HomeEventCellDelegate
+extension HomeController: HomeEventCellDelegate {
+    
+    func didTapReportButton(cell: HomeEventCell) {
+        showReportAlert()
+    }
+}

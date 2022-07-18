@@ -75,8 +75,7 @@ class MediaPlayerView: UIView {
     private lazy var playPauseButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        let config = UIImage.SymbolConfiguration(pointSize: 40)
-        button.setImage(UIImage(systemName: "play.circle.fill", withConfiguration: config), for: .normal)
+        button.setImage(UIImage(systemName: "play.circle.fill"), for: .normal)
         button.addTarget(self, action: #selector(didTapPlayPause), for: .touchUpInside)
         button.tintColor = .white
         return button
@@ -206,8 +205,7 @@ class MediaPlayerView: UIView {
     }
     
     private func setPlayPauseIcon(isPlaying: Bool) {
-        print("is playing \(isPlaying)")
-        let config = UIImage.SymbolConfiguration(pointSize: 100)
+        let config = UIImage.SymbolConfiguration(pointSize: 60)
         playPauseButton.setImage(UIImage(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill", withConfiguration: config), for: .normal)
     }
     

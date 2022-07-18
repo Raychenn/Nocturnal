@@ -47,6 +47,7 @@ class EventDetailController: UIViewController {
         table.register(PreviewMapCell.self, forCellReuseIdentifier: PreviewMapCell.identifier)
         table.register(DetailDescriptionCell.self, forCellReuseIdentifier: DetailDescriptionCell.identifier)
         let header = StretchyTableHeaderView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: view.frame.size.width))
+        header.delegate = self
         header.backgroundColor = UIColor.hexStringToUIColor(hex: "#161616")
         header.layer.cornerRadius = 15
         header.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
@@ -66,22 +67,7 @@ class EventDetailController: UIViewController {
         return button
     }()
     
-    private lazy var backButton: UIButton = {
-        let button = UIButton()
-        button.setImage( UIImage(systemName: "chevron.left"), for: .normal)
-        button.tintColor = .white
-        button.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
-        return button
-    }()
-    
     private let event: Event
-    
-//    private var currentUser: User? {
-//        didSet {
-//            // host can not join his own event
-//            tableView.reloadData()
-//        }
-//    }
     
     private var host: User? {
         didSet {
@@ -127,13 +113,17 @@ class EventDetailController: UIViewController {
         return view
     }()
     
-    public var headerView: DetailHeader?
-    
+    private var joinedMembers: [User] = []
+        
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        fetchHost()
-//        fetchCurrentUser()
+        print("viewDidLoad in detailVC called")
+        fetchJoinedMemebers { [weak self] joinedMembers in
+            guard let self = self else { return }
+            self.joinedMembers = joinedMembers
+            self.fetchHost()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -160,16 +150,20 @@ class EventDetailController: UIViewController {
     
     // MARK: - API
     
-//    private func fetchCurrentUser() {
-//        UserService.shared.fetchUser(uid: uid) { result in
-//            switch result {
-//            case .success(let user):
-//                self.currentUser = user
-//            case .failure(let error):
-//                print("Fail to get user \(error)")
-//            }
-//        }
-//    }
+    private func fetchJoinedMemebers(completion: @escaping ([User]) -> Void) {
+        self.presentLoadingView(shouldPresent: true)
+        UserService.shared.fetchUsers(uids: event.participants) { result in
+            switch result {
+            case .success(let joinedMembers):
+                self.presentLoadingView(shouldPresent: false)
+                completion(joinedMembers)
+            case .failure(let error):
+                self.presentLoadingView(shouldPresent: false)
+                self.presentErrorAlert(message: "\(error.localizedDescription)")
+                print("Fail to get joined members \(error)")
+            }
+        }
+    }
     
     private func fetchHost() {
         self.presentLoadingView(shouldPresent: true)
@@ -230,9 +224,6 @@ class EventDetailController: UIViewController {
             
             setJoinButton(forState: joinState)
         }
-        
-        view.addSubview(backButton)
-        backButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingTop: 8, paddingLeft: 16)
     }
     
     private func setupJoinButtonState() {
@@ -361,10 +352,6 @@ class EventDetailController: UIViewController {
             }
         }
     }
-    
-    @objc func didTapBackButton() {
-        navigationController?.popViewController(animated: true)
-    }
 }
 
 // MARK: - UITableViewDataSource
@@ -382,10 +369,13 @@ extension EventDetailController: UITableViewDataSource {
         guard let descriptionCell = tableView.dequeueReusableCell(withIdentifier: DetailDescriptionCell.identifier) as? DetailDescriptionCell else { return UITableViewCell() }
         
         guard let host = host else { return UITableViewCell() }
+    
+        let joinedMemberProfileURLs = joinedMembers.map({ $0.profileImageURL })
         
         switch indexPath.row {
         case 0:
-            infoCell.configureCell(with: event, host: host)
+            infoCell.configureCell(with: event, host: host, joinedMemberProfileURLs: joinedMemberProfileURLs)
+            infoCell.joinedMemberProfileURLs = joinedMemberProfileURLs
             infoCell.delegate = self
             return infoCell
         case 1:
@@ -418,7 +408,7 @@ extension EventDetailController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
         if indexPath.row == 0 {
-            return 310
+            return 370
         } else if indexPath.row == 1 {
             return 200
         }
@@ -556,5 +546,13 @@ extension EventDetailController: DetailDescriptionCellDelegate {
         tableView.beginUpdates()
         cell.decriptionContentLabel.numberOfLines = 0
         tableView.endUpdates()
+    }
+}
+
+// MARK: - StretchyTableHeaderViewDelegate
+extension EventDetailController: StretchyTableHeaderViewDelegate {
+    
+    func didTapBackButton(header: StretchyTableHeaderView) {
+        navigationController?.popViewController(animated: true)
     }
 }

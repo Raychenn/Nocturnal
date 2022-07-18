@@ -16,7 +16,7 @@ class StatsController: UIViewController, ChartViewDelegate {
     
     private let pieChartDescriptionLabel: UILabel = {
        let label = UILabel()
-        label.text = "Event style distribution"
+        label.text = "Joined event style distribution"
         label.font = .systemFont(ofSize: 20, weight: .bold)
         label.textColor = .white
         return label
@@ -210,11 +210,17 @@ class StatsController: UIViewController, ChartViewDelegate {
         view.addSubview(pieChartDescriptionLabel)
         pieChartDescriptionLabel.anchor(top: view.safeAreaLayoutGuide.topAnchor,
                                         right: view.rightAnchor,
-                                        paddingTop: 10,
+                                        paddingTop: 15,
                                         paddingRight: 15)
         
         view.addSubview(pieChartView)
-        pieChartView.anchor(top: pieChartDescriptionLabel.topAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 30, paddingLeft: 15, paddingRight: 15, height: 270)
+        pieChartView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            pieChartView.topAnchor.constraint(equalTo: pieChartDescriptionLabel.bottomAnchor, constant: 10),
+            pieChartView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            pieChartView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+            pieChartView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.4)
+        ])
                 
         let dataEntries: [PieChartDataEntry] = [
             PieChartDataEntry(value: rockCounts, label: "Rock"),
@@ -262,10 +268,16 @@ class StatsController: UIViewController, ChartViewDelegate {
         barChartDescriptionLabel.anchor(top: pieChartView.bottomAnchor, right: view.rightAnchor, paddingTop: 5, paddingRight: 15)
         
         view.addSubview(barChartView)
-        barChartView.anchor(top: barChartDescriptionLabel.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 10, paddingLeft: 15, paddingRight: 15, height: 270)
-
-        var entries: [BarChartDataEntry] = []
+        barChartView.translatesAutoresizingMaskIntoConstraints = false
         
+        NSLayoutConstraint.activate([
+            barChartView.topAnchor.constraint(equalTo: barChartDescriptionLabel.bottomAnchor, constant: 10),
+            barChartView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            barChartView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+            barChartView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10)
+        ])
+        
+        var entries: [BarChartDataEntry] = []
         for index in 0..<currentJoinedEvents.count {
             entries.append( BarChartDataEntry(x: Double(index + 1), y: costs[index]))
         }

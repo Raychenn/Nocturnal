@@ -58,7 +58,14 @@ class ChatController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+       
         setupUI()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        configureChatNavBar(withTitle: user.name, preferLargeTitles: false)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -72,6 +79,7 @@ class ChatController: UICollectionViewController {
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = .init(top: 16, left: 0, bottom: 16, right: 0)
         super.init(collectionViewLayout: layout)
+        
         self.addMessagesListener()
     }
     
@@ -96,7 +104,6 @@ class ChatController: UICollectionViewController {
             case .success(let message):
                 self.messages.append(message)
                 self.collectionView.reloadData()
-                print("reloaded")
                 self.collectionView.scrollToItem(at: [0, self.messages.count - 1], at: .bottom, animated: true)
             case .failure(let error):
                 self.presentErrorAlert(message: "\(error.localizedDescription)")
@@ -106,28 +113,40 @@ class ChatController: UICollectionViewController {
         }
     }
     
-//    private func fetchAllMessages(completion: @escaping () -> Void) {
-//        MessegeService.shared.fetchAllMessages(forUser: user) { result in
-//            switch result {
-//            case .success(let messages):
-//                print("messages \(messages)")
-//                self.messages = messages
-//                self.collectionView.reloadData()
-//                completion()
-//            case .failure(let error):
-//                print("Fail to fetch messaes \(error)")
-//            }
-//        }
-//    }
+    private func fetchAllMessages(completion: @escaping () -> Void) {
+        MessegeService.shared.fetchAllMessages(forUser: user) { result in
+            switch result {
+            case .success(let messages):
+                self.messages = messages
+                self.groupMessagesBasedOnDates()
+                self.collectionView.reloadData()
+                completion()
+            case .failure(let error):
+                print("Fail to fetch messaes \(error)")
+            }
+        }
+    }
     
     // MARK: - Helpers
     
     private func setupUI() {
         IQKeyboardManager.shared.enable = false
-        navigationItem.title = user.name
         collectionView.register(MessageCell.self, forCellWithReuseIdentifier: MessageCell.identifier)
         collectionView.alwaysBounceVertical = true
         collectionView.keyboardDismissMode = .interactive
+    }
+    
+    private func groupMessagesBasedOnDates() {
+        let groupMessages = Dictionary(grouping: messages, by: { element in
+            return element.sentTime.dateValue()
+        })
+                
+        let sortedKeys = groupMessages.keys.sorted()
+        
+        sortedKeys.forEach { key in
+            let values = groupMessages[key]
+            chatMessages.append(values ?? [])
+        }
     }
 
     private func estimatedFrameForText(text: String) -> CGRect {

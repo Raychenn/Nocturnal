@@ -65,7 +65,10 @@ class EditProfileHeader: UITableViewHeaderFooterView {
     // MARK: - Helpers
     
      func configureHeader(imageURL: String) {
-        guard let url = URL(string: imageURL) else { return }
+        guard let url = URL(string: imageURL) else {
+            profileImageView.image = UIImage(named: "profileImage")
+            return
+        }
         
         profileImageView.kf.setImage(with: url)
     }

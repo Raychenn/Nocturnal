@@ -22,13 +22,13 @@ class MusicPlayerController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        print("view did loadd")
+
         setupUI()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
         mediaPlayerView.play()
         UIApplication.shared.isIdleTimerDisabled = true
     }

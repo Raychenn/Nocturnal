@@ -511,19 +511,14 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
           switch error {
           case ASAuthorizationError.canceled:
               self.presentLoadingView(shouldPresent: false)
-              break
           case ASAuthorizationError.failed:
               self.presentLoadingView(shouldPresent: false)
-              break
           case ASAuthorizationError.invalidResponse:
               self.presentLoadingView(shouldPresent: false)
-              break
           case ASAuthorizationError.notHandled:
               self.presentLoadingView(shouldPresent: false)
-              break
           case ASAuthorizationError.unknown:
               self.presentLoadingView(shouldPresent: false)
-              break
           default:
               break
           }

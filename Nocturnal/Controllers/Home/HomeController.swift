@@ -106,7 +106,7 @@ class HomeController: UIViewController {
         fetchCurrentUser { [weak self] in
             guard let self = self else {return}
             self.fetchAllEvents()
-            self.setupCurrentUserInfo()
+            self.setupProfileView()
         }
     }
     
@@ -227,7 +227,7 @@ class HomeController: UIViewController {
         completion(result)
     }
     
-    private func setupCurrentUserInfo() {
+    private func setupProfileView() {
         self.currentUserNameLabel.text = self.currentUser.name
         if let profileURL = URL(string: self.currentUser.profileImageURL) {
             self.currentUserProfileImageView.kf.setImage(with: profileURL)
@@ -336,6 +336,21 @@ class HomeController: UIViewController {
     private func cleanupEmptyViews() {
         emptyAnimationView.stop()
         emptyWarningLabel.removeFromSuperview()
+    }
+    
+    private func animateProfileView(scrollView: UIScrollView) {
+        if scrollView.contentOffset.y >= 110 && profileView.alpha != 1 {
+            profileView.isHidden = false
+            profileView.alpha = 0
+            UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, animations: {
+                self.profileView.alpha = 1
+            })
+        } else if scrollView.contentOffset.y < 110 && profileView.alpha == 1 {
+            profileView.alpha = 1
+            UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, animations: {
+                self.profileView.alpha = 0
+            })
+        }
     }
     
     func setupUI() {
@@ -460,18 +475,19 @@ extension HomeController: UICollectionViewDelegateFlowLayout {
 extension HomeController: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView.contentOffset.y >= 110 && profileView.alpha != 1 {
-            profileView.isHidden = false
-            profileView.alpha = 0
-            UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, animations: {
-                self.profileView.alpha = 1
-            })
-        } else if scrollView.contentOffset.y < 110 && profileView.alpha == 1 {
-            profileView.alpha = 1
-            UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, animations: {
-                self.profileView.alpha = 0
-            })
-        }
+        animateProfileView(scrollView: scrollView)
+//        if scrollView.contentOffset.y >= 110 && profileView.alpha != 1 {
+//            profileView.isHidden = false
+//            profileView.alpha = 0
+//            UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, animations: {
+//                self.profileView.alpha = 1
+//            })
+//        } else if scrollView.contentOffset.y < 110 && profileView.alpha == 1 {
+//            profileView.alpha = 1
+//            UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, animations: {
+//                self.profileView.alpha = 0
+//            })
+//        }
     }
 }
 

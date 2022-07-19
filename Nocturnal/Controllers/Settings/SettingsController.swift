@@ -176,6 +176,17 @@ class SettingsController: UIViewController {
         SKStoreReviewController.requestReview(in: windowScene)
     }
     
+    private func presentReauthenticateController() {
+        // reauthenticate
+        let deletingAccountAlert = UIAlertController(title: "Deleting account will require user to sign out and sign in again", message: "", preferredStyle: .alert)
+        deletingAccountAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            try? Auth.auth().signOut()
+            self.checkIfUserIsLoggedIn()
+        }))
+        
+        self.present(deletingAccountAlert, animated: true)
+    }
+    
     // MARK: - Selectors
     
     @objc func didTapBackButton() {
@@ -261,13 +272,7 @@ extension SettingsController: UITableViewDelegate {
                         let authErr = AuthErrorCode.Code(rawValue: error._code)
                         if authErr == .requiresRecentLogin {
                             // reauthenticate
-                            let deletingAccountAlert = UIAlertController(title: "Deleting account will require user to sign out and sign in again", message: "", preferredStyle: .alert)
-                            deletingAccountAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
-                                try? Auth.auth().signOut()
-                                self.checkIfUserIsLoggedIn()
-                            }))
-                            
-                            self.present(deletingAccountAlert, animated: true)
+                            self.presentReauthenticateController()
                         }
 
                         // other error

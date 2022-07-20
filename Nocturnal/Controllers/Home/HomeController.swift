@@ -164,7 +164,7 @@ class HomeController: UIViewController {
             fetchHosts(hostsId: hostsId) { [weak self] hosts in
                 guard let self = self else { return }
                 self.filterDeletedHosts(hosts: hosts)
-                self.filterEventsFromDeletedUser(hosts: self.evnetHosts)
+                self.filterEventsFromDeletedHosts(hosts: self.evnetHosts)
                 self.presentEmptyViewIfNecessary()
                 self.endRefreshing()
             }
@@ -291,7 +291,7 @@ class HomeController: UIViewController {
         self.evnetHosts = undeletedHosts
     }
     
-    private func filterEventsFromDeletedUser(hosts: [User]) {
+    private func filterEventsFromDeletedHosts(hosts: [User]) {
         var undeletedHostsId: Set<String> = []
         var filteredEvents: [Event] = []
         hosts.forEach { host in
@@ -321,11 +321,9 @@ class HomeController: UIViewController {
     }
     
     private func presentLoginVC() {
-        DispatchQueue.main.async {
-            let loginController = LoginController()
-            let nav = UINavigationController(rootViewController: loginController)
-            self.present(nav, animated: true, completion: nil)
-        }
+        let loginController = LoginController()
+        let nav = UINavigationController(rootViewController: loginController)
+        self.present(nav, animated: true, completion: nil)
     }
     
     private func cleanupLayers() {
@@ -338,16 +336,16 @@ class HomeController: UIViewController {
         emptyWarningLabel.removeFromSuperview()
     }
     
-    private func animateProfileView(scrollView: UIScrollView) {
-        if scrollView.contentOffset.y >= 110 && profileView.alpha != 1 {
+    private func animateProfileView(scrollView: UIScrollView, yOffset: CGFloat, duration: TimeInterval) {
+        if scrollView.contentOffset.y >= yOffset && profileView.alpha != 1 {
             profileView.isHidden = false
             profileView.alpha = 0
-            UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, animations: {
+            UIViewPropertyAnimator.runningPropertyAnimator(withDuration: duration, delay: 0, animations: {
                 self.profileView.alpha = 1
             })
-        } else if scrollView.contentOffset.y < 110 && profileView.alpha == 1 {
+        } else if scrollView.contentOffset.y < yOffset && profileView.alpha == 1 {
             profileView.alpha = 1
-            UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, animations: {
+            UIViewPropertyAnimator.runningPropertyAnimator(withDuration: duration, delay: 0, animations: {
                 self.profileView.alpha = 0
             })
         }
@@ -475,19 +473,7 @@ extension HomeController: UICollectionViewDelegateFlowLayout {
 extension HomeController: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        animateProfileView(scrollView: scrollView)
-//        if scrollView.contentOffset.y >= 110 && profileView.alpha != 1 {
-//            profileView.isHidden = false
-//            profileView.alpha = 0
-//            UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, animations: {
-//                self.profileView.alpha = 1
-//            })
-//        } else if scrollView.contentOffset.y < 110 && profileView.alpha == 1 {
-//            profileView.alpha = 1
-//            UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, animations: {
-//                self.profileView.alpha = 0
-//            })
-//        }
+        animateProfileView(scrollView: scrollView, yOffset: 110, duration: 0.3)
     }
 }
 

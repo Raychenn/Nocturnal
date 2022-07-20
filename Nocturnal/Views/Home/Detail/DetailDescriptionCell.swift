@@ -62,7 +62,7 @@ class DetailDescriptionCell: UITableViewCell {
     // MARK: - Helpers
     
     private func setupCellUI() {
-        backgroundColor = UIColor.hexStringToUIColor(hex: "#161616")
+        backgroundColor = .deepGray
         contentView.addSubview(descriptionTitleLabel)
         descriptionTitleLabel.anchor(top: contentView.topAnchor, left: contentView.leftAnchor, paddingTop: 8, paddingLeft: 8)
         

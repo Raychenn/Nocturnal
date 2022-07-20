@@ -16,17 +16,6 @@ class PreviewMapCell: UITableViewCell {
 
     // MARK: - Properties
     
-    var event: Event? {
-        didSet {
-            guard let event = event else { return }
-            let annotation = MKPointAnnotation()
-            let coordinate = CLLocationCoordinate2D(latitude: event.destinationLocation.latitude, longitude: event.destinationLocation.longitude)
-            annotation.coordinate = CLLocationCoordinate2D(latitude: coordinate.latitude, longitude: coordinate.longitude)
-            mapView.addAnnotation(annotation)
-            mapView.zoomToFit(annotations: [annotation])
-        }
-    }
-    
     weak var delegate: PreviewMapCellDelegate?
     
     private lazy var mapView: MKMapView = {
@@ -41,7 +30,7 @@ class PreviewMapCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = UIColor.hexStringToUIColor(hex: "#161616")
+        backgroundColor = .deepGray
         contentView.addSubview(mapView)
         mapView.layer.cornerRadius = 10
         mapView.anchor(top: contentView.topAnchor,
@@ -61,6 +50,10 @@ class PreviewMapCell: UITableViewCell {
     // MARK: - Helpers
     
     func configureCell(with event: Event) {
+        let annotation = MKPointAnnotation()
+        let coordinate = CLLocationCoordinate2D(latitude: event.destinationLocation.latitude, longitude: event.destinationLocation.longitude)
+        annotation.coordinate = CLLocationCoordinate2D(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        mapView.addAnnotation(annotation)
         let destinationCoordinate = CLLocationCoordinate2D(latitude: event.destinationLocation.latitude, longitude: event.destinationLocation.longitude)
         let region = MKCoordinateRegion(center: destinationCoordinate, span: MKCoordinateSpan(latitudeDelta: 0.001, longitudeDelta: 0.001))
         mapView.setRegion(region, animated: true)

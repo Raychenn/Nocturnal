@@ -21,10 +21,27 @@ extension UILabel {
         attributedText = attributedTitle
     }
     
-    func makeBasicSemiboldLabel(fontSize: CGFloat, text: String) -> UILabel {
+    func makeBasicLabel(text: String? = "default text") -> UILabel {
+        let label = UILabel()
+        label.textColor = .lightGray
+        label.numberOfLines = 0
+        label.text = text
+        return label
+    }
+    
+    func makeBasicBoldLabel(fontSize: CGFloat, text: String? = "") -> UILabel {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: fontSize, weight: .bold)
+        label.textColor = .lightGray
+        label.text = text
+        return label
+    }
+    
+    func makeBasicSemiboldLabel(fontSize: CGFloat, text: String, textAlighment: NSTextAlignment = NSTextAlignment.natural) -> UILabel {
         let label = UILabel()
         label.font = .systemFont(ofSize: fontSize, weight: .semibold)
         label.numberOfLines = 0
+        label.textAlignment = textAlighment
         label.text = text
         return label
     }
@@ -34,6 +51,7 @@ extension UILabel {
          label.text = text
          label.font = .satisfyRegular(size: size)
          label.textAlignment = textAlighment
+         label.numberOfLines = 0
          label.textColor = .white
          return label
     }

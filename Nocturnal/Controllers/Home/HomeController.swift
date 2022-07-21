@@ -49,41 +49,15 @@ class HomeController: UIViewController {
         return button
     }()
     
-    private let emptyAnimationView: AnimationView = {
-       let view = AnimationView(name: "empty-box")
-        view.loopMode = .loop
-        view.contentMode = .scaleAspectFill
-        view.animationSpeed = 1
-        view.backgroundColor = .clear
-        view.play()
-        return view
-    }()
+    private let emptyAnimationView = LottieManager.shared.createLottieView(name: "empty-box", mode: .loop)
     
-    private let emptyWarningLabel: UILabel = {
-       let label = UILabel()
-        label.text = "No Events yet, click the + button to add new event"
-        label.font = .satisfyRegular(size: 25)
-        label.textAlignment = .center
-        label.textColor = .white
-        return label
-    }()
+    private let emptyWarningLabel = UILabel().makeSatisfyLabel(text: "No Events yet, click the + button to add new event",
+                                                               size: 25,
+                                                               textAlighment: .center)
     
-    private let currentUserNameLabel: UILabel = {
-       let label = UILabel()
-        label.text = "Loading Name"
-        label.textColor = .white
-        label.font = .satisfyRegular(size: 18)
-        return label
-    }()
+    private let currentUserNameLabel = UILabel().makeSatisfyLabel(text: "Loading Name", size: 18)
     
-    private let currentUserProfileImageView: UIImageView = {
-       let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        imageView.backgroundColor = .lightGray
-        imageView.tintColor = .black
-        imageView.clipsToBounds = true
-        return imageView
-    }()
+    private let currentUserProfileImageView = UIImageView().createBasicImageView(backgroundColor: .lightGray, tintColor: .black)
     
     private let profileView: UIView = {
        let view = UIView()
@@ -97,8 +71,6 @@ class HomeController: UIViewController {
     var events: [Event] = []
     
     var evnetHosts: [User] = []
-    
-    var currentCell: HomeEventCell?
         
     // MARK: - Life Cycle
     
@@ -121,13 +93,12 @@ class HomeController: UIViewController {
         super.viewDidLayoutSubviews()
         
         currentUserProfileImageView.layer.cornerRadius = 35/2
-        
-        let pulseLayer = PulsingLayer(numberOfPulses: .infinity, radius: 50, view: addEventButtonBackgroundView)
-        self.addEventButtonBackgroundView.layer.addSublayer(pulseLayer)
+        setupPulsingLayer()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         navigationController?.navigationBar.isHidden = true
         
         // fetch all events from firestore
@@ -135,21 +106,14 @@ class HomeController: UIViewController {
         fetchCurrentUser { [weak self] in
             guard let self = self else {return}
             self.fetchAllEvents()
-            self.currentUserNameLabel.text = self.currentUser.name
-            if let profileURL = URL(string: self.currentUser.profileImageURL) {
-                self.currentUserProfileImageView.kf.setImage(with: profileURL)
-            } else {
-                self.currentUserProfileImageView.image = UIImage(systemName: "person")
-            }
+            self.setupProfileView()
         }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        removePulsingLayer()
-        releaseVideoPlayer()
-        emptyAnimationView.stop()
-        emptyWarningLabel.removeFromSuperview()
+        cleanupLayers()
+        cleanupEmptyViews()
     }
 
     // MARK: - API
@@ -181,16 +145,8 @@ class HomeController: UIViewController {
             guard let self = self else { return }
             switch result {
             case .success(let events):
-                
-                if self.currentUser.blockedUsersId.count == 0 {
-                    self.events = events
-                    self.fetchHostsWhenLoggedin()
-                } else {
-                    self.filterEventsFromBlockedUsers(events: events) { filteredEvents in
-                        self.events = filteredEvents
-                        self.fetchHostsWhenLoggedin()
-                    }
-                }
+                self.filterBlockedEventsIfNecessary(from: events)
+                self.fetchLoggedinHosts()
             case .failure(let error):
                 self.presentErrorAlert(message: "\(error.localizedDescription)")
                 self.presentLoadingView(shouldPresent: false)
@@ -199,15 +155,16 @@ class HomeController: UIViewController {
         }
     }
         
-    private func fetchHostsWhenLoggedin() {
+    private func fetchLoggedinHosts() {
         if Auth.auth().currentUser != nil {
             // logged in, start fetching user data
             var hostsId: [String] = []
             events.forEach({hostsId.append($0.hostID)})
             
-            fetchHosts(hostsId: hostsId) { [weak self] in
+            fetchHosts(hostsId: hostsId) { [weak self] hosts in
                 guard let self = self else { return }
-                self.filterEventsForDeletedUser(hosts: self.evnetHosts)
+                self.filterDeletedHosts(hosts: hosts)
+                self.filterEventsFromDeletedHosts(hosts: self.evnetHosts)
                 self.presentEmptyViewIfNecessary()
                 self.endRefreshing()
             }
@@ -217,14 +174,12 @@ class HomeController: UIViewController {
         }
     }
     
-    private func fetchHosts(hostsId: [String], completion: @escaping () -> Void) {
+    private func fetchHosts(hostsId: [String], completion: @escaping ([User]) -> Void) {
         UserService.shared.fetchUsers(uids: hostsId) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let hosts):
-                // filter deleted hosts here
-                self.filterDeletedHosts(hosts: hosts)
-                completion()
+                completion(hosts)
             case .failure(let error):
                 self.presentErrorAlert(message: "\(error.localizedDescription)")
                 self.presentLoadingView(shouldPresent: false)
@@ -240,11 +195,7 @@ class HomeController: UIViewController {
     
     @objc func didTapShowEventButton() {
         if Auth.auth().currentUser == nil {
-            DispatchQueue.main.async {
-                let loginController = LoginController()
-                let nav = UINavigationController(rootViewController: loginController)
-                self.present(nav, animated: true, completion: nil)
-            }
+            presentLoginVC()
         } else {
             let addEventVC = AddEventController()
             navigationController?.pushViewController(addEventVC, animated: true)
@@ -252,6 +203,43 @@ class HomeController: UIViewController {
     }
     
     // MARK: - Helpers
+    
+    private func filterBlockedEventsIfNecessary(from events: [Event]) {
+        if self.currentUser.blockedUsersId.count == 0 {
+            self.events = events
+        } else {
+            self.filterEventsFromBlockedUsers(events: events) { filteredEvents in
+                self.events = filteredEvents
+            }
+        }
+    }
+    
+    func filterEventsFromBlockedUsers(events: [Event], completion: @escaping ([Event]) -> Void) {
+        var result: [Event] = []
+        
+        currentUser.blockedUsersId.forEach { blockedId in
+            events.forEach { event in
+                if blockedId != event.hostID {
+                    result.append(event)
+                }
+            }
+        }
+        completion(result)
+    }
+    
+    private func setupProfileView() {
+        self.currentUserNameLabel.text = self.currentUser.name
+        if let profileURL = URL(string: self.currentUser.profileImageURL) {
+            self.currentUserProfileImageView.kf.setImage(with: profileURL)
+        } else {
+            self.currentUserProfileImageView.image = UIImage(systemName: "person")
+        }
+    }
+    
+    private func setupPulsingLayer() {
+        let pulseLayer = PulsingLayer(numberOfPulses: .infinity, radius: 50, view: addEventButtonBackgroundView)
+        self.addEventButtonBackgroundView.layer.addSublayer(pulseLayer)
+    }
     
     private func presentEmptyViewIfNecessary() {
         if evnetHosts.count == 0 {
@@ -286,53 +274,6 @@ class HomeController: UIViewController {
         emptyWarningLabel.anchor(top: emptyAnimationView.bottomAnchor, paddingTop: 15)
     }
     
-    private func showReportAlert() {
-        let reportAlert = UIAlertController(title: "Please select a problem", message: "If someone is in immediate problem danger, get help before reporting to NocturnalHuman", preferredStyle: .alert)
-        
-        let responseAlert = UIAlertController(title: "Thanks for reporting this event", message: "We will review this event and remove anything that does not follow our standards as quickly as possible", preferredStyle: .alert)
-        responseAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        
-        reportAlert.addAction(UIAlertAction(title: "Nudity", style: .default, handler: { _ in
-            self.present(responseAlert, animated: true)
-        }))
-        
-        reportAlert.addAction(UIAlertAction(title: "Violence", style: .default, handler: { _ in
-            self.present(responseAlert, animated: true)
-        }))
-        
-        reportAlert.addAction(UIAlertAction(title: "Harassment", style: .default, handler: { _ in
-            self.present(responseAlert, animated: true)
-        }))
-        
-        reportAlert.addAction(UIAlertAction(title: "Suicide or self-injury", style: .default, handler: { _ in
-            self.present(responseAlert, animated: true)
-        }))
-        
-        reportAlert.addAction(UIAlertAction(title: "False information", style: .default, handler: { _ in
-            self.present(responseAlert, animated: true)
-        }))
-        
-        reportAlert.addAction(UIAlertAction(title: "Spam", style: .default, handler: { _ in
-            self.present(responseAlert, animated: true)
-        }))
-        
-        reportAlert.addAction(UIAlertAction(title: "Hate speech", style: .default, handler: { _ in
-            self.present(responseAlert, animated: true)
-        }))
-        
-        reportAlert.addAction(UIAlertAction(title: "Terrorism", style: .default, handler: { _ in
-            self.present(responseAlert, animated: true)
-        }))
-        
-        reportAlert.addAction(UIAlertAction(title: "Something else", style: .default, handler: { _ in
-            self.present(responseAlert, animated: true)
-        }))
-        
-        reportAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        
-        self.present(reportAlert, animated: true)
-    }
-    
     private func endRefreshing() {
         refreshControl.endRefreshing()
         collectionView.reloadData()
@@ -350,7 +291,7 @@ class HomeController: UIViewController {
         self.evnetHosts = undeletedHosts
     }
     
-    private func filterEventsForDeletedUser(hosts: [User]) {
+    private func filterEventsFromDeletedHosts(hosts: [User]) {
         var undeletedHostsId: Set<String> = []
         var filteredEvents: [Event] = []
         hosts.forEach { host in
@@ -358,15 +299,7 @@ class HomeController: UIViewController {
                 undeletedHostsId.insert(host.id ?? "")
             }
         }
-                
-        events.forEach { event in
-            undeletedHostsId.forEach { undeletedHostId in
-                if undeletedHostId == event.hostID {
-                    filteredEvents.append(event)
-                }
-            }
-        }
-        
+        filteredEvents = events.filter({ undeletedHostsId.contains($0.hostID) })
         self.events = filteredEvents
     }
     
@@ -378,12 +311,43 @@ class HomeController: UIViewController {
         })
     }
     
-    func releaseVideoPlayer() {
+    private func releaseVideoPlayer() {
         collectionView.visibleCells.forEach { cell in
             if let homeCell = cell as? HomeEventCell {
                 homeCell.player?.removeAllItems()
                 homeCell.player = nil
             }
+        }
+    }
+    
+    private func presentLoginVC() {
+        let loginController = LoginController()
+        let nav = UINavigationController(rootViewController: loginController)
+        self.present(nav, animated: true, completion: nil)
+    }
+    
+    private func cleanupLayers() {
+        removePulsingLayer()
+        releaseVideoPlayer()
+    }
+    
+    private func cleanupEmptyViews() {
+        emptyAnimationView.stop()
+        emptyWarningLabel.removeFromSuperview()
+    }
+    
+    private func animateProfileView(scrollView: UIScrollView, yOffset: CGFloat, duration: TimeInterval) {
+        if scrollView.contentOffset.y >= yOffset && profileView.alpha != 1 {
+            profileView.isHidden = false
+            profileView.alpha = 0
+            UIViewPropertyAnimator.runningPropertyAnimator(withDuration: duration, delay: 0, animations: {
+                self.profileView.alpha = 1
+            })
+        } else if scrollView.contentOffset.y < yOffset && profileView.alpha == 1 {
+            profileView.alpha = 1
+            UIViewPropertyAnimator.runningPropertyAnimator(withDuration: duration, delay: 0, animations: {
+                self.profileView.alpha = 0
+            })
         }
     }
     
@@ -425,19 +389,6 @@ class HomeController: UIViewController {
                               paddingRight: 8)
         addEventButton.layer.cornerRadius = 60/2
     }
-    
-    func filterEventsFromBlockedUsers(events: [Event], completion: @escaping ([Event]) -> Void) {
-        var result: [Event] = []
-        
-        currentUser.blockedUsersId.forEach { blockedId in
-            events.forEach { event in
-                if blockedId != event.hostID {
-                    result.append(event)
-                }
-            }
-        }
-        completion(result)
-    }
 }
 
 // MARK: - UICollectionViewDataSource
@@ -466,14 +417,12 @@ extension HomeController: UICollectionViewDataSource {
             guard let eventCell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeEventCell.identifier, for: indexPath) as? HomeEventCell else { return UICollectionViewCell() }
             
             eventCell.delegate = self
+            let event = events[indexPath.item]
             
             // should have 2 types of config | loggedin user vs no user
             if Auth.auth().currentUser == nil {
-                let event = events[indexPath.item]
-
                 eventCell.configureCell(event: event)
             } else {
-                let event = events[indexPath.item]
                 let host = evnetHosts[indexPath.item]
                 eventCell.configureCellForLoggedInUser(event: event, host: host)
             }
@@ -489,19 +438,11 @@ extension HomeController: UICollectionViewDelegate {
         
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if Auth.auth().currentUser == nil {
-            DispatchQueue.main.async {
-                let loginController = LoginController()
-                let nav = UINavigationController(rootViewController: loginController)
-                self.present(nav, animated: true, completion: nil)
-            }
+            presentLoginVC()
         } else {
             if indexPath.section == 1 {
                 let selectedEvent = events[indexPath.item]
                 let detailVC = EventDetailController(event: selectedEvent)
-                if let selectedCell = collectionView.cellForItem(at: indexPath) as? HomeEventCell {
-                    self.currentCell = selectedCell
-                }
-                
                 detailVC.hidesBottomBarWhenPushed = true
                 navigationController?.pushViewController(detailVC, animated: true)
             }
@@ -532,18 +473,7 @@ extension HomeController: UICollectionViewDelegateFlowLayout {
 extension HomeController: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView.contentOffset.y >= 110 && profileView.alpha != 1 {
-            profileView.isHidden = false
-            profileView.alpha = 0
-            UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, animations: {
-                self.profileView.alpha = 1
-            })
-        } else if scrollView.contentOffset.y < 110 && profileView.alpha == 1 {
-            profileView.alpha = 1
-            UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, animations: {
-                self.profileView.alpha = 0
-            })
-        }
+        animateProfileView(scrollView: scrollView, yOffset: 110, duration: 0.3)
     }
 }
 

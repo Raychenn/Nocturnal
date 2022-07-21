@@ -25,24 +25,9 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
         return table
     }()
     
-    private let loadingAnimationView: AnimationView = {
-       let view = AnimationView(name: "empty-box")
-        view.loopMode = .loop
-        view.contentMode = .scaleAspectFill
-        view.animationSpeed = 1
-        view.backgroundColor = .clear
-        view.play()
-        return view
-    }()
+    private let loadingAnimationView: AnimationView = LottieManager.shared.createLottieView(name: "empty-box", mode: .loop)
     
-    private let emptyWarningLabel: UILabel = {
-       let label = UILabel()
-        label.text = "No Available Data yet"
-        label.font = .systemFont(ofSize: 30, weight: .bold)
-        label.textAlignment = .center
-        label.textColor = .white
-        return label
-    }()
+    private let emptyWarningLabel: UILabel = UILabel().makeBasicBoldLabel(fontSize: 30, text: "No Available Data yet")
     
     private var currentUser: User
     
@@ -109,13 +94,11 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
             case .success(let notifications):
                 self.notifications = self.getFilteredNotifications(notifications: notifications)
                 self.notifications = self.filterNotificationFromBlockedUsers(notifications: self.notifications)
-                print("filtered notifications after blocking users \(self.notifications.count)")
-                self.fetchEvents { [weak self] events in
+                self.fetchEvents(from: self.notifications) { [weak self] events in
                     guard let self = self else { return }
                     self.events = events
                     self.fetchHostsAndApplicants()
                 }
-                
             case .failure(let error):
                 self.presentLoadingView(shouldPresent: false)
                 self.presentErrorAlert(title: "Error", message: "Fail to get notification: \(error.localizedDescription)", completion: nil)
@@ -136,7 +119,7 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
         }
     }
     
-    private func fetchEvents(completion: @escaping ([Event]) -> Void) {
+    private func fetchEvents(from notifications: [Notification], completion: @escaping ([Event]) -> Void) {
         var eventsId: [String] = []
         notifications.forEach({ eventsId.append($0.eventId) })
         EventService.shared.fetchEvents(fromEventIds: eventsId) { result in
@@ -254,7 +237,7 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
         if currentUser.blockedUsersId.count == 0 {
             return notifications
         }
-        
+    
         var result: [Notification] = []
         
         currentUser.blockedUsersId.forEach { blockedId in

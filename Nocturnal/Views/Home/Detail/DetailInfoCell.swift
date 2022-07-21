@@ -44,12 +44,7 @@ class DetailInfoCell: UITableViewCell {
         return imageView
     }()
     
-    private let dateLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .lightGray
-        label.text = "Jun 4 . 7:00 PM"
-        return label
-    }()
+    private let dateLabel: UILabel = UILabel().makeBasicLabel()
     
     private let addressImageView: UIImageView = {
         let imageView = UIImageView()
@@ -60,13 +55,7 @@ class DetailInfoCell: UITableViewCell {
         return imageView
     }()
     
-    private let addressLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 0
-        label.textColor = .lightGray
-        label.text = "Loading Address"
-        return label
-    }()
+    private let addressLabel: UILabel = UILabel().makeBasicLabel()
     
     private let styleImageView: UIImageView = {
         let imageView = UIImageView()
@@ -77,12 +66,7 @@ class DetailInfoCell: UITableViewCell {
         return imageView
     }()
     
-    private let styleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .lightGray
-        label.text = "Event Style: Loading"
-        return label
-    }()
+    private let styleLabel: UILabel = UILabel().makeBasicLabel()
     
     private let feesImageView: UIImageView = {
         let imageView = UIImageView()
@@ -93,12 +77,7 @@ class DetailInfoCell: UITableViewCell {
         return imageView
     }()
     
-    private let feeLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .lightGray
-        label.text = "$15.50"
-        return label
-    }()
+    private let feeLabel: UILabel = UILabel().makeBasicLabel()
     
     private let playMusicImageView: UIImageView = {
         let imageView = UIImageView()
@@ -109,12 +88,7 @@ class DetailInfoCell: UITableViewCell {
         return imageView
     }()
     
-    private let playMusicLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .lightGray
-        label.text = "Experience Event Music"
-        return label
-    }()
+    private let playMusicLabel: UILabel = UILabel().makeBasicLabel()
     
     private lazy var hostProfileImageView: UIImageView = {
         let imageView = UIImageView()
@@ -126,13 +100,7 @@ class DetailInfoCell: UITableViewCell {
         return imageView
     }()
     
-    private let hostNameLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 17, weight: .bold)
-        label.text = "Host: Ray Chen"
-        label.textColor = .lightGray
-        return label
-    }()
+    private let hostNameLabel: UILabel = UILabel().makeBasicBoldLabel(fontSize: 17)
     
     private lazy var chatButton: UIButton = {
         let button = UIButton()
@@ -148,14 +116,6 @@ class DetailInfoCell: UITableViewCell {
         imageView.setDimensions(height: 20, width: 20)
         imageView.tintColor = .lightGray
         return imageView
-    }()
-    
-    private let joinedMembersLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .medium)
-        label.text = "Joined Members: 0"
-        label.textColor = .lightGray
-        return label
     }()
     
     private let musicLabel: UILabel = {
@@ -187,19 +147,9 @@ class DetailInfoCell: UITableViewCell {
         return imageView
     }()
     
-    private let whosComingLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Who's coming: "
-        label.textColor = .lightGray
-        return label
-    }()
+    private let whosComingLabel: UILabel = UILabel().makeBasicLabel(text: "Who's coming: ")
     
-    private let emptyJoinedMembersLabel: UILabel = {
-        let label = UILabel()
-        label.text = "No joined member yet"
-        label.textColor = .lightGray
-        return label
-    }()
+    private let emptyJoinedMembersLabel: UILabel = UILabel().makeBasicLabel(text: "No joined member yet")
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -215,14 +165,7 @@ class DetailInfoCell: UITableViewCell {
         
     var joinedMemberProfileURLs: [String] = [] {
         didSet {
-            if joinedMemberProfileURLs.count == 0 {
-                emptyJoinedMembersLabel.isHidden = false
-                collectionView.isHidden = true
-            } else {
-                emptyJoinedMembersLabel.isHidden = true
-                collectionView.isHidden = false
-                collectionView.reloadData()
-            }
+            self.presentJoinedMemberCollection(shouldShow: joinedMemberProfileURLs.count == 0)
         }
     }
     
@@ -238,7 +181,6 @@ class DetailInfoCell: UITableViewCell {
          super.layoutSubviews()
          let bottomSpace: CGFloat = 15.0 // Let's assume the space you want is 10
          self.contentView.frame = self.contentView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: bottomSpace, right: 0))
-        
         hostProfileImageView.layer.cornerRadius = 50/2
         hostProfileImageView.layer.masksToBounds = true
     }
@@ -269,7 +211,7 @@ class DetailInfoCell: UITableViewCell {
     // MARK: - Heleprs
 
     func configureCell(with event: Event, host: User, joinedMemberProfileURLs: [String]) {
-        backgroundColor = UIColor.hexStringToUIColor(hex: "#161616")
+        backgroundColor = .deepGray
         if let profileUrl = URL(string: host.profileImageURL) {
             self.hostProfileImageView.kf.setImage(with: profileUrl, placeholder: UIImage(systemName: "person"))
         } else {
@@ -281,20 +223,12 @@ class DetailInfoCell: UITableViewCell {
         titleLabel.setContentHuggingPriority(.required, for: .vertical)
         let formattedDateString = Date.dateTimeFormatter.string(from: event.startingDate.dateValue())
         dateLabel.text = "\(formattedDateString)"
-        
         let location = CLLocation(latitude: event.destinationLocation.latitude, longitude: event.destinationLocation.longitude)
         configureAddressLabel(with: location)
-        
         styleLabel.text = "Event Style: \(event.style)"
         feeLabel.text = "$\(String(event.fee))"
-        joinedMembersLabel.text = "Joined Members: \(event.participants.count)"
-        guard let uid = Auth.auth().currentUser?.uid else {
-            print("uid in detail cell is nil")
-            return
-        }
         chatButton.isHidden = uid == event.hostID
         deleteImageView.isHidden = uid != event.hostID
-
         self.joinedMemberProfileURLs = joinedMemberProfileURLs
     }
     
@@ -304,10 +238,19 @@ class DetailInfoCell: UITableViewCell {
                 print("No placemark from Apple: \(String(describing: error))")
                 return
             }
-            
             let mkPlacemark = MKPlacemark(placemark: place)
-            
             self?.addressLabel.text = mkPlacemark.title ?? "no address"
+        }
+    }
+    
+    private func presentJoinedMemberCollection(shouldShow: Bool) {
+        if shouldShow {
+            emptyJoinedMembersLabel.isHidden = false
+            collectionView.isHidden = true
+        } else {
+            emptyJoinedMembersLabel.isHidden = true
+            collectionView.isHidden = false
+            collectionView.reloadData()
         }
     }
 
@@ -397,6 +340,7 @@ class DetailInfoCell: UITableViewCell {
     }
     
 }
+// MARK: - UICollectionViewDataSource, UICollectionViewDelegateFlowLayout
 
 extension DetailInfoCell: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     

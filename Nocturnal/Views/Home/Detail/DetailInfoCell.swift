@@ -44,13 +44,7 @@ class DetailInfoCell: UITableViewCell {
         return imageView
     }()
     
-    private let dateLabel: UILabel = {
-        let label = UILabel()
-//        label.font = .systemFont(ofSize: 15, weight: .medium)
-        label.textColor = .lightGray
-        label.text = "Jun 4 . 7:00 PM"
-        return label
-    }()
+    private let dateLabel: UILabel = UILabel().makeBasicLabel()
     
     private let addressImageView: UIImageView = {
         let imageView = UIImageView()
@@ -61,14 +55,7 @@ class DetailInfoCell: UITableViewCell {
         return imageView
     }()
     
-    private let addressLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 0
-        label.textColor = .lightGray
-//        label.font = .systemFont(ofSize: 15, weight: .medium)
-        label.text = "Loading Address"
-        return label
-    }()
+    private let addressLabel: UILabel = UILabel().makeBasicLabel()
     
     private let styleImageView: UIImageView = {
         let imageView = UIImageView()
@@ -79,13 +66,7 @@ class DetailInfoCell: UITableViewCell {
         return imageView
     }()
     
-    private let styleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .lightGray
-//        label.font = .systemFont(ofSize: 15, weight: .medium)
-        label.text = "Event Style: Loading"
-        return label
-    }()
+    private let styleLabel: UILabel = UILabel().makeBasicLabel()
     
     private let feesImageView: UIImageView = {
         let imageView = UIImageView()
@@ -96,13 +77,18 @@ class DetailInfoCell: UITableViewCell {
         return imageView
     }()
     
-    private let feeLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .lightGray
-//        label.font = .systemFont(ofSize: 15, weight: .medium)
-        label.text = "$15.50"
-        return label
+    private let feeLabel: UILabel = UILabel().makeBasicLabel()
+    
+    private let playMusicImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.image = UIImage(systemName: "music.note")
+        imageView.setDimensions(height: 20, width: 20)
+        imageView.tintColor = .lightGray
+        return imageView
     }()
+    
+    private let playMusicLabel: UILabel = UILabel().makeBasicLabel()
     
     private lazy var hostProfileImageView: UIImageView = {
         let imageView = UIImageView()
@@ -111,23 +97,14 @@ class DetailInfoCell: UITableViewCell {
         imageView.setDimensions(height: 50, width: 50)
         let tap = UITapGestureRecognizer(target: self, action: #selector(didTapUserProfile))
         imageView.addGestureRecognizer(tap)
-        imageView.backgroundColor = .lightGray
         return imageView
     }()
     
-    private let hostNameLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 17, weight: .bold)
-        label.text = "Host: Ray Chen"
-        label.textColor = .lightGray
-        return label
-    }()
+    private let hostNameLabel: UILabel = UILabel().makeBasicBoldLabel(fontSize: 17)
     
     private lazy var chatButton: UIButton = {
         let button = UIButton()
-        let config = UIImage.SymbolConfiguration(pointSize: 25)
-        button.setImage( UIImage(systemName: "message.fill", withConfiguration: config), for: .normal)
-        button.tintColor = .lightGray
+        button.setImage( UIImage(named: "messaging"), for: .normal)
         button.addTarget(self, action: #selector(didTapChatButton), for: .touchUpInside)
         return button
     }()
@@ -139,26 +116,6 @@ class DetailInfoCell: UITableViewCell {
         imageView.setDimensions(height: 20, width: 20)
         imageView.tintColor = .lightGray
         return imageView
-    }()
-    
-    private let joinedMembersLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 15, weight: .medium)
-        label.text = "Joined Members: 7"
-        label.textColor = .lightGray
-        return label
-    }()
-    
-    private lazy var viewAllMemberButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("View All", for: .normal)
-        button.setTitleColor(.black, for: .normal)
-        button.backgroundColor = .clear
-        button.layer.borderColor = UIColor.deepBlue.cgColor
-        button.layer.borderWidth = 1.3
-        button.addTarget(self, action: #selector(didTapViewAllButton), for: .touchUpInside)
-        
-        return button
     }()
     
     private let musicLabel: UILabel = {
@@ -190,6 +147,28 @@ class DetailInfoCell: UITableViewCell {
         return imageView
     }()
     
+    private let whosComingLabel: UILabel = UILabel().makeBasicLabel(text: "Who's coming: ")
+    
+    private let emptyJoinedMembersLabel: UILabel = UILabel().makeBasicLabel(text: "No joined member yet")
+    
+    private lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.minimumInteritemSpacing = 8
+        layout.scrollDirection = .horizontal
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
+        collectionView.register(JoinedMemberCell.self, forCellWithReuseIdentifier: JoinedMemberCell.id)
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        return collectionView
+    }()
+        
+    var joinedMemberProfileURLs: [String] = [] {
+        didSet {
+            self.presentJoinedMemberCollection(shouldShow: joinedMemberProfileURLs.count == 0)
+        }
+    }
+    
     // MARK: - Life Cycle
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -202,7 +181,6 @@ class DetailInfoCell: UITableViewCell {
          super.layoutSubviews()
          let bottomSpace: CGFloat = 15.0 // Let's assume the space you want is 10
          self.contentView.frame = self.contentView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: bottomSpace, right: 0))
-        
         hostProfileImageView.layer.cornerRadius = 50/2
         hostProfileImageView.layer.masksToBounds = true
     }
@@ -212,10 +190,6 @@ class DetailInfoCell: UITableViewCell {
     }
     
     // MARK: - Selectors
-    
-    @objc func didTapViewAllButton() {
-        print("view all")
-    }
     
     @objc func didPlayMusicButton() {
         guard let event = event else { return }
@@ -236,9 +210,13 @@ class DetailInfoCell: UITableViewCell {
     
     // MARK: - Heleprs
 
-    func configureCell(with event: Event, host: User) {
-        backgroundColor = UIColor.hexStringToUIColor(hex: "#161616")
-        self.hostProfileImageView.kf.setImage(with: URL(string: host.profileImageURL)!)
+    func configureCell(with event: Event, host: User, joinedMemberProfileURLs: [String]) {
+        backgroundColor = .deepGray
+        if let profileUrl = URL(string: host.profileImageURL) {
+            self.hostProfileImageView.kf.setImage(with: profileUrl, placeholder: UIImage(systemName: "person"))
+        } else {
+            self.hostProfileImageView.image = UIImage(systemName: "person")
+        }
         self.hostNameLabel.text = host.name
         self.event = event
         titleLabel.text = event.title
@@ -246,28 +224,36 @@ class DetailInfoCell: UITableViewCell {
         let formattedDateString = Date.dateTimeFormatter.string(from: event.startingDate.dateValue())
         dateLabel.text = "\(formattedDateString)"
         let location = CLLocation(latitude: event.destinationLocation.latitude, longitude: event.destinationLocation.longitude)
+        configureAddressLabel(with: location)
+        styleLabel.text = "Event Style: \(event.style)"
+        feeLabel.text = "$\(String(event.fee))"
+        chatButton.isHidden = uid == event.hostID
+        deleteImageView.isHidden = uid != event.hostID
+        self.joinedMemberProfileURLs = joinedMemberProfileURLs
+    }
+    
+    private func configureAddressLabel(with location: CLLocation) {
         CLGeocoder().reverseGeocodeLocation(location, preferredLocale: nil) { [weak self] (clPlacemark: [CLPlacemark]?, error: Error?) in
             guard let place = clPlacemark?.first else {
                 print("No placemark from Apple: \(String(describing: error))")
                 return
             }
-            
             let mkPlacemark = MKPlacemark(placemark: place)
-            
             self?.addressLabel.text = mkPlacemark.title ?? "no address"
         }
-        
-        styleLabel.text = "Event Style: \(event.style)"
-        feeLabel.text = "$\(String(event.fee))"
-        joinedMembersLabel.text = "Joined Members: \(event.participants.count)"
-        guard let uid = Auth.auth().currentUser?.uid else {
-            print("uid in nil")
-            return
-        }
-        chatButton.isHidden = uid == event.hostID
-        deleteImageView.isHidden = uid != event.hostID
     }
     
+    private func presentJoinedMemberCollection(shouldShow: Bool) {
+        if shouldShow {
+            emptyJoinedMembersLabel.isHidden = false
+            collectionView.isHidden = true
+        } else {
+            emptyJoinedMembersLabel.isHidden = true
+            collectionView.isHidden = false
+            collectionView.reloadData()
+        }
+    }
+
     private func setupCellUI() {
         contentView.addSubview(titleLabel)
         titleLabel.anchor(top: contentView.topAnchor,
@@ -294,6 +280,11 @@ class DetailInfoCell: UITableViewCell {
         addressStack.alignment = .center
         addressLabel.setContentCompressionResistancePriority(UILayoutPriority.required, for: .vertical)
         
+        let playMusicStack = UIStackView(arrangedSubviews: [playMusicImageView, playMusicLabel])
+        playMusicStack.axis = .horizontal
+        playMusicStack.spacing = 8
+        playMusicStack.alignment = .center
+        
         let styleStack = UIStackView(arrangedSubviews: [styleImageView, styleLabel])
         styleStack.axis = .horizontal
         styleStack.spacing = 8
@@ -302,15 +293,11 @@ class DetailInfoCell: UITableViewCell {
         feeStack.axis = .horizontal
         feeStack.spacing = 8
         
-        let joinedMemberStack = UIStackView(arrangedSubviews: [joinedMembersImageView, joinedMembersLabel])
-        joinedMemberStack.axis = .horizontal
-        joinedMemberStack.spacing = 8
-        
         let parentVStack = UIStackView(arrangedSubviews: [dateStack,
                                                           styleStack,
                                                           feeStack,
-                                                          joinedMemberStack,
-                                                          addressStack
+                                                          addressStack,
+                                                          playMusicStack
                                                           ])
         parentVStack.axis = .vertical
         parentVStack.spacing = 8
@@ -323,19 +310,60 @@ class DetailInfoCell: UITableViewCell {
                             paddingLeft: 8,
                             paddingRight: 8)
         
+        contentView.addSubview(whosComingLabel)
+        whosComingLabel.anchor(top: parentVStack.bottomAnchor, left: contentView.leftAnchor, paddingTop: 25, paddingLeft: 10)
+        
+        contentView.addSubview(emptyJoinedMembersLabel)
+        emptyJoinedMembersLabel.centerY(inView: whosComingLabel)
+        emptyJoinedMembersLabel.anchor(left: whosComingLabel.rightAnchor, paddingLeft: 5)
+        
+        contentView.addSubview(collectionView)
+        collectionView.centerY(inView: whosComingLabel)
+        collectionView.anchor(left: whosComingLabel.rightAnchor, right: contentView.rightAnchor, paddingLeft: 10, paddingRight: 10, height: 40)
+        
         contentView.addSubview(hostProfileImageView)
-        hostProfileImageView.anchor(top: parentVStack.bottomAnchor, left: contentView.leftAnchor, bottom: contentView.bottomAnchor, paddingTop: 30, paddingLeft: 8, paddingBottom: 10)
+        hostProfileImageView.anchor(top: collectionView.bottomAnchor, left: contentView.leftAnchor, bottom: contentView.bottomAnchor, paddingTop: 30, paddingLeft: 8, paddingBottom: 10)
 
         contentView.addSubview(hostNameLabel)
         hostNameLabel.centerY(inView: hostProfileImageView)
-        hostNameLabel.anchor(left: hostProfileImageView.rightAnchor, paddingLeft: 25)
+        hostNameLabel.anchor(left: hostProfileImageView.rightAnchor, paddingLeft: 10)
 
         contentView.addSubview(chatButton)
-        chatButton.anchor(top: parentVStack.bottomAnchor, left: hostProfileImageView.rightAnchor, paddingTop: 8, paddingLeft: 2)
+        chatButton.centerY(inView: hostNameLabel)
+        chatButton.anchor(right: contentView.rightAnchor, paddingRight: 15)
+        chatButton.setDimensions(height: 30, width: 30)
 
         contentView.addSubview(playMusicButton)
-        playMusicButton.centerY(inView: hostProfileImageView)
-        playMusicButton.anchor(right: contentView.rightAnchor, paddingRight: 8)
+        playMusicButton.centerY(inView: playMusicStack)
+        playMusicButton.anchor(right: contentView.rightAnchor, paddingRight: 15)
+        playMusicButton.setDimensions(height: 33, width: 33)
+    }
+    
+}
+// MARK: - UICollectionViewDataSource, UICollectionViewDelegateFlowLayout
+
+extension DetailInfoCell: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return joinedMemberProfileURLs.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        guard let profileCell = collectionView.dequeueReusableCell(withReuseIdentifier: JoinedMemberCell.id, for: indexPath) as? JoinedMemberCell else {
+            return UICollectionViewCell()
+        }
+        
+        let profileImageURL = self.joinedMemberProfileURLs[indexPath.item]
+        
+        profileCell.configureCell(imageURLString: profileImageURL)
+        
+        return profileCell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        return CGSize(width: 40, height: 40)
     }
     
 }

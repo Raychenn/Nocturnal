@@ -164,7 +164,7 @@ extension EditProfileController: UITableViewDelegate {
 extension EditProfileController: EditProfileCellDelegate {
     
     func didTapSave(cell: EditProfileCell, editedData: EditProfileCellModel) {
-        let currentImage = self.currentImage ?? UIImage()
+        let currentImage = self.currentImage ?? UIImage(named: "profileImage")
          
         // update user data in firestore
         let genderString = editedData.gender
@@ -180,9 +180,11 @@ extension EditProfileController: EditProfileCellDelegate {
             break
         }
     
-        let imageToUpload = updatedImage == nil ? currentImage: updatedImage ?? UIImage()
+        let imageToUpload = (updatedImage == nil ? currentImage: updatedImage) ?? UIImage(named: "profileImage")!
+                
         configureAnimationView()
         self.view.isUserInteractionEnabled = false
+        print("start uploading profile image")
         StorageUploader.shared.uploadProfileImage(with: imageToUpload) { [weak self] downloadedImageURL in
             guard let self = self else { return }
             let user = User(name: "\(editedData.firstname) \(editedData.familyname)",
@@ -197,6 +199,8 @@ extension EditProfileController: EditProfileCellDelegate {
                             blockedUsersId: self.currentUser.blockedUsersId,
                             requestedEventsId: self.currentUser.requestedEventsId)
 
+            print("start updating user profile and birthday is \(user.birthday)")
+            
             UserService.shared.updateUserProfile(newUserData: user) { error in
                 guard error == nil else {
                     self.view.isUserInteractionEnabled = true

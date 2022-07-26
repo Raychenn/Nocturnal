@@ -44,14 +44,6 @@ class SettingCell: UITableViewCell {
     }
     
     private func setupCellUI() {
-//        backgroundColor = .clear
-//        layer.masksToBounds = false
-//        layer.shadowOpacity = 0.3
-//        layer.shadowRadius = 12
-//        layer.shadowOffset = CGSize(width: 5, height: 5)
-//        layer.shadowColor = UIColor.white.cgColor
-//        contentView.backgroundColor = .black
-//        contentView.layer.cornerRadius = 8
         contentView.backgroundColor = UIColor.hexStringToUIColor(hex: "#1C242F")
         
         addSubview(symbolImageView)

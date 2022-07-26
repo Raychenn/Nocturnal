@@ -8,6 +8,7 @@
 import UIKit
 import CHTCollectionViewWaterfallLayout
 import FirebaseAuth
+import Lottie
 
 class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLayout {
     
@@ -16,7 +17,6 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     let refreshControl = UIRefreshControl()
     
     private lazy var collectionView: UICollectionView = {
-        
         let layout = CHTCollectionViewWaterfallLayout()
         layout.itemRenderDirection = .leftToRight
         layout.columnCount = 2
@@ -31,6 +31,11 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         return collectionView
     }()
     
+    private let emptyAnimationView: AnimationView = LottieManager.shared.createLottieView(name: "empty-box", mode: .loop)
+        
+    private let emptyWarningLabel: UILabel = UILabel().makeBasicSemiboldLabel(fontSize: 20,
+                                                                              text: "No Events yet, click the + button to add new event", textAlighment: .center)
+    
     private lazy var dateSegmentControl: NTSegmentedControl = {
         let seg = NTSegmentedControl()
         seg.translatesAutoresizingMaskIntoConstraints = false
@@ -42,7 +47,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         return seg
     }()
     
-    private lazy var searchController: UISearchController = {
+     lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
@@ -66,7 +71,11 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     
     var randomHeights: [CGFloat] = []
     
-    var originalAllEvents: [Event] = []
+    var originalAllEvents: [Event] = [] {
+        didSet {
+            print("originalAllEvents count \(events.count)")
+        }
+    }
     
     private var currentUser: User
     
@@ -90,16 +99,13 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if Auth.auth().currentUser == nil {
-            self.fetchEvents()
-        } else {
-            fetchCurrentUser { [weak self] user in
-                guard let self = self else { return }
-                
-                self.currentUser = user
-                self.fetchEvents()
-            }
-        }
+        Auth.auth().currentUser == nil ? self.fetchEvents(): self.fetchCurrentUser()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        emptyAnimationView.stop()
+        emptyWarningLabel.removeFromSuperview()
     }
     
     // MARK: - API
@@ -113,22 +119,15 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
                 if Auth.auth().currentUser == nil {
                     self.events = events
                     self.fetchHosts { hosts in
-                        self.filterEventsForDeletedUser(hosts: hosts)
-                        self.originalAllEvents = events
-                        self.generateRandomHeight(eventCount: events.count)
-                        self.endRefreshing()
+                        self.processAPICallback(hosts: hosts, events: events)
                     }
                 } else {
-                    self.filterEventsFromBlockedUsers(events: events) { [weak self] filteredEvents in
-                        guard let self = self else { return }
+//                    print("testing blocked users result: \(events.filter({ self.currentUser.blockedUsersId.contains( $0.hostID ) }).count)")
+                    self.filterEventsFromBlockedUsers(events: events) { filteredEvents in
                         // filter blocked users' posts first
                         self.events = filteredEvents
                         self.fetchHosts { hosts in
-                            // filter deleted users' posts
-                            self.filterEventsForDeletedUser(hosts: hosts)
-                            self.originalAllEvents = self.events
-                            self.generateRandomHeight(eventCount: self.events.count)
-                            self.endRefreshing()
+                            self.processAPICallback(hosts: hosts, events: self.events)
                         }
                     }
                 }
@@ -150,23 +149,18 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         if currentUser.blockedUsersId.count == 0 {
             completion(events)
         } else {
-            currentUser.blockedUsersId.forEach { blockedId in
-                events.forEach { event in
-                    if blockedId != event.hostID {
-                        result.append(event)
-                    }
-                }
-            }
+            result = events.filter({ !self.currentUser.blockedUsersId.contains( $0.hostID ) })
             completion(result)
         }
     }
     
-    private func fetchCurrentUser(completion: @escaping (User) -> Void) {
+    private func fetchCurrentUser() {
         UserService.shared.fetchUser(uid: uid) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let user):
-                completion(user)
+                self.currentUser = user
+                self.fetchEvents()
             case .failure(let error):
                 self.presentLoadingView(shouldPresent: false)
                 self.presentErrorAlert(title: "Error", message: "\(error.localizedDescription)", completion: nil)
@@ -182,7 +176,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         UserService.shared.fetchUsers(uids: hostsId) { result in
             switch result {
             case .success(let hosts):
-                completion(self.getUnDeletedHosts(hosts: hosts))
+                completion(self.getUndeletedHosts(hosts: hosts))
             case .failure(let error):
                 self.presentLoadingView(shouldPresent: false)
                 self.presentErrorAlert(message: "\(error.localizedDescription)")
@@ -198,7 +192,6 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     }
     
     @objc func dateSegmentValueChange(sender: NTSegmentedControl) {
-        
         switch sender.selectedButtonIndex {
             
         case 0:
@@ -206,42 +199,15 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
             collectionView.reloadData()
         case 1:
             resetEvents()
-            let calendar = Calendar.current
-            
-            let filteredEvents = events.filter { event in
-                return calendar.isDateInToday(event.startingDate.dateValue())
-            }
-            
-            self.events = filteredEvents
-            collectionView.reloadData()
+            filterTodaysEvents()
         case 2:
             resetEvents()
             let tomorrow = Calendar(identifier: .gregorian).date(byAdding: .day, value: 1, to: Date()) ?? Date()
-            
-            let filteredEvents = events.filter({ event in
-                if event.startingDate.dateValue() >= Date() && event.startingDate.dateValue() <= tomorrow {
-                    return true
-                } else {
-                    return false
-                }
-            })
-            self.events = filteredEvents
-            collectionView.reloadData()
+            filterEvents(for: tomorrow)
         case 3:
             resetEvents()
-            let today = Date()
             let dateAfterSevenDays = Calendar(identifier: .gregorian).date(byAdding: .day, value: 7, to: Date()) ?? Date()
-            
-            let filteredEvents = events.filter({ event in
-                if event.startingDate.dateValue() >= today && event.startingDate.dateValue() <= dateAfterSevenDays {
-                    return true
-                } else {
-                    return false
-                }
-            })
-            
-            self.events = filteredEvents
-            collectionView.reloadData()
+            filterEvents(for: dateAfterSevenDays)
         default:
             break
         }
@@ -249,24 +215,78 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     
     // MARK: - Helpers
     
+    private func filterTodaysEvents() {
+        let calendar = Calendar.current
+        
+        let filteredEvents = events.filter { event in
+            return calendar.isDateInToday(event.startingDate.dateValue())
+        }
+        
+        self.events = filteredEvents
+        collectionView.reloadData()
+    }
+    
+    func filterEvents(for date: Date) {
+        let filteredEvents = events.filter({ event in
+            return event.startingDate.dateValue() >= Date() && event.startingDate.dateValue() <= date
+        })
+        self.events = filteredEvents
+        collectionView.reloadData()
+    }
+    
+    private func processAPICallback(hosts: [User], events: [Event]) {
+        self.events = getFilteredEventsFromActiveHosts(hosts: hosts)
+        self.originalAllEvents = getFilteredEventsFromActiveHosts(hosts: hosts)
+        self.generateRandomHeight(eventCount: events.count)
+        self.presentEmptyViewIfNecessary()
+        self.endRefreshing()
+    }
+    
+    private func presentEmptyViewIfNecessary() {
+        if events.count == 0 {
+            configureEmptyAnimationView()
+            configureEmptyWarningLabel()
+            collectionView.isHidden = true
+        } else {
+            stopAnimationView()
+            emptyWarningLabel.removeFromSuperview()
+            collectionView.isHidden = false
+        }
+    }
+    
+    private func configureEmptyAnimationView() {
+        view.addSubview(emptyAnimationView)
+        emptyAnimationView.centerY(inView: view)
+        emptyAnimationView.centerX(inView: view)
+        emptyAnimationView.widthAnchor.constraint(equalToConstant: view.frame.size.width - 20).isActive = true
+        emptyAnimationView.heightAnchor.constraint(equalTo: emptyAnimationView.widthAnchor).isActive = true
+        emptyAnimationView.play()
+    }
+    
+    private func stopAnimationView() {
+        emptyAnimationView.stop()
+        emptyAnimationView.alpha = 0
+        emptyAnimationView.removeFromSuperview()
+    }
+    
+    private func configureEmptyWarningLabel() {
+        view.addSubview(emptyWarningLabel)
+        emptyWarningLabel.anchor(top: emptyAnimationView.bottomAnchor,
+                                 left: view.leftAnchor, right: view.rightAnchor,
+                                 paddingTop: 15, paddingLeft: 5, paddingRight: 5)
+    }
+    
     private func endRefreshing() {
         refreshControl.endRefreshing()
         collectionView.reloadData()
         presentLoadingView(shouldPresent: false)
     }
     
-    private func getUnDeletedHosts(hosts: [User]) -> [User] {
-        var undeletedHosts: [User] = []
-        
-        hosts.forEach { host in
-            if host.name != "Unknown User" {
-                undeletedHosts.append(host)
-            }
-        }
-        return undeletedHosts
+    private func getUndeletedHosts(hosts: [User]) -> [User] {
+        return hosts.filter({ $0.name != "Unknown User" })
     }
     
-    private func filterEventsForDeletedUser(hosts: [User]) {
+    func getFilteredEventsFromActiveHosts(hosts: [User]) -> [Event] {
         var undeletedHostsId: Set<String> = []
         var filteredEvents: [Event] = []
         hosts.forEach { host in
@@ -274,16 +294,8 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
                 undeletedHostsId.insert(host.id ?? "")
             }
         }
-        
-        events.forEach { event in
-            undeletedHostsId.forEach { undeletedHostId in
-                if undeletedHostId == event.hostID {
-                    filteredEvents.append(event)
-                }
-            }
-        }
-        
-        self.events = filteredEvents
+        filteredEvents = events.filter({ undeletedHostsId.contains($0.hostID) })
+        return filteredEvents
     }
     
     private func generateRandomHeight(eventCount: Int) {
@@ -328,6 +340,12 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         collectionView.reloadData()
     }
     
+    private func presentLoginVC() {
+        let loginController = LoginController()
+        let nav = UINavigationController(rootViewController: loginController)
+        self.present(nav, animated: true, completion: nil)
+    }
+    
     // MARK: - CHTCollectionViewDelegateWaterfallLayout
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
@@ -366,20 +384,10 @@ extension ExploreController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         if Auth.auth().currentUser == nil {
-            DispatchQueue.main.async {
-                let loginController = LoginController()
-                let nav = UINavigationController(rootViewController: loginController)
-                self.present(nav, animated: true, completion: nil)
-            }
+            presentLoginVC()
         } else {
             let event: Event
-            
-            if isFiltering {
-                event = filtedEvents[indexPath.item]
-            } else {
-                event = events[indexPath.item]
-            }
-            
+            event = isFiltering ? filtedEvents[indexPath.item]: events[indexPath.item]
             let detailedVC = EventDetailController(event: event)
             detailedVC.hidesBottomBarWhenPushed = true
             navigationController?.pushViewController(detailedVC, animated: true)
@@ -395,5 +403,4 @@ extension ExploreController: UISearchResultsUpdating {
         
         filterContentForSearchText(searchingText)
     }
-    
 }

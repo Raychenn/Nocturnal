@@ -18,7 +18,7 @@ class AuthButton: UIButton, Buzzable {
         super.init(frame: frame)
     
         setTitleColor(.white, for: .normal)
-        backgroundColor = .systemPurple.withAlphaComponent(0.4)
+        backgroundColor = .systemPurple.withAlphaComponent(0.6)
         layer.cornerRadius = 5
         setHeight(50)
         titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)

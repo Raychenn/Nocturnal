@@ -56,9 +56,4 @@ struct AuthService {
              print("Error Encoding user \(error)")
          }
     }
-    
-//    static func resetPasswrod(withEamil email: String, completion: SendPasswordResetCallback?) {
-//
-//        Auth.auth().sendPasswordReset(withEmail: email, completion: completion)
-//    }
 }

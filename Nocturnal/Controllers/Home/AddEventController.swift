@@ -31,23 +31,15 @@ class AddEventController: UIViewController {
         return table
     }()
     
-    var userInputData: AddEventUserInputCellModel?
+    private var userInputData: AddEventUserInputCellModel?
     
-    var eventImageURLString: String?
+    private var eventImageURLString: String?
     
-    var eventMusicURLString: String?
+    private var eventMusicURLString: String?
     
-    var eventVideoURLString: String?
+    private var eventVideoURLString: String?
     
-    let loadingAnimationView: AnimationView = {
-        let view = AnimationView(name: "cheers")
-        view.loopMode = .loop
-        view.contentMode = .scaleAspectFill
-        view.animationSpeed = 1
-        view.backgroundColor = .clear
-        view.play()
-        return view
-    }()
+    private let loadingAnimationView: AnimationView = LottieManager.shared.createLottieView(name: "cheers", mode: .loop)
     
     lazy var imagePickerController: UIImagePickerController = {
         let imagePicker = UIImagePickerController()
@@ -80,24 +72,42 @@ class AddEventController: UIViewController {
         setupUI()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.navigationBar.isHidden = false
+        configureChatNavBar(withTitle: "", preferLargeTitles: false)
+    }
+    
+    // MARK: - API
+    
+    private func postNewEvent(event: Event) {
+        EventService.shared.postNewEvent(event: event) { [weak self] error in
+            guard let self = self else { return }
+            print("start uploading event")
+            guard error == nil else {
+                self.presentLoadingView(shouldPresent: false)
+                self.presentErrorAlert(title: "Error", message: "Fail to upload event: \(error!.localizedDescription)", completion: nil)
+                print("Fail to upload event \(String(describing: error))")
+                return
+            }
+
+            self.stopAnimationView()
+            self.view.isUserInteractionEnabled = true
+            print("Scussfully uploaded event")
+            self.navigationController?.popViewController(animated: true)
+    }
+}
+    
     // MARK: - Helpers
     
     private func setupUI() {
-        setupNavigationBar()
         view.backgroundColor = .white
         view.addSubview(tableView)
         tableView.anchor(top: view.safeAreaLayoutGuide.topAnchor,
                          left: view.leftAnchor,
                          bottom: view.safeAreaLayoutGuide.bottomAnchor,
                          right: view.rightAnchor, paddingTop: 0)
-    }
-    
-    private func setupNavigationBar() {
-        title = "Add Event"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationController?.navigationBar.tintColor = .black
-        //        tableView.contentInsetAdjustmentBehavior = .never
-        //        tableView.setContentOffset(.init(x: 0, y: -2), animated: false)
     }
     
     private func configureAnimationView() {
@@ -158,7 +168,6 @@ extension AddEventController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: AddEventHeader.identifier) as? AddEventHeader else { return UIView() }
-        
         header.delegate = self
         return header
     }
@@ -191,7 +200,6 @@ extension AddEventController: UIImagePickerControllerDelegate, UINavigationContr
             presentLoadingView(shouldPresent: true)
             StorageUploader.shared.uploadEventVideo(videoUrl: videoUrl) { [weak self] downloadedUrl in
                 guard let self = self, let videoURL = URL(string: downloadedUrl) else { return }
-                print("downloadedUrl \(downloadedUrl)")
                 if let header = self.tableView.headerView(forSection: 0) as? AddEventHeader {
                     self.eventVideoURLString = downloadedUrl
                     header.setupVideoPlayerView(videoURL: videoURL)
@@ -243,7 +251,13 @@ extension AddEventController: UploadEventInfoCellDelegate {
     
     func uploadEvent(cell: UploadEventInfoCell) {
         
-        guard let userInputData = userInputData else { return }
+        guard let userInputData = userInputData,
+              let musicUrl = Bundle.main.url(forResource: userInputData.eventMusicString, withExtension: "mp3"),
+              let musicUrlData = try? Data(contentsOf: musicUrl) else {
+            
+            print("userInputData, musicUrl, or musicUrlData nil")
+            return
+        }
         
         guard !userInputData.eventName.isEmpty,
               !userInputData.eventAddress.isEmpty,
@@ -256,18 +270,8 @@ extension AddEventController: UploadEventInfoCellDelegate {
             print("incomplete input data")
             return
         }
-        
-        guard let musicUrl = Bundle.main.url(forResource: userInputData.eventMusicString, withExtension: "mp3") else {
-            print("musicUrl nil")
-            return
-        }
-        guard let musicUrlData = try? Data(contentsOf: musicUrl) else {
-            print("musicUrlData nil")
-            return
-        }
-            // upload video
-            let geoCoder = CLGeocoder()
             configureAnimationView()
+            let geoCoder = CLGeocoder()
             self.view.isUserInteractionEnabled = false
             geoCoder.geocodeAddressString(userInputData.eventAddress) { [weak self] (placemarks, error) in
                 guard let self = self else { return }
@@ -288,12 +292,7 @@ extension AddEventController: UploadEventInfoCellDelegate {
                 StorageUploader.shared.uploadEventImage(with: selectedEventImage) { downloadedImageURL in
             
                     StorageUploader.shared.uploadEventMusic(with: musicUrlData) { downloadedMusicURL in
-                        
-                        guard let uid = Auth.auth().currentUser?.uid else {
-                            print("current user nil in add EventVC")
-                            return
-                        }
-            
+
                         let newEvent = Event(title: userInputData.eventName,
                                              createTime: Timestamp(date: Date()),
                                              hostID: uid,
@@ -309,21 +308,7 @@ extension AddEventController: UploadEventInfoCellDelegate {
                                              deniedUsersId: [],
                                              pendingUsersId: [])
             
-                        EventService.shared.postNewEvent(event: newEvent) { [weak self] error in
-                            guard let self = self else { return }
-                            print("start uploading event")
-                            guard error == nil else {
-                                self.presentLoadingView(shouldPresent: false)
-                                self.presentErrorAlert(title: "Error", message: "Fail to upload event: \(error!.localizedDescription)", completion: nil)
-                                print("Fail to upload event \(String(describing: error))")
-                                return
-                            }
-            
-                            self.stopAnimationView()
-                            self.view.isUserInteractionEnabled = true
-                            print("Scussfully uploaded event")
-                            self.navigationController?.popViewController(animated: true)
-                    }
+                        self.postNewEvent(event: newEvent)
                 }
             }
         }

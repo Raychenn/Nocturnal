@@ -47,6 +47,7 @@ enum Gender: Int, Codable {
 }
 
 enum Country: String {
+    case taiwan = "Taiwan"
     case usa = "USA"
     case japan = "Japan"
     case australia = "Australia"
@@ -61,6 +62,8 @@ enum Country: String {
     
     var countryCode: String {
         switch self {
+        case .taiwan:
+            return "TW"
         case .usa:
             return "US"
         case .japan:

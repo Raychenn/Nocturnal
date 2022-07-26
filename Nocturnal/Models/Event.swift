@@ -9,7 +9,7 @@ import Foundation
 import FirebaseFirestoreSwift
 import FirebaseFirestore
 
-struct Event: Codable {
+struct Event: Codable, Equatable {
     @DocumentID var id: String?
     let title: String
     let createTime: Timestamp

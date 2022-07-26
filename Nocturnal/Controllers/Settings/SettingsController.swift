@@ -7,6 +7,9 @@
 import UIKit
 import FirebaseAuth
 import FirebaseFirestore
+import MessageUI
+import SafariServices
+import StoreKit
 
 class SettingsController: UIViewController {
     
@@ -149,11 +152,39 @@ class SettingsController: UIViewController {
         self.present(alert, animated: true)
     }
     
-    private func presentFeedBackAlert() {
-        let alert = UIAlertController(title: "Please send any suggestion or feedback to the developer at r0975929562@gmail.com", message: "Hope you have a nice experience using this App", preferredStyle: .alert)
+    private func presentSendEmailController() {
+        if MFMailComposeViewController.canSendMail() {
+            let emailVC = MFMailComposeViewController()
+            emailVC.delegate = self
+            emailVC.mailComposeDelegate = self
+            emailVC.setSubject("Contact Developer")
+            emailVC.setToRecipients(["r0975929562@gmail.com"])
+            self.present(emailVC, animated: true)
+        } else {
+            // fallback here if user does not wnat to send email
+            guard let googleUrl = URL(string: "https://www.google.com") else { return  }
+            let fallbackVC = SFSafariViewController(url: googleUrl)
+            self.present(fallbackVC, animated: true)
+        }
+    }
+    
+    private func presentRatingController() {
+        guard let windowScene = view.window?.windowScene else {
+            print("Can not find window scene in setting VC")
+            return
+        }
+        SKStoreReviewController.requestReview(in: windowScene)
+    }
+    
+    private func presentReauthenticateController() {
+        // reauthenticate
+        let deletingAccountAlert = UIAlertController(title: "Deleting account will require user to sign out and sign in again", message: "", preferredStyle: .alert)
+        deletingAccountAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            try? Auth.auth().signOut()
+            self.checkIfUserIsLoggedIn()
+        }))
         
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        self.present(alert, animated: true)
+        self.present(deletingAccountAlert, animated: true)
     }
     
     // MARK: - Selectors
@@ -207,9 +238,9 @@ extension SettingsController: UITableViewDelegate {
                 let privacyVC = PrivacyPolicyController()
                 self.present(privacyVC, animated: true)
             case .rate:
-                break
+                presentRatingController()
             case .feedback:
-                presentFeedBackAlert()
+                presentSendEmailController()
             case .eula:
                 let eulaVC = EULAController()
                 self.present(eulaVC, animated: true)
@@ -233,45 +264,52 @@ extension SettingsController: UITableViewDelegate {
                     print("current user is nil in setting")
                     return
                 }
-            // MARK: - TODO:
+                
                 currentUser.delete { [weak self] error in
                     guard let self = self else { return }
+                    
                     if let error = error {
+                        let authErr = AuthErrorCode.Code(rawValue: error._code)
+                        if authErr == .requiresRecentLogin {
+                            // reauthenticate
+                            self.presentReauthenticateController()
+                        }
+
+                        // other error
                         self.presentErrorAlert(message: "\(error.localizedDescription)")
-                        self.presentLoadingView(shouldPresent: false)
-                        return
-                    }
-            
-                    StorageUploader.shared.uploadProfileImage(with: UIImage(systemName: "person")!) { downloadedUrl in
-                        let emptyUser = User(name: "Unknown User",
-                                             email: "",
-                                             country: "",
-                                             profileImageURL: downloadedUrl,
-                                             birthday: Timestamp(date: Date()),
-                                             gender: 2,
-                                             numberOfHostedEvents: 0,
-                                             bio: "This account has been deleted",
-                                             joinedEventsId: [],
-                                             blockedUsersId: [],
-                                             requestedEventsId: [])
-                        
-                        UserService.shared.updateUserProfileForDeletion(deledtedUserId: currentUser.uid, emptyUser: emptyUser) { error in
-                            if let error = error {
-                                self.presentErrorAlert(message: "\(error.localizedDescription)")
-                                self.presentLoadingView(shouldPresent: false)
-                                return
-                            }
+                    } else {
+                        // delete success, start deleting
+                        StorageUploader.shared.uploadProfileImage(with: UIImage(systemName: "person")!) { downloadedUrl in
+                            let emptyUser = User(name: "Unknown User",
+                                                 email: "",
+                                                 country: "",
+                                                 profileImageURL: downloadedUrl,
+                                                 birthday: Timestamp(date: Date()),
+                                                 gender: 2,
+                                                 numberOfHostedEvents: 0,
+                                                 bio: "This account has been deleted",
+                                                 joinedEventsId: [],
+                                                 blockedUsersId: [],
+                                                 requestedEventsId: [])
                             
-                            NotificationService.shared.updateCancelNotification(deletedUserId: currentUser.uid) { error in
+                            UserService.shared.updateUserProfileForDeletion(deledtedUserId: self.user.id ?? "", emptyUser: emptyUser) { error in
                                 if let error = error {
                                     self.presentErrorAlert(message: "\(error.localizedDescription)")
                                     self.presentLoadingView(shouldPresent: false)
                                     return
                                 }
-                                self.presentLoadingView(shouldPresent: false)
-                                // remember to present login full screen
-                                print("Successfully deleted user")
-                                self.handleLogout()
+                                print("user id before deletion \(self.user.id ?? "")")
+                                NotificationService.shared.updateCancelNotification(deletedUserId: self.user.id ?? "") { error in
+                                    if let error = error {
+                                        self.presentErrorAlert(message: "\(error.localizedDescription)")
+                                        self.presentLoadingView(shouldPresent: false)
+                                        return
+                                    }
+                                    self.presentLoadingView(shouldPresent: false)
+                                    // remember to present login full screen
+                                    print("Successfully deleted user")
+                                    self.handleLogout()
+                                }
                             }
                         }
                     }
@@ -294,4 +332,27 @@ extension SettingsController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return section == 0 ? 270: 15
     }
+}
+
+// MARK: - MFMailComposeViewControllerDelegate
+extension SettingsController: MFMailComposeViewControllerDelegate, UINavigationControllerDelegate {
+    
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        
+        switch result {
+        case .cancelled:
+            print("email cancelled")
+        case .saved:
+            print("email saved")
+        case .sent:
+            print("sent email")
+        case .failed:
+            print("fail to send email")
+        @unknown default:
+            break
+        }
+        
+        controller.dismiss(animated: true)
+    }
+    
 }

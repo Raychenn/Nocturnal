@@ -100,7 +100,7 @@ class ProfileController: UIViewController {
             case .success(let user):
                 print("current user name in profile \(user.name)")
                 self.currentUser = user
-                self.collectionView.reloadData()
+//                self.collectionView.reloadData()
                 self.checkIfIsBlockedUser { isBlocked in
                     self.isBlocked = isBlocked
                     self.collectionView.reloadData()
@@ -141,7 +141,7 @@ class ProfileController: UIViewController {
     // MARK: - Helpers
     private func setupUI() {
         navigationController?.navigationBar.isHidden = true
-        view.backgroundColor = .white
+        view.backgroundColor = .black
         view.addSubview(collectionView)
         collectionView.anchor(top: view.topAnchor,
                               left: view.leftAnchor,

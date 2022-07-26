@@ -41,6 +41,7 @@ class HomeController: UIViewController {
     
     private lazy var addEventButton: UIButton = {
         let button = UIButton()
+        button.accessibilityIdentifier = "add"
         button.setDimensions(height: 60, width: 60)
         button.setImage(UIImage(systemName: "plus")?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.tintColor = .white

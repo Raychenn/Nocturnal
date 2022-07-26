@@ -47,7 +47,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         return seg
     }()
     
-    private lazy var searchController: UISearchController = {
+     lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
@@ -226,7 +226,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         collectionView.reloadData()
     }
     
-    private func filterEvents(for date: Date) {
+    func filterEvents(for date: Date) {
         let filteredEvents = events.filter({ event in
             return event.startingDate.dateValue() >= Date() && event.startingDate.dateValue() <= date
         })
@@ -286,7 +286,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         return hosts.filter({ $0.name != "Unknown User" })
     }
     
-    private func getFilteredEventsFromActiveHosts(hosts: [User]) -> [Event] {
+    func getFilteredEventsFromActiveHosts(hosts: [User]) -> [Event] {
         var undeletedHostsId: Set<String> = []
         var filteredEvents: [Event] = []
         hosts.forEach { host in

@@ -16,7 +16,7 @@
 
 :seedling: Features
 =======
-**Core features:**
+**Main features:**
 - Host events: upload your own event with highly detailed information
 - Play music: experience event music uploaded by the event host
 - Conversation: text with hosts or applicants immediately if there is any question regarding the event
@@ -26,14 +26,9 @@
 
 *Screenshots were taken using iPhone 13 mini, but is compatible with all iPhones and iPads*
 
- - **Home Page**
+ - **Home&Detail Page**
  >All events posted by other users 
- <img src="https://github.com/Raychenn/Nocturnal/blob/main/Screenshots/Home_page.png" width="179">
-
- - **Event Detail Page**
- >Detail information about the event 
- 
- <img src="https://github.com/Raychenn/Nocturnal/blob/main/Screenshots/Detail_page.png" width="179">
+ <img src="https://github.com/Raychenn/Nocturnal/blob/main/Screenshots/Home_page.png" width="179"><img src="https://github.com/Raychenn/Nocturnal/blob/main/Screenshots/Detail_page.png" width="179">
  
   - **Chatting**
  >Private chat between event host and applicant 

@@ -184,20 +184,7 @@ class LoginController: UIViewController {
                     self.presentErrorAlert(title: "Error", message: "\(String(describing: error.localizedDescription))", completion: nil)
                     return
                 } else {
-                    var keyWindow: UIWindow? {
-                        // Get connected scenes
-                        return UIApplication.shared.connectedScenes
-                            // Keep only active scenes, onscreen and visible to the user
-                            .filter { $0.activationState == .foregroundActive }
-                            // Keep only the first `UIWindowScene`
-                            .first(where: { $0 is UIWindowScene })
-                            // Get its associated windows
-                            .flatMap({ $0 as? UIWindowScene })?.windows
-                            // Finally, keep only the key window
-                            .first(where: \.isKeyWindow)
-                    }
-
-                    guard let tab = keyWindow?.rootViewController as? MainTabBarController else {
+                    guard let tab = self.keyWindow?.rootViewController as? MainTabBarController else {
                         print("no tab bar controller")
                         return
                     }
@@ -351,6 +338,9 @@ class LoginController: UIViewController {
         }
     }
     
+    // MARK: - API
+    
+    
     // MARK: - Apple sign in
     
     private func randomNonceString(length: Int = 32) -> String {
@@ -444,30 +434,17 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
               // you're sending the SHA256-hashed nonce as a hex string with
               // your request to Apple.
              self.presentLoadingView(shouldPresent: false)
-             self.presentErrorAlert(title: "Error", message: "Fail to log in with Apple: \(String(describing: error!.localizedDescription))", completion: nil)
+             self.presentErrorAlert(title: "Error",
+                                    message: "Fail to log in with Apple: \(String(describing: error!.localizedDescription))",
+                                    completion: nil)
               return        
             }
-              
-              var keyWindow: UIWindow? {
-                  // Get connected scenes
-                  return UIApplication.shared.connectedScenes
-                      // Keep only active scenes, onscreen and visible to the user
-                      .filter { $0.activationState == .foregroundActive }
-                      // Keep only the first `UIWindowScene`
-                      .first(where: { $0 is UIWindowScene })
-                      // Get its associated windows
-                      .flatMap({ $0 as? UIWindowScene })?.windows
-                      // Finally, keep only the key window
-                      .first(where: \.isKeyWindow)
-              }
 
-              guard let tab = keyWindow?.rootViewController as? MainTabBarController else {
+              guard let tab = self.keyWindow?.rootViewController as? MainTabBarController else {
                   print("no tab bar controller")
                   return
               }
               
-              let uid = authResult?.user.uid ?? ""
-
               UserService.shared.checkIfUserExist(uid: uid) { [weak self] result in
                   guard let self = self else { return }
                   switch result {
@@ -482,7 +459,7 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
                           let firstname = appleIDCredential.fullName?.givenName ?? "default"
                           let familyname = appleIDCredential.fullName?.familyName ?? "name"
                           let username = "\(firstname) \(familyname)"
-                            let email = authResult?.user.email ?? ""
+                          let email = authResult?.user.email ?? ""
                           AuthService.shared.uploadNewUser(withId: uid, name: username, email: email) { error in
                               guard error == nil else {
                                   self.presentErrorAlert(message: "\(error!.localizedDescription)")

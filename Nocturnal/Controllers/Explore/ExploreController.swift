@@ -71,11 +71,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     
     var randomHeights: [CGFloat] = []
     
-    var originalAllEvents: [Event] = [] {
-        didSet {
-            print("originalAllEvents count \(events.count)")
-        }
-    }
+    var originalAllEvents: [Event] = []
     
     private var currentUser: User
     
@@ -122,7 +118,6 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
                         self.processAPICallback(hosts: hosts, events: events)
                     }
                 } else {
-//                    print("testing blocked users result: \(events.filter({ self.currentUser.blockedUsersId.contains( $0.hostID ) }).count)")
                     self.filterEventsFromBlockedUsers(events: events) { filteredEvents in
                         // filter blocked users' posts first
                         self.events = filteredEvents

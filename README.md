@@ -28,6 +28,7 @@
 
  - **Home&Detail Page**
  >All events posted by other users 
+ 
  <img src="https://github.com/Raychenn/Nocturnal/blob/main/Screenshots/Home_page.png" width="179"><img src="https://github.com/Raychenn/Nocturnal/blob/main/Screenshots/Detail_page.png" width="179">
  
   - **Chatting**

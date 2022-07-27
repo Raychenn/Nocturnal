@@ -53,7 +53,7 @@
  ## :bulb: Technical Highlights
 - Implemented music and video playing feature by using AVKit  
 - Applied dynamic UICollectionViewCell to calculate cell size based on contents
-- Familiar with MVC, MVVM, and OOP to architect structure of App 
+- Implemented MVC and OOP to manage structure of the App
 - Applied Firestore as remote database for data storage 
 - Adopted singleton design pattern to ensure unified access
 - Designed reusable UI components 

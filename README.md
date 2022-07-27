@@ -19,7 +19,7 @@
 **Main features:**
 - Host events: upload your own event with highly detailed information
 - Play music: experience event music uploaded by the event host
-- Conversation: text with hosts or applicants immediately if there is any question regarding the event
+- Conversation: text with hosts or applicants immediately for further inquiries regarding the event
 - Statistics: provide easy to read charts analyzing current user's joined event styles and costs
 
 **Screenshots:**
@@ -31,17 +31,17 @@
  
  <img src="https://github.com/Raychenn/Nocturnal/blob/main/Screenshots/Home_page.png" width="179"><img src="https://github.com/Raychenn/Nocturnal/blob/main/Screenshots/Detail_page.png" width="179">
  
-  - **Chatting**
+  - **Chatting Page**
  >Private chat between event host and applicant 
  
  <img src="https://github.com/Raychenn/Nocturnal/blob/main/Screenshots/Chat_page.png" width="179">
  
-   - **Stats**
+   - **Stats Page**
  >Joined event styles and costs of the current logged in user
  
  <img src="https://github.com/Raychenn/Nocturnal/blob/main/Screenshots/Stats_page.png" width="179">
  
-   - **Notifications**
+   - **Notifications Page**
  >Received all notification regarding your applications and responses
  
  <img src="https://github.com/Raychenn/Nocturnal/blob/main/Screenshots/Notification_page.png" width="179">

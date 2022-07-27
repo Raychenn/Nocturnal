@@ -18,7 +18,7 @@
   <b>NocturnalHuman</b> is an <b>event sharing, social App</b> that allows users to find friends with common interests and hang out at night. Users can either play as as applicant to join other's events or become a host themselves to throw a desired party. Through browsing other's events, applicants can send applicant to the host, and the hosts could determine if they want to let the applicant join. If hosts and applicants have further questions to ask each other, they can start a real time conversation whenever they want!
 </p>
 
-:seedling: Features
+:hear_no_evil: Features
 =======
 **Main features:**
 - Host events: upload your own event with highly detailed information
@@ -31,7 +31,7 @@
 *Screenshots were taken using iPhone 13 mini, but is compatible with all iPhones and iPads*
 
  - **Home&Detail Page**
- >All events posted by other users 
+ >All events posted by other users
  
  <img src="https://github.com/Raychenn/Nocturnal/blob/main/Screenshots/Home_page.png" width="179"><img src="https://github.com/Raychenn/Nocturnal/blob/main/Screenshots/Detail_page.png" width="179">
  

@@ -95,7 +95,6 @@ class SettingsController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupUI()
     }
     
@@ -124,6 +123,42 @@ class SettingsController: UIViewController {
                 let nav = UINavigationController(rootViewController: loginController)
                 nav.modalPresentationStyle = .fullScreen
                 self.present(nav, animated: true, completion: nil)
+            }
+        }
+    }
+    
+    private func handleDeletingUser() {
+        StorageUploader.shared.uploadProfileImage(with: UIImage(systemName: "person")!) { downloadedUrl in
+            let emptyUser = User(name: "Unknown User",
+                                 email: "",
+                                 country: "",
+                                 profileImageURL: downloadedUrl,
+                                 birthday: Timestamp(date: Date()),
+                                 gender: 2,
+                                 numberOfHostedEvents: 0,
+                                 bio: "This account has been deleted",
+                                 joinedEventsId: [],
+                                 blockedUsersId: [],
+                                 requestedEventsId: [])
+            
+            UserService.shared.updateUserProfileForDeletion(deledtedUserId: self.user.id ?? "", emptyUser: emptyUser) { error in
+                if let error = error {
+                    self.presentErrorAlert(message: "\(error.localizedDescription)")
+                    self.presentLoadingView(shouldPresent: false)
+                    return
+                }
+                print("user id before deletion \(self.user.id ?? "")")
+                NotificationService.shared.updateCancelNotification(deletedUserId: self.user.id ?? "") { error in
+                    if let error = error {
+                        self.presentErrorAlert(message: "\(error.localizedDescription)")
+                        self.presentLoadingView(shouldPresent: false)
+                        return
+                    }
+                    self.presentLoadingView(shouldPresent: false)
+                    // remember to present login full screen
+                    print("Successfully deleted user")
+                    self.handleLogout()
+                }
             }
         }
     }
@@ -187,6 +222,26 @@ class SettingsController: UIViewController {
         self.present(deletingAccountAlert, animated: true)
     }
     
+    private func handleSelectedSetting(selectedSetting: SettingType) {
+        switch selectedSetting {
+        case .privacy:
+            let privacyVC = PrivacyPolicyController()
+            self.present(privacyVC, animated: true)
+        case .rate:
+            presentRatingController()
+        case .feedback:
+            presentSendEmailController()
+        case .eula:
+            let eulaVC = EULAController()
+            self.present(eulaVC, animated: true)
+        case .blockedList:
+            let blockedListVC = BlockedUsersController()
+            navigationController?.pushViewController(blockedListVC, animated: true)
+        case .signout:
+            presentLogoutController()
+        }
+    }
+    
     // MARK: - Selectors
     
     @objc func didTapBackButton() {
@@ -233,26 +288,9 @@ extension SettingsController: UITableViewDelegate {
         if indexPath.section == 0 {
             let selectedSetting = settings[indexPath.row]
             
-            switch selectedSetting {
-            case .privacy:
-                let privacyVC = PrivacyPolicyController()
-                self.present(privacyVC, animated: true)
-            case .rate:
-                presentRatingController()
-            case .feedback:
-                presentSendEmailController()
-            case .eula:
-                let eulaVC = EULAController()
-                self.present(eulaVC, animated: true)
-            case .blockedList:
-                let blockedListVC = BlockedUsersController()
-                navigationController?.pushViewController(blockedListVC, animated: true)
-            case .signout:
-                presentLogoutController()
-            }
+            handleSelectedSetting(selectedSetting: selectedSetting)
         } else {
             let alert = UIAlertController(title: "Are you sure you want to delete this account?", message: "", preferredStyle: .actionSheet)
-            
             alert.addAction(UIAlertAction(title: "NO", style: .cancel, handler: nil))
             alert.addAction(UIAlertAction(title: "YES", style: .destructive, handler: { [weak self] _ in
                 guard let self = self else { return }
@@ -270,48 +308,10 @@ extension SettingsController: UITableViewDelegate {
                     
                     if let error = error {
                         let authErr = AuthErrorCode.Code(rawValue: error._code)
-                        if authErr == .requiresRecentLogin {
-                            // reauthenticate
-                            self.presentReauthenticateController()
-                        }
-
-                        // other error
-                        self.presentErrorAlert(message: "\(error.localizedDescription)")
+                        authErr == .requiresRecentLogin ? self.presentReauthenticateController(): self.presentErrorAlert(message: "\(error.localizedDescription)")
                     } else {
                         // delete success, start deleting
-                        StorageUploader.shared.uploadProfileImage(with: UIImage(systemName: "person")!) { downloadedUrl in
-                            let emptyUser = User(name: "Unknown User",
-                                                 email: "",
-                                                 country: "",
-                                                 profileImageURL: downloadedUrl,
-                                                 birthday: Timestamp(date: Date()),
-                                                 gender: 2,
-                                                 numberOfHostedEvents: 0,
-                                                 bio: "This account has been deleted",
-                                                 joinedEventsId: [],
-                                                 blockedUsersId: [],
-                                                 requestedEventsId: [])
-                            
-                            UserService.shared.updateUserProfileForDeletion(deledtedUserId: self.user.id ?? "", emptyUser: emptyUser) { error in
-                                if let error = error {
-                                    self.presentErrorAlert(message: "\(error.localizedDescription)")
-                                    self.presentLoadingView(shouldPresent: false)
-                                    return
-                                }
-                                print("user id before deletion \(self.user.id ?? "")")
-                                NotificationService.shared.updateCancelNotification(deletedUserId: self.user.id ?? "") { error in
-                                    if let error = error {
-                                        self.presentErrorAlert(message: "\(error.localizedDescription)")
-                                        self.presentLoadingView(shouldPresent: false)
-                                        return
-                                    }
-                                    self.presentLoadingView(shouldPresent: false)
-                                    // remember to present login full screen
-                                    print("Successfully deleted user")
-                                    self.handleLogout()
-                                }
-                            }
-                        }
+                        self.handleDeletingUser()
                     }
                 }
             }))

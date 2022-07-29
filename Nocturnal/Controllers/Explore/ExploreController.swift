@@ -71,11 +71,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     
     var randomHeights: [CGFloat] = []
     
-    var originalAllEvents: [Event] = [] {
-        didSet {
-            print("originalAllEvents count \(events.count)")
-        }
-    }
+    var originalAllEvents: [Event] = []
     
     private var currentUser: User
     
@@ -122,7 +118,6 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
                         self.processAPICallback(hosts: hosts, events: events)
                     }
                 } else {
-//                    print("testing blocked users result: \(events.filter({ self.currentUser.blockedUsersId.contains( $0.hostID ) }).count)")
                     self.filterEventsFromBlockedUsers(events: events) { filteredEvents in
                         // filter blocked users' posts first
                         self.events = filteredEvents
@@ -216,11 +211,7 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     // MARK: - Helpers
     
     private func filterTodaysEvents() {
-        let calendar = Calendar.current
-        
-        let filteredEvents = events.filter { event in
-            return calendar.isDateInToday(event.startingDate.dateValue())
-        }
+        let filteredEvents = events.filter { Calendar.current.isDateInToday($0.startingDate.dateValue()) }
         
         self.events = filteredEvents
         collectionView.reloadData()
@@ -364,13 +355,7 @@ extension ExploreController: UICollectionViewDataSource {
         guard let exploreCell = collectionView.dequeueReusableCell(withReuseIdentifier: ExploreCell.identifier, for: indexPath) as? ExploreCell else { return UICollectionViewCell() }
         
         let event: Event
-        
-        if isFiltering {
-            event = filtedEvents[indexPath.row]
-        } else {
-            event = events[indexPath.row]
-        }
-        
+        event = isFiltering ? filtedEvents[indexPath.row]: events[indexPath.row]
         exploreCell.configureCell(with: event)
         
         return exploreCell

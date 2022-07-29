@@ -4,6 +4,7 @@
 //
 //  Created by Boray Chen on 2022/7/21.
 //
+// swiftlint:disable line_length
 
 import XCTest
 @testable import Nocturnal
@@ -88,3 +89,4 @@ class NocturnalTests: XCTestCase {
     }
 
 }
+// swiftlint:enable line_length

@@ -77,6 +77,41 @@ class EditProfileController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - API
+    
+    private func updateUserProfile(newUser: User) {
+        UserService.shared.updateUserProfile(newUserData: newUser) { [weak self] error in
+            guard let self = self else { return }
+            guard error == nil else {
+                self.view.isUserInteractionEnabled = true
+                self.presentErrorAlert(message: "\(error!.localizedDescription)")
+                self.stopAnimationView()
+                return
+            }
+            // Fetch new new user and reload
+            self.fetchNewUser()
+        }
+    }
+    
+    private func fetchNewUser() {
+        UserService.shared.fetchUser(uid: uid) { result in
+            switch result {
+            case .success(let updatedUser):
+                self.currentUser = updatedUser
+                self.tableView.reloadData()
+                self.stopAnimationView()
+                self.view.isUserInteractionEnabled = true
+                self.delegate?.updateProfile()
+                self.navigationController?.popViewController(animated: true)
+            case .failure(let error):
+                self.view.isUserInteractionEnabled = true
+                self.presentErrorAlert(message: "\(error.localizedDescription)")
+                self.stopAnimationView()
+                print("Fail to fetch user \(error)")
+            }
+        }
+    }
+    
     // MARK: - Helpers
     private func configureAnimationView() {
         view.addSubview(loadingAnimationView)
@@ -201,31 +236,7 @@ extension EditProfileController: EditProfileCellDelegate {
 
             print("start updating user profile and birthday is \(user.birthday)")
             
-            UserService.shared.updateUserProfile(newUserData: user) { error in
-                guard error == nil else {
-                    self.view.isUserInteractionEnabled = true
-                    self.presentErrorAlert(message: "\(error!.localizedDescription)")
-                    self.stopAnimationView()
-                    return
-                }
-                // Fetch new new user and reload
-                UserService.shared.fetchUser(uid: uid) { result in
-                    switch result {
-                    case .success(let updatedUser):
-                        self.currentUser = updatedUser
-                        self.tableView.reloadData()
-                        self.stopAnimationView()
-                        self.view.isUserInteractionEnabled = true
-                        self.delegate?.updateProfile()
-                        self.navigationController?.popViewController(animated: true)
-                    case .failure(let error):
-                        self.view.isUserInteractionEnabled = true
-                        self.presentErrorAlert(message: "\(error.localizedDescription)")
-                        self.stopAnimationView()
-                        print("Fail to fetch user \(error)")
-                    }
-                }
-            }
+            self.updateUserProfile(newUser: user)
         }
     }
 }

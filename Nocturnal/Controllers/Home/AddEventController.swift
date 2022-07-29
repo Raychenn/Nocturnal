@@ -63,7 +63,7 @@ class AddEventController: UIViewController {
         
         return view
     }()
-        
+    
     // MARK: - Life Cycle
     
     override func viewDidLoad() {
@@ -91,13 +91,34 @@ class AddEventController: UIViewController {
                 print("Fail to upload event \(String(describing: error))")
                 return
             }
-
+            
             self.stopAnimationView()
             self.view.isUserInteractionEnabled = true
             print("Scussfully uploaded event")
             self.navigationController?.popViewController(animated: true)
+        }
     }
-}
+    
+    private func getConvertedAddressToGeoPoint(addressString: String, completion: @escaping (GeoPoint) -> Void) {
+        let geoCoder = CLGeocoder()
+        
+        geoCoder.geocodeAddressString(addressString) { [weak self] (placemarks, error) in
+            guard let self = self else { return }
+            print("geo coding")
+            if let error = error {
+                self.presentLoadingView(shouldPresent: false)
+                self.presentErrorAlert(title: "Error", message: "error converting address \(error.localizedDescription))", completion: nil)
+                return
+            }
+            guard let placemarks = placemarks, let location = placemarks[0].location else {
+                // handle no location found
+                print("Present Alert to show no location found")
+                return
+            }
+            // get location
+            completion(GeoPoint(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude))
+        }
+    }
     
     // MARK: - Helpers
     
@@ -196,7 +217,7 @@ extension AddEventController: UIImagePickerControllerDelegate, UINavigationContr
         
         if let videoUrl = info[UIImagePickerController.InfoKey.mediaURL] as? URL {
             // Do something with the URL
-        
+            
             presentLoadingView(shouldPresent: true)
             StorageUploader.shared.uploadEventVideo(videoUrl: videoUrl) { [weak self] downloadedUrl in
                 guard let self = self, let videoURL = URL(string: downloadedUrl) else { return }
@@ -222,7 +243,7 @@ extension AddEventController: UIImagePickerControllerDelegate, UINavigationContr
 
 // MARK: - AddEventHeaderDelegate
 extension AddEventController: AddEventHeaderDelegate {
-
+    
     func uploadNewEventImageView(header: AddEventHeader) {
         imagePickerController.mediaTypes = ["public.image"]
         self.present(imagePickerController, animated: true, completion: nil)
@@ -270,51 +291,36 @@ extension AddEventController: UploadEventInfoCellDelegate {
             print("incomplete input data")
             return
         }
-            configureAnimationView()
-            let geoCoder = CLGeocoder()
-            self.view.isUserInteractionEnabled = false
-            geoCoder.geocodeAddressString(userInputData.eventAddress) { [weak self] (placemarks, error) in
-                guard let self = self else { return }
-                print("geo coding")
-                if let error = error {
-                    self.presentLoadingView(shouldPresent: false)
-                    self.presentErrorAlert(title: "Error", message: "error converting address \(error.localizedDescription))", completion: nil)
-                    return
-                }
-                guard let placemarks = placemarks, let location = placemarks[0].location else {
-                    // handle no location found
-                    print("Present Alert to show no location found")
-                    return
-                }
-                // get location
-                let destinationLocation = GeoPoint(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
+        configureAnimationView()
+        self.view.isUserInteractionEnabled = false
+        getConvertedAddressToGeoPoint(addressString: userInputData.eventAddress) { destinationLocation in
+            
+            StorageUploader.shared.uploadEventImage(with: selectedEventImage) { downloadedImageURL in
                 
-                StorageUploader.shared.uploadEventImage(with: selectedEventImage) { downloadedImageURL in
-            
-                    StorageUploader.shared.uploadEventMusic(with: musicUrlData) { downloadedMusicURL in
-
-                        let newEvent = Event(title: userInputData.eventName,
-                                             createTime: Timestamp(date: Date()),
-                                             hostID: uid,
-                                             description: userInputData.eventDescription,
-                                             startingDate: Timestamp(date: userInputData.eventTime),
-                                             destinationLocation: destinationLocation,
-                                             fee: Double(userInputData.eventFee) ?? 0,
-                                             style: userInputData.eventStyle,
-                                             eventImageURL: downloadedImageURL,
-                                             eventMusicURL: downloadedMusicURL,
-                                             eventVideoURL: self.eventVideoURLString,
-                                             participants: [],
-                                             deniedUsersId: [],
-                                             pendingUsersId: [])
-            
-                        self.postNewEvent(event: newEvent)
+                StorageUploader.shared.uploadEventMusic(with: musicUrlData) { downloadedMusicURL in
+                    
+                    let newEvent = Event(title: userInputData.eventName,
+                                         createTime: Timestamp(date: Date()),
+                                         hostID: uid,
+                                         description: userInputData.eventDescription,
+                                         startingDate: Timestamp(date: userInputData.eventTime),
+                                         destinationLocation: destinationLocation,
+                                         fee: Double(userInputData.eventFee) ?? 0,
+                                         style: userInputData.eventStyle,
+                                         eventImageURL: downloadedImageURL,
+                                         eventMusicURL: downloadedMusicURL,
+                                         eventVideoURL: self.eventVideoURLString,
+                                         participants: [],
+                                         deniedUsersId: [],
+                                         pendingUsersId: [])
+                    
+                    self.postNewEvent(event: newEvent)
                 }
             }
         }
     }
 }
- // MARK: - CustomPopupViewDelegate
+// MARK: - CustomPopupViewDelegate
 
 extension AddEventController: CustomPopupViewDelegate {
     

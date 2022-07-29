@@ -145,8 +145,7 @@ class ProfileCell: UICollectionViewCell {
         let gender = Gender(rawValue: user.gender) ?? .male
         genderImageView.image = UIImage(named: gender.getDescription)
         zodiaContentImageView.image = UIImage(named: calculateZodiac())?.withRenderingMode(.alwaysTemplate)
-        let age = calculateAge() == 0 ? "Unspecified": "\(calculateAge()) years old"
-        ageContentLabel.text = age
+        ageContentLabel.text = "\(user.age) years old"
         usernameLabel.text = user.name
         let country = Country(rawValue: user.country) ?? .unspecified
         if country == .unspecified {
@@ -224,19 +223,6 @@ class ProfileCell: UICollectionViewCell {
         ageStack.anchor(top: zodiacStack.bottomAnchor,
                         left: usernameLabel.leftAnchor,
                         paddingTop: 5)
-    }
-    
-    func calculateAge() -> Int {
-        guard let user = user else {
-            print("user is nil")
-            return 0
-        }
-        
-        let calendar = Calendar(identifier: .gregorian)
-        let birthday = user.birthday.dateValue()
-        let ageComponents = calendar.dateComponents([.year], from: birthday, to: Date())
-        let age = ageComponents.year ?? 18
-        return age
     }
     
     func calculateZodiac() -> String {

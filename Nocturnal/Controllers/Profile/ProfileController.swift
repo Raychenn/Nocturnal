@@ -9,9 +9,15 @@ import UIKit
 import FirebaseAuth
 import JGProgressHUD
 
+protocol ProfileControllerDelegate: AnyObject {
+    func didFinishUnblockingUser()
+}
+
 class ProfileController: UIViewController {
     
     // MARK: - Properties
+    
+    weak var delegate: ProfileControllerDelegate?
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -290,7 +296,8 @@ extension ProfileController: ProfileHeaderDelegate {
         alert.addAction(UIAlertAction(title: "NO", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "YES", style: .default, handler: { _ in
             self.presentLoadingView(shouldPresent: true)
-            UserService.shared.removeUserFromblockedList(blockedUid: id) { error in
+            UserService.shared.removeUserFromblockedList(blockedUid: id) { [weak self] error in
+                guard let self = self else { return }
                 if let error = error {
                     self.presentErrorAlert(message: "\(error.localizedDescription)")
                     self.presentLoadingView(shouldPresent: false)
@@ -304,6 +311,8 @@ extension ProfileController: ProfileHeaderDelegate {
                 
                 self.presentLoadingView(shouldPresent: false)
                 HudManager.shared.showSuccess(on: self, text: "Success")
+                self.dismiss(animated: true)
+                self.delegate?.didFinishUnblockingUser()
                 print("Succussfully unblocked user and pop up alert here..")
             }
         }))

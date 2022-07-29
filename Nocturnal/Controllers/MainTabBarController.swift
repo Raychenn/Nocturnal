@@ -16,13 +16,12 @@ class MainTabBarController: UITabBarController {
     
     var currentUser: User?
     
-    let defaultUser = User(id: "guest", name: "", email: "", country: "", profileImageURL: "", birthday: Timestamp(date: Date()), gender: 2, numberOfHostedEvents: 0, bio: "", joinedEventsId: [], blockedUsersId: [], requestedEventsId: [])
+    let defaultUser = User()
     
     // MARK: - Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
 //        try? Auth.auth().signOut()
         self.configureTabBarStyle()
         self.configureNavigationBarUI()

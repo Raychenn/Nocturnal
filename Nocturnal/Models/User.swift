@@ -25,7 +25,27 @@ struct User: Codable, Hashable {
     
     var age: Int {
         // should calculate this based on birthday
-        return 99
+        let calendar = Calendar(identifier: .gregorian)
+        let birthday = self.birthday.dateValue()
+        let ageComponents = calendar.dateComponents([.year], from: birthday, to: Date())
+        let age = ageComponents.year ?? 18
+        return age
+    }
+}
+
+extension User {
+    init() {
+        self.name = ""
+        self.email = ""
+        self.country = ""
+        self.profileImageURL = ""
+        self.birthday = Timestamp(date: Date())
+        self.numberOfHostedEvents = 0
+        self.gender = 3
+        self.bio = ""
+        self.joinedEventsId = []
+        self.blockedUsersId = []
+        self.requestedEventsId = []
     }
 }
 

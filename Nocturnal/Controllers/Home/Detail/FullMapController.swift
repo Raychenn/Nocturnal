@@ -54,21 +54,13 @@ class FullMapController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    // MARK: - Selectors
-    
-//    @objc func didTapBackButton() {
-//        navigationController?.popViewController(animated: true)
-//    }
-    
+        
     // MARK: - Helpers
     
     private func setupUI() {
         view.backgroundColor = .white
         view.addSubview(mapView)
         mapView.fillSuperview()
-//        view.addSubview(backButton)
-//        backButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingTop: 8, paddingLeft: 8)
     }
     
     private func setupMap() {
@@ -144,7 +136,6 @@ class FullMapController: UIViewController {
     }
     
     func createDirctionRequest(from coordinate: CLLocationCoordinate2D) -> MKDirections.Request {
-//        let destinationCoordinate = destinationCoordinate
         let startingLocation = MKPlacemark(coordinate: coordinate)
         let destination = MKPlacemark(coordinate: destinationCoordinate)
         
@@ -200,7 +191,6 @@ extension FullMapController: MKMapViewDelegate {
         let renderer = MKPolylineRenderer(overlay: overlay)
         renderer.lineWidth = 3
         renderer.strokeColor = .primaryBlue
-        
         return renderer
     }
 }

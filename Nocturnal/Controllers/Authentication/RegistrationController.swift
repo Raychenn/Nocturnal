@@ -90,6 +90,30 @@ class RegistrationController: UIViewController {
         confiureUI()
     }
     
+    // MARK: - API
+    
+    private func registerNewUser(user: User, password: String) {
+        AuthService.shared.registerUser(withUser: user, password: password) { [weak self] error in
+            guard let self = self else { return }
+            guard error == nil else {
+                self.presentLoadingView(shouldPresent: false)
+                self.presentErrorAlert(title: "Error", message: error!.localizedDescription, completion: nil)
+                return
+            }
+
+            guard let tab = self.keyWindow?.rootViewController as? MainTabBarController else {
+                print("no tab bar controller")
+                return
+            }
+
+            print("successfully register user with firestore")
+            self.presentLoadingView(shouldPresent: false)
+            tab.authenticateUserAndConfigureUI()
+            self.signUpButton.configuration?.showsActivityIndicator = false
+            self.dismiss(animated: true)
+        }
+    }
+    
     // MARK: - selectors
     
     @objc func handleShowLogIn() {
@@ -110,64 +134,28 @@ class RegistrationController: UIViewController {
               let fullName = fullNameTextField.text,
               let profileImage = self.profileImage,
               !email.isEmpty, !password.isEmpty, !fullName.isEmpty else {
-            
-            popupVC.modalTransitionStyle = .crossDissolve
-            popupVC.modalPresentationStyle = .overCurrentContext
-            popupVC.delegate = self
+            presentWarningPopupVC()
             signUpButton.buzz()
-            self.present(popupVC, animated: true)
             return
         }
         
         signUpButton.configuration?.showsActivityIndicator = true
         presentLoadingView(shouldPresent: true)
         StorageUploader.shared.uploadProfileImage(with: profileImage) { downloadedImgURL in
-            
-            let defaultGender = Gender.unspecified.rawValue
-            
+        
             let user = User(name: fullName,
                             email: email,
                             country: "",
                             profileImageURL: downloadedImgURL,
                             birthday: Timestamp(date: Date()),
-                            gender: defaultGender,
+                            gender: Gender.unspecified.rawValue,
                             numberOfHostedEvents: 0,
                             bio: "",
                             joinedEventsId: [],
                             blockedUsersId: [],
                             requestedEventsId: [])
             
-            AuthService.shared.registerUser(withUser: user, password: password) { [weak self] error in
-                guard let self = self else { return }
-                guard error == nil else {
-                    self.presentLoadingView(shouldPresent: false)
-                    self.presentErrorAlert(title: "Error", message: error!.localizedDescription, completion: nil)
-                    return
-                }
-                var keyWindow: UIWindow? {
-                    // Get connected scenes
-                    return UIApplication.shared.connectedScenes
-                        // Keep only active scenes, onscreen and visible to the user
-                        .filter { $0.activationState == .foregroundActive }
-                        // Keep only the first `UIWindowScene`
-                        .first(where: { $0 is UIWindowScene })
-                        // Get its associated windows
-                        .flatMap({ $0 as? UIWindowScene })?.windows
-                        // Finally, keep only the key window
-                        .first(where: \.isKeyWindow)
-                }
-
-                guard let tab = keyWindow?.rootViewController as? MainTabBarController else {
-                    print("no tab bar controller")
-                    return
-                }
-
-                print("successfully register user with firestore")
-                self.presentLoadingView(shouldPresent: false)
-                tab.authenticateUserAndConfigureUI()
-                self.signUpButton.configuration?.showsActivityIndicator = false
-                self.dismiss(animated: true)
-            }
+            self.registerNewUser(user: user, password: password)
         }
     }
     
@@ -175,8 +163,6 @@ class RegistrationController: UIViewController {
     
     private func confiureUI() {
         self.navigationController?.delegate = self
-//        configureGradientLayer()
-        
         view.addSubview(backgroundImageView)
         backgroundImageView.alpha = 1
         backgroundImageView.fillSuperview()
@@ -201,7 +187,13 @@ class RegistrationController: UIViewController {
         view.addSubview(alreadyHasAcouuntButton)
         alreadyHasAcouuntButton.centerX(inView: view)
         alreadyHasAcouuntButton.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor)
-        
+    }
+    
+    private func presentWarningPopupVC() {
+        popupVC.modalTransitionStyle = .crossDissolve
+        popupVC.modalPresentationStyle = .overCurrentContext
+        popupVC.delegate = self
+        self.present(popupVC, animated: true)
     }
 }
 

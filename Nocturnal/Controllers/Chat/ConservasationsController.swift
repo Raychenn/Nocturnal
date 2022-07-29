@@ -48,9 +48,7 @@ class ConversationsController: UIViewController {
             guard let self = self else { return }
             switch result {
             case .success(let conversations):
-                print("conversations count \(conversations.count)")
                 self.conversations = self.filterConversationsFromBlockedUser(conversations: conversations)
-                print("conversations after filtering blocked users count \(self.conversations.count)")
                 self.tableView.reloadData()
                 self.presentLoadingView(shouldPresent: false)
             case .failure(let error):
@@ -85,15 +83,7 @@ class ConversationsController: UIViewController {
         }
 
         var result: [Conversation] = []
-        
-        currentUser.blockedUsersId.forEach { blockedId in
-            conversations.forEach { conversation in
-                if conversation.user.id != blockedId {
-                    result.append(conversation)
-                }
-            }
-        }
-        
+        result = conversations.filter({ !currentUser.blockedUsersId.contains($0.user.id ?? "") })
         return result
     }
     

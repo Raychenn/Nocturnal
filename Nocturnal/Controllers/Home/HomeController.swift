@@ -67,7 +67,7 @@ class HomeController: UIViewController {
         return view
     }()
 
-    var currentUser: User
+    var currentUser: User 
         
     var events: [Event] = []
     
@@ -217,14 +217,7 @@ class HomeController: UIViewController {
     
     func filterEventsFromBlockedUsers(events: [Event], completion: @escaping ([Event]) -> Void) {
         var result: [Event] = []
-        
-        currentUser.blockedUsersId.forEach { blockedId in
-            events.forEach { event in
-                if blockedId != event.hostID {
-                    result.append(event)
-                }
-            }
-        }
+        result = events.filter({ !currentUser.blockedUsersId.contains($0.hostID) })
         completion(result)
     }
     
@@ -283,12 +276,7 @@ class HomeController: UIViewController {
     
     private func filterDeletedHosts(hosts: [User]) {
         var undeletedHosts: [User] = []
-        
-        hosts.forEach { host in
-            if host.name != "Unknown User" {
-                undeletedHosts.append(host)
-            }
-        }
+        undeletedHosts = hosts.filter({ $0.name != "Unknown User" })
         self.evnetHosts = undeletedHosts
     }
     

@@ -99,4 +99,3 @@ func getZodiacSign(_ date: Date) -> String {
         return "capricorn"
     }
 }
-

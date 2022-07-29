@@ -115,7 +115,7 @@ class LoginController: UIViewController {
     var audioPlayer: AVAudioPlayer?
     
     var playerLooper: AVPlayerLooper?
-    
+        
     // MARK: - life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -144,6 +144,21 @@ class LoginController: UIViewController {
         player = nil
         videoPlayerView.layer.sublayers?.removeAll()
         audioPlayer = nil
+    }
+    
+    // MARK: - API
+    
+    private func uploadNewUser(username: String, email: String, completion: @escaping () -> Void) {
+        AuthService.shared.uploadNewUser(withId: uid, name: username, email: email) { error in
+            guard error == nil else {
+                self.presentErrorAlert(message: "\(error!.localizedDescription)")
+                self.presentLoadingView(shouldPresent: false)
+                print("Fail to upload new user \(String(describing: error))")
+                return
+            }
+            print("did Sign in appleeee")
+            completion()
+        }
     }
     
     // MARK: - selectors
@@ -337,16 +352,11 @@ class LoginController: UIViewController {
             print("Fail to play music \(error)")
         }
     }
-    
-    // MARK: - API
-    
-    
     // MARK: - Apple sign in
     
     private func randomNonceString(length: Int = 32) -> String {
         precondition(length > 0)
-        let charset: Array<Character> =
-            Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+        let charset = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
         var result = ""
         var remainingLength = length
         
@@ -420,7 +430,7 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
             print("Unable to serialize token string from data: \(appleIDToken.debugDescription)")
             return
           }
-            
+    
           // Initialize a Firebase credential.
           let credential = OAuthProvider.credential(withProviderID: "apple.com",
                                                     idToken: idTokenString,
@@ -430,9 +440,6 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
           Auth.auth().signIn(with: credential) { [weak self] (authResult, error) in
               guard let self = self else { return }
               if error != nil {
-              // Error. If error.code == .MissingOrInvalidNonce, make sure
-              // you're sending the SHA256-hashed nonce as a hex string with
-              // your request to Apple.
              self.presentLoadingView(shouldPresent: false)
              self.presentErrorAlert(title: "Error",
                                     message: "Fail to log in with Apple: \(String(describing: error!.localizedDescription))",
@@ -460,14 +467,7 @@ extension LoginController: ASAuthorizationControllerDelegate, ASAuthorizationCon
                           let familyname = appleIDCredential.fullName?.familyName ?? "name"
                           let username = "\(firstname) \(familyname)"
                           let email = authResult?.user.email ?? ""
-                          AuthService.shared.uploadNewUser(withId: uid, name: username, email: email) { error in
-                              guard error == nil else {
-                                  self.presentErrorAlert(message: "\(error!.localizedDescription)")
-                                  self.presentLoadingView(shouldPresent: false)
-                                  print("Fail to upload new user \(String(describing: error))")
-                                  return
-                              }
-                              print("did Sign in appleeee")
+                          self.uploadNewUser(username: username, email: email) {
                               tab.authenticateUserAndConfigureUI()
                               self.presentLoadingView(shouldPresent: false)
                               self.dismiss(animated: true)

@@ -13,9 +13,7 @@ import Lottie
 class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLayout {
     
     // MARK: - Properties
-    
-    let refreshControl = UIRefreshControl()
-    
+        
     private lazy var collectionView: UICollectionView = {
         let layout = CHTCollectionViewWaterfallLayout()
         layout.itemRenderDirection = .leftToRight
@@ -25,8 +23,6 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.showsVerticalScrollIndicator = false
-        collectionView.refreshControl = refreshControl
-        collectionView.refreshControl?.addTarget(self, action: #selector(refreshData), for: .valueChanged)
         collectionView.register(ExploreCell.self, forCellWithReuseIdentifier: ExploreCell.identifier)
         return collectionView
     }()
@@ -106,7 +102,6 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     
     // MARK: - API
     private func fetchEvents() {
-        refreshControl.beginRefreshing()
         presentLoadingView(shouldPresent: true)
         EventService.shared.fetchAllEvents { [weak self] result in
             guard let self = self else { return }
@@ -181,10 +176,6 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     }
     
     // MARK: - Selectors
-    
-    @objc func refreshData() {
-        fetchEvents()
-    }
     
     @objc func dateSegmentValueChange(sender: NTSegmentedControl) {
         switch sender.selectedButtonIndex {
@@ -268,7 +259,6 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     }
     
     private func endRefreshing() {
-        refreshControl.endRefreshing()
         collectionView.reloadData()
         presentLoadingView(shouldPresent: false)
     }

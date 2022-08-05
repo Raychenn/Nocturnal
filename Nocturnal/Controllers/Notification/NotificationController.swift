@@ -31,11 +31,13 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     
     private var currentUser: User
     
-    var hosts: [User] = []
+    private var users: [User] = []
     
-    var applicants: [User] = []
+    var hosts: [String: User] = [:]
+
+    var applicants: [String: User] = [:]
     
-    var events: [Event] = [] 
+    var events: [String: Event] = [:]
     
     var notifications: [Notification] = [] {
         didSet {
@@ -94,9 +96,16 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
             case .success(let notifications):
                 self.notifications = self.getFilteredNotifications(notifications: notifications)
                 self.notifications = self.filterNotificationFromBlockedUsers(notifications: self.notifications)
+                
                 self.fetchEvents(from: self.notifications) { [weak self] events in
                     guard let self = self else { return }
-                    self.events = events
+                    
+                    events.forEach { event in
+                        if let id = event.id {
+                            self.events[id] = event
+                        }
+                    }
+                    
                     self.fetchHostsAndApplicants()
                 }
             case .failure(let error):
@@ -158,6 +167,7 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     private func fetchHostsAndApplicants() {
+        
         var applicantsId: [String] = []
         notifications.forEach({ applicantsId.append($0.applicantId) })
         var hostsId: [String] = []
@@ -167,26 +177,57 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     
         group.enter()
         fetchApplicants(uids: applicantsId) { [weak self] applicants in
-            group.leave()
             guard let self = self else { return }
-            self.applicants = applicants
-            self.presentLoadingView(shouldPresent: false)
+            applicants.forEach({
+                if let id = $0.id {
+                    self.applicants[id] = $0
+                }
+            })
+            group.leave()
         }
         
         group.enter()
         fetchHosts(uids: hostsId) { [weak self] hosts in
-            group.leave()
             guard let self = self else { return }
-            self.hosts = hosts
-            self.presentLoadingView(shouldPresent: false)
+            
+            hosts.forEach({
+                if let id = $0.id {
+                    self.hosts[id] = $0
+                }
+            })
+            group.leave()
         }
         
         group.notify(queue: .main) {
+            self.presentLoadingView(shouldPresent: false)
             self.tableView.reloadData()
         }
     }
     
    // MARK: - Helpers
+    
+    private func getSortedEvents(events: [Event], eventsId: [String]) -> [Event] {
+        var result: [Event] = []
+        eventsId.forEach { id in
+            events.forEach { event in
+                if id == event.id ?? "" {
+                    result.append(event)
+                }
+            }
+        }
+        return result
+    }
+    
+    private func getSortedUsers(users: [User], inputIds: [String]) -> [User] {
+        var result: [User] = []
+        
+        for (index, user) in users.enumerated() {
+            if user.id ?? "" == inputIds[index] {
+                result.append(user)
+            }
+        }
+        return result
+    }
     
     private func setupUI() {
         navigationController?.navigationBar.isHidden = true
@@ -266,28 +307,16 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
         notificationCell.delegate = self
         
         let notification = notifications[indexPath.section]
-        let event = events[indexPath.section]
+        let event = events[notification.eventId]
         
-        if applicants.count == 0 {
-            let host = hosts[indexPath.section]
-
-            notificationCell.configueCell(with: notification, user: host, event: event)
-        } else if hosts.count == 0 {
-            let applicant = applicants[indexPath.section]
-            
-            notificationCell.configueCell(with: notification, user: applicant, event: event)
-            
+        let type = NotificationType(rawValue: notification.type) ?? .none
+        let applicant = applicants[notification.applicantId]
+        let host = hosts[notification.hostId]
+        
+        if type == .joinEventRequest {
+            notificationCell.configueCell(with: notification, user: applicant ?? User(), event: event ?? Event())
         } else {
-            // have both applicants and hosts notifications
-            let type = NotificationType(rawValue: notification.type) ?? .none
-            let applicant = applicants[indexPath.section]
-            let host = hosts[indexPath.section]
-            
-            if type == .joinEventRequest {
-                notificationCell.configueCell(with: notification, user: applicant, event: event)
-            } else {
-                notificationCell.configueCell(with: notification, user: host, event: event)
-            }
+            notificationCell.configueCell(with: notification, user: host ?? User(), event: event ?? Event())
         }
         
         return notificationCell

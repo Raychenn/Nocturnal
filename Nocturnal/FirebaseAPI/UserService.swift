@@ -131,23 +131,24 @@ struct UserService {
     // 要抓每個notification的hosts看他們有沒有給通過
     // 也要抓每個notification的applicants看host要不要給過
     func fetchUsers(uids: [String], completion: @escaping (Result<[User], Error>) -> Void) {
-        let semaphor = DispatchSemaphore(value: 0)
         var users: [User] = []
+        let group = DispatchGroup()
         DispatchQueue.global(qos: .userInitiated).async {
             uids.forEach { uid in
+                group.enter()
                 fetchUser(uid: uid) { result in
                     switch result {
                     case .success(let user):
                         users.append(user)
-                        semaphor.signal()
+                        group.leave()
                     case .failure(let error):
                         print("error fetching user \(error)")
                         completion(.failure(error))
                     }
                 }
-                semaphor.wait()
             }
-            DispatchQueue.main.async {
+            
+            group.notify(queue: .main) {
                 completion(.success(users))
             }
         }

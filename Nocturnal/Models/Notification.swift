@@ -37,3 +37,13 @@ struct Notification: Codable {
     let type: Int
     var isRequestPermitted: Bool
 }
+
+struct Applicant {
+    let id: String
+    let data: User
+}
+
+struct Host {
+    let id: String
+    let data: User
+}

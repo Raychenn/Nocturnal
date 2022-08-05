@@ -71,7 +71,9 @@ class HomeController: UIViewController {
         
     var events: [Event] = []
     
-    var evnetHosts: [User] = []
+    var evnetHosts: [String: User] = [:]
+    
+    var hostsId: [String] = []
         
     // MARK: - Life Cycle
     
@@ -159,13 +161,20 @@ class HomeController: UIViewController {
     private func fetchLoggedinHosts() {
         if Auth.auth().currentUser != nil {
             // logged in, start fetching user data
-            var hostsId: [String] = []
             events.forEach({hostsId.append($0.hostID)})
             
             fetchHosts(hostsId: hostsId) { [weak self] hosts in
                 guard let self = self else { return }
-                self.filterDeletedHosts(hosts: hosts)
-                self.filterEventsFromDeletedHosts(hosts: self.evnetHosts)
+                let activeHosts = self.getActiveHosts(hosts: hosts)
+                
+                activeHosts.forEach { host in
+                    if let id = host.id {
+                        self.evnetHosts[id] = host
+                    }
+                }
+                
+                let hostValues = self.evnetHosts.map({ $0.value })
+                self.filterEventsFromDeletedHosts(hosts: hostValues)
                 self.presentEmptyViewIfNecessary()
                 self.endRefreshing()
             }
@@ -180,7 +189,8 @@ class HomeController: UIViewController {
             guard let self = self else { return }
             switch result {
             case .success(let hosts):
-                completion(hosts)
+                let sortedHosts = self.getSortedHosts(users: hosts)
+                completion(sortedHosts)
             case .failure(let error):
                 self.presentErrorAlert(message: "\(error.localizedDescription)")
                 self.presentLoadingView(shouldPresent: false)
@@ -204,6 +214,18 @@ class HomeController: UIViewController {
     }
     
     // MARK: - Helpers
+    
+    private func getSortedHosts(users: [User]) -> [User] {
+        var result: [User] = []
+        hostsId.forEach { id in
+            users.forEach { user in
+                if id == user.id ?? "" {
+                    result.append(user)
+                }
+            }
+        }
+        return result
+    }
     
     private func filterBlockedEventsIfNecessary(from events: [Event]) {
         if self.currentUser.blockedUsersId.count == 0 {
@@ -274,10 +296,10 @@ class HomeController: UIViewController {
         presentLoadingView(shouldPresent: false)
     }
     
-    private func filterDeletedHosts(hosts: [User]) {
+    private func getActiveHosts(hosts: [User]) -> [User] {
         var undeletedHosts: [User] = []
         undeletedHosts = hosts.filter({ $0.name != "Unknown User" })
-        self.evnetHosts = undeletedHosts
+        return undeletedHosts
     }
     
     private func filterEventsFromDeletedHosts(hosts: [User]) {
@@ -412,8 +434,8 @@ extension HomeController: UICollectionViewDataSource {
             if Auth.auth().currentUser == nil {
                 eventCell.configureCell(event: event)
             } else {
-                let host = evnetHosts[indexPath.item]
-                eventCell.configureCellForLoggedInUser(event: event, host: host)
+                let host = evnetHosts[event.hostID]
+                eventCell.configureCellForLoggedInUser(event: event, host: host ?? User())
             }
             
             return eventCell

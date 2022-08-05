@@ -62,22 +62,6 @@ class JoinedEventCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - API
-    
-//    private func fetchEvents() {
-//        guard let user = user else { return }
-//        EventService.shared.fetchEvents(fromEventIds: user.joinedEventsId) { [weak self] result in
-//            guard let self = self else { return }
-//            switch result {
-//            case .success(let events):
-//                self.joinedEvents = events
-//                self.collectionView.reloadData()
-//            case .failure(let error):
-//                print("Fail to fetch events in joined cell \(error)")
-//            }
-//        }
-//    }
-    
     // MARK: - Helpers
     
     func setupCellUI() {

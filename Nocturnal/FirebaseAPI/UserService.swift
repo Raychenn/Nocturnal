@@ -10,7 +10,12 @@ import FirebaseFirestore
 import FirebaseFirestoreSwift
 import FirebaseAuth
 
-struct UserService {
+protocol UserProvider {
+    func fetchUser(uid: String, completion: @escaping (Result<User, Error>) -> Void)
+    func fetchUsers(uids: [String], completion: @escaping (Result<[User], Error>) -> Void)
+}
+
+struct UserService: UserProvider {
     
     static let shared = UserService()
     

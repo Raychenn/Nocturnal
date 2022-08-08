@@ -66,19 +66,24 @@ class HomeController: UIViewController {
         view.alpha = 0
         return view
     }()
+    
+    let userProvider: UserProvider
+    
+    let homeEventProvider: EventProvider
 
-    var currentUser: User 
+    var currentUser: User = User()
         
     var events: [Event] = []
     
     var evnetHosts: [String: User] = [:]
     
     var hostsId: [String] = []
-        
+            
     // MARK: - Life Cycle
     
-    init(currentUser: User) {
-        self.currentUser = currentUser
+    init(userProvider: UserProvider, homeEventProvider: EventProvider) {
+        self.userProvider = userProvider
+        self.homeEventProvider = homeEventProvider
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -88,7 +93,7 @@ class HomeController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
+        
         setupUI()
     }
     
@@ -126,7 +131,7 @@ class HomeController: UIViewController {
             completion()
         } else {
             if let userId = Auth.auth().currentUser?.uid {
-                UserService.shared.fetchUser(uid: userId) { result in
+                userProvider.fetchUser(uid: userId) { result in
                     switch result {
                     case .success(let user):
                         self.currentUser = user
@@ -144,7 +149,7 @@ class HomeController: UIViewController {
     private func fetchAllEvents() {
         refreshControl.beginRefreshing()
         
-        EventService.shared.fetchAllEvents { [weak self] result in
+        homeEventProvider.fetchAllEvents { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let events):
@@ -185,7 +190,7 @@ class HomeController: UIViewController {
     }
     
     private func fetchHosts(hostsId: [String], completion: @escaping ([User]) -> Void) {
-        UserService.shared.fetchUsers(uids: hostsId) { [weak self] result in
+        userProvider.fetchUsers(uids: hostsId) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let hosts):

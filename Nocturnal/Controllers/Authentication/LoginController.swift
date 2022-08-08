@@ -10,7 +10,6 @@ import CryptoKit
 import AuthenticationServices
 import FirebaseAuth
 import AVKit
-import AVFAudio
 
 class LoginController: UIViewController {
     // MARK: - Properties

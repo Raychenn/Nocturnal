@@ -13,7 +13,9 @@ import Lottie
 class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLayout {
     
     // MARK: - Properties
-        
+    
+    let refresher = UIRefreshControl()
+    
     private lazy var collectionView: UICollectionView = {
         let layout = CHTCollectionViewWaterfallLayout()
         layout.itemRenderDirection = .leftToRight
@@ -22,6 +24,8 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.dataSource = self
         collectionView.delegate = self
+        collectionView.refreshControl = refresher
+        collectionView.refreshControl?.addTarget(self, action: #selector(refresh), for: .valueChanged)
         collectionView.showsVerticalScrollIndicator = false
         collectionView.register(ExploreCell.self, forCellWithReuseIdentifier: ExploreCell.identifier)
         return collectionView
@@ -177,6 +181,10 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
     
     // MARK: - Selectors
     
+    @objc func refresh() {
+        fetchEvents()
+    }
+    
     @objc func dateSegmentValueChange(sender: NTSegmentedControl) {
         switch sender.selectedButtonIndex {
             
@@ -221,7 +229,10 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
         self.originalAllEvents = getFilteredEventsFromActiveHosts(hosts: hosts)
         self.generateRandomHeight(eventCount: events.count)
         self.presentEmptyViewIfNecessary()
-        self.endRefreshing()
+        self.endRefreshing {
+            dateSegmentControl.sendActions(for: .valueChanged)
+            refresher.endRefreshing()
+        }
     }
     
     private func presentEmptyViewIfNecessary() {
@@ -258,9 +269,10 @@ class ExploreController: UIViewController, CHTCollectionViewDelegateWaterfallLay
                                  paddingTop: 15, paddingLeft: 5, paddingRight: 5)
     }
     
-    private func endRefreshing() {
+    private func endRefreshing(completion: () -> Void) {
         collectionView.reloadData()
         presentLoadingView(shouldPresent: false)
+        completion()
     }
     
     private func getUndeletedHosts(hosts: [User]) -> [User] {

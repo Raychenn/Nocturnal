@@ -10,7 +10,11 @@ import FirebaseFirestore
 
 typealias FirestoreCompletion = ((Error?) -> Void)?
 
-class EventService {
+protocol EventProvider {
+    func fetchAllEvents(completion: @escaping (Result<[Event], Error>) -> Void)
+}
+
+class EventService: EventProvider {
     
     static let shared = EventService()
     

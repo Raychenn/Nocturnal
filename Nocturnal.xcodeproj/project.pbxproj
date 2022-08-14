@@ -70,6 +70,7 @@
 		ED4DB00A28758C5D0051F40F /* Satisfy-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ED4DB00828758C5D0051F40F /* Satisfy-Regular.ttf */; };
 		ED4DB00B28758C5D0051F40F /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = ED4DB00928758C5D0051F40F /* LICENSE.txt */; };
 		ED4DB00D28758EDA0051F40F /* djVideo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = ED4DB00C28758EDA0051F40F /* djVideo.mp4 */; };
+		ED52ACB528A8C7E700728CF7 /* ObservableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED52ACB428A8C7E700728CF7 /* ObservableObject.swift */; };
 		ED5D192A286A11750054AC56 /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5D1929286A11750054AC56 /* SettingsController.swift */; };
 		ED626A872862B09E003BB636 /* ProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED626A862862B09E003BB636 /* ProfileCell.swift */; };
 		ED626A8A2862B41C003BB636 /* JoinedEventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED626A892862B41C003BB636 /* JoinedEventCell.swift */; };
@@ -215,6 +216,7 @@
 		ED4DB00828758C5D0051F40F /* Satisfy-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Satisfy-Regular.ttf"; sourceTree = "<group>"; };
 		ED4DB00928758C5D0051F40F /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		ED4DB00C28758EDA0051F40F /* djVideo.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = djVideo.mp4; sourceTree = "<group>"; };
+		ED52ACB428A8C7E700728CF7 /* ObservableObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableObject.swift; sourceTree = "<group>"; };
 		ED5D1929286A11750054AC56 /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
 		ED626A862862B09E003BB636 /* ProfileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCell.swift; sourceTree = "<group>"; };
 		ED626A892862B41C003BB636 /* JoinedEventCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinedEventCell.swift; sourceTree = "<group>"; };
@@ -581,6 +583,7 @@
 			children = (
 				ED24FB8E2885B4970009CF9F /* HomeViewModel.swift */,
 				ED24FB902885B4B90009CF9F /* HomeEventCellViewModel.swift */,
+				ED52ACB428A8C7E700728CF7 /* ObservableObject.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -1041,6 +1044,7 @@
 				EDC663EB28614FB8007FEF82 /* ConservasationsController.swift in Sources */,
 				ED1560AD286CA0AA0089121D /* SettingHeader.swift in Sources */,
 				ED0A483E285873DB004661BB /* ViewController.swift in Sources */,
+				ED52ACB528A8C7E700728CF7 /* ObservableObject.swift in Sources */,
 				ED191D0F2865873E009A10CC /* String+Ext.swift in Sources */,
 				ED0B424928588845000680C2 /* UIButton+Ext.swift in Sources */,
 				ED81C3DE285DA50D004C12EA /* NotificationCell.swift in Sources */,

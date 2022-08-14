@@ -78,6 +78,10 @@ class HomeController: UIViewController {
     var evnetHosts: [String: User] = [:]
     
     var hostsId: [String] = []
+    
+    let viewModel: HomeViewModel = HomeViewModel()
+    
+    var homeEventCellViewModels: [HomeEventCellViewModel] = []
             
     // MARK: - Life Cycle
     
@@ -93,13 +97,11 @@ class HomeController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupUI()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
         currentUserProfileImageView.layer.cornerRadius = 35/2
         setupPulsingLayer()
     }
@@ -178,8 +180,8 @@ class HomeController: UIViewController {
                     }
                 }
                 
-                let hostValues = self.evnetHosts.map({ $0.value })
-                self.filterEventsFromDeletedHosts(hosts: hostValues)
+                let hosts = self.evnetHosts.map({ $0.value })
+                self.events = self.getActiveEvents(from: hosts)
                 self.presentEmptyViewIfNecessary()
                 self.endRefreshing()
             }
@@ -219,6 +221,10 @@ class HomeController: UIViewController {
     }
     
     // MARK: - Helpers
+    
+    private func bindingViewModel() {
+        
+    }
     
     private func getSortedHosts(users: [User]) -> [User] {
         var result: [User] = []
@@ -307,7 +313,7 @@ class HomeController: UIViewController {
         return undeletedHosts
     }
     
-    private func filterEventsFromDeletedHosts(hosts: [User]) {
+    private func getActiveEvents(from hosts: [User]) -> [Event] {
         var undeletedHostsId: Set<String> = []
         var filteredEvents: [Event] = []
         hosts.forEach { host in
@@ -316,7 +322,7 @@ class HomeController: UIViewController {
             }
         }
         filteredEvents = events.filter({ undeletedHostsId.contains($0.hostID) })
-        self.events = filteredEvents
+        return filteredEvents
     }
     
     private func removePulsingLayer() {

@@ -138,37 +138,19 @@ extension UIViewController {
         
         present(alert, animated: true)
     }
-
+    
     func presentLoadingView(shouldPresent: Bool, message: String? = nil) {
-        let loadingView = UIView()
-        let indicator = UIActivityIndicatorView()
-        let messageLabel = UILabel()
-
+        let loadingView = NTLoadingView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
+        
         if shouldPresent {
-            view.addSubview(loadingView)
-            loadingView.backgroundColor = .black
             loadingView.frame = view.bounds
+            view.addSubview(loadingView)
             loadingView.alpha = 0
-            loadingView.tag = 1
-            
+
             UIView.animate(withDuration: 0.3) {
                 loadingView.alpha = 0.7
             }
             
-            loadingView.addSubview(indicator)
-            indicator.style = UIActivityIndicatorView.Style.large
-            indicator.color = .white
-            indicator.center = view.center
-            indicator.startAnimating()
-            
-            loadingView.addSubview(messageLabel)
-            messageLabel.text = message
-            messageLabel.textColor = .white
-            messageLabel.alpha = 0.87
-            messageLabel.textAlignment = .center
-            messageLabel.font = UIFont.systemFont(ofSize: 25)
-            messageLabel.centerX(inView: view, topAnchor: indicator.bottomAnchor, paddingTop: 25)
-
         } else {
             // dismiss and remove loading view
             UIView.animate(withDuration: 0.3) {
@@ -176,10 +158,54 @@ extension UIViewController {
             }
             
             view.subviews.forEach { subview in
-                if subview.tag == 1 {
+                if subview is NTLoadingView {
                     subview.removeFromSuperview()
                 }
             }
         }
     }
+
+//    func presentLoadingView(shouldPresent: Bool, message: String? = nil) {
+//        let loadingView = UIView()
+//        let indicator = UIActivityIndicatorView()
+//        let messageLabel = UILabel()
+//
+//        if shouldPresent {
+//            view.addSubview(loadingView)
+//            loadingView.backgroundColor = .black
+//            loadingView.frame = view.bounds
+//            loadingView.alpha = 0
+//            loadingView.tag = 1
+//
+//            UIView.animate(withDuration: 0.3) {
+//                loadingView.alpha = 0.7
+//            }
+//
+//            loadingView.addSubview(indicator)
+//            indicator.style = UIActivityIndicatorView.Style.large
+//            indicator.color = .white
+//            indicator.center = view.center
+//            indicator.startAnimating()
+//
+//            loadingView.addSubview(messageLabel)
+//            messageLabel.text = message
+//            messageLabel.textColor = .white
+//            messageLabel.alpha = 0.87
+//            messageLabel.textAlignment = .center
+//            messageLabel.font = UIFont.systemFont(ofSize: 25)
+//            messageLabel.centerX(inView: view, topAnchor: indicator.bottomAnchor, paddingTop: 25)
+//
+//        } else {
+//            // dismiss and remove loading view
+//            UIView.animate(withDuration: 0.3) {
+//                loadingView.alpha = 0
+//            }
+//
+//            view.subviews.forEach { subview in
+//                if subview.tag == 1 {
+//                    subview.removeFromSuperview()
+//                }
+//            }
+//        }
+//    }
 }

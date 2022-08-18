@@ -102,6 +102,7 @@
 		ED847A1C285CE5E700F33C7F /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED847A1B285CE5E700F33C7F /* User.swift */; };
 		ED8B1EF32860CC4B008A0ECB /* MessageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED8B1EF22860CC4B008A0ECB /* MessageService.swift */; };
 		ED8B1EF52860E2D8008A0ECB /* Conversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED8B1EF42860E2D8008A0ECB /* Conversation.swift */; };
+		EDA4FE4728ADDCF20001D9E1 /* NTLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA4FE4628ADDCF20001D9E1 /* NTLoadingView.swift */; };
 		EDC663EB28614FB8007FEF82 /* ConservasationsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC663EA28614FB8007FEF82 /* ConservasationsController.swift */; };
 		EDC663ED28615D8D007FEF82 /* ConversationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC663EC28615D8D007FEF82 /* ConversationCell.swift */; };
 		EDC663F028617465007FEF82 /* ExploreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC663EF28617465007FEF82 /* ExploreCell.swift */; };
@@ -249,6 +250,7 @@
 		ED847A1B285CE5E700F33C7F /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		ED8B1EF22860CC4B008A0ECB /* MessageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageService.swift; sourceTree = "<group>"; };
 		ED8B1EF42860E2D8008A0ECB /* Conversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Conversation.swift; sourceTree = "<group>"; };
+		EDA4FE4628ADDCF20001D9E1 /* NTLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTLoadingView.swift; sourceTree = "<group>"; };
 		EDC663EA28614FB8007FEF82 /* ConservasationsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConservasationsController.swift; sourceTree = "<group>"; };
 		EDC663EC28615D8D007FEF82 /* ConversationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationCell.swift; sourceTree = "<group>"; };
 		EDC663EF28617465007FEF82 /* ExploreCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreCell.swift; sourceTree = "<group>"; };
@@ -519,6 +521,7 @@
 				ED63D5112874145B00603515 /* CustomPopupView.swift */,
 				ED63D516287421AA00603515 /* PulsingLayer.swift */,
 				EDFC4F51287FE77D00440149 /* CustomBlurEffectView.swift */,
+				EDA4FE4628ADDCF20001D9E1 /* NTLoadingView.swift */,
 			);
 			path = CustomViews;
 			sourceTree = "<group>";
@@ -1107,6 +1110,7 @@
 				ED0A485528587A27004661BB /* HomeController.swift in Sources */,
 				ED626A902862DA20003BB636 /* EditProfileController.swift in Sources */,
 				ED81C3D7285D93D3004C12EA /* Firebase+Ext.swift in Sources */,
+				EDA4FE4728ADDCF20001D9E1 /* NTLoadingView.swift in Sources */,
 				ED24FB882882A7340009CF9F /* HomeProfileCell.swift in Sources */,
 				ED83392E285ADC4B00236814 /* DetailDescriptionCell.swift in Sources */,
 				ED0A485728587A7C004661BB /* ExploreController.swift in Sources */,

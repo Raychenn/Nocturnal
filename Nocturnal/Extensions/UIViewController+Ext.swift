@@ -180,8 +180,6 @@ extension UIViewController {
                     subview.removeFromSuperview()
                 }
             }
-            
         }
     }
-    
 }

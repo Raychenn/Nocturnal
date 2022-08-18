@@ -17,32 +17,24 @@ class HomeViewModel {
     var shouldEndRefreshing: ObservableObject<Bool> = ObservableObject(value: false)
     
     var shouldPresentEmptyView: ObservableObject<Bool> = ObservableObject(value: false)
-        
-    var shouldCollectionViewBeginRefreshing: ObservableObject<Bool> = ObservableObject(value: false)
     
     var firestoreError: ObservableObject<Error?> = ObservableObject(value: nil)
     
     var currentUser: ObservableObject<User> = ObservableObject(value: User())
     
     var events: [Event] = []
-
-    var eventHosts: [String: User]? = [:]
+    
+    var eventHosts: [String: User]?
     
     var hostsId: [String] = []
     
-//    var events: ObservableObject<[Event]> = ObservableObject(value: [])
-//
-//    var eventHost: ObservableObject<[String: User]?> = ObservableObject(value: [:])
+    let userProvider: UserProvider
+    let eventProvider: EventProvider
     
-    //
-    //    let userProvider: UserProvider
-    //    let eventProvider: EventProvider
-    //
-    //    init(userProvider: UserProvider, eventProvider: EventProvider) {
-    //        self.userProvider = userProvider
-    //        self.eventProvider = eventProvider
-    //    }
-    //
+    init(userProvider: UserProvider, eventProvider: EventProvider) {
+        self.userProvider = userProvider
+        self.eventProvider = eventProvider
+    }
     
     var homeEventCellViewModels: [HomeEventCellViewModel] = []
     
@@ -52,11 +44,11 @@ class HomeViewModel {
         if Auth.auth().currentUser != nil {
             shouldPresentLoadingView.value = true
             if let userId = Auth.auth().currentUser?.uid {
-                UserService.shared.fetchUser(uid: userId) { result in
+                userProvider.fetchUser(uid: userId) { result in
+                    completion()
                     switch result {
                     case .success(let user):
                         self.currentUser.value = user
-                        completion()
                     case .failure(let error):
                         self.firestoreError.value = error
                         self.shouldPresentLoadingView.value = false
@@ -64,13 +56,15 @@ class HomeViewModel {
                     }
                 }
             }
+        } else {
+            completion()
         }
     }
     
     func fetchAllEvents() {
-        shouldCollectionViewBeginRefreshing.value = true
+        shouldPresentRefreshControl.value = true
         //        refreshControl.beginRefreshing()
-        EventService.shared.fetchAllEvents { [weak self] result in
+        eventProvider.fetchAllEvents { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let events):
@@ -90,8 +84,7 @@ class HomeViewModel {
         if Auth.auth().currentUser != nil {
             // logged in, start fetching user data
             events.forEach({hostsId.append($0.hostID)})
-            
-            UserService.shared.fetchUsers(uids: hostsId) { [weak self] result in
+            userProvider.fetchUsers(uids: hostsId) { [weak self] result in
                 guard let self = self else { return }
                 
                 switch result {
@@ -101,6 +94,8 @@ class HomeViewModel {
                         dict[host.id ?? ""] = host
                     })
                     self.shouldPresentEmptyView.value = self.eventHosts?.count == 0 ? true: false
+                    
+                    self.events = self.getActiveEvents(from: activeHosts)
                     self.shouldEndRefreshing.value = true
                 case .failure(let error):
                     self.firestoreError.value = error
@@ -111,24 +106,23 @@ class HomeViewModel {
             self.shouldEndRefreshing.value = true
         }
     }
-        
-        private func getUnblockedEvents(from events: [Event]) -> [Event] {
-            var result: [Event] = []
-            
-            if self.currentUser.value.blockedUsersId.count == 0 {
-                return events
-            } else {
-                result = events.filter({ !currentUser.value.blockedUsersId.contains($0.hostID) })
-                return result
-            }
-        }
-        
-        private func getActiveHosts(hosts: [User]) -> [User] {
-            var undeletedHosts: [User] = []
-            undeletedHosts = hosts.filter({ $0.name != "Unknown User" })
-            return undeletedHosts
-        }
     
+    private func getUnblockedEvents(from events: [Event]) -> [Event] {
+        var result: [Event] = []
+        
+        if self.currentUser.value.blockedUsersId.count == 0 {
+            return events
+        } else {
+            result = events.filter({ !currentUser.value.blockedUsersId.contains($0.hostID) })
+            return result
+        }
+    }
+    
+    private func getActiveHosts(hosts: [User]) -> [User] {
+        var undeletedHosts: [User] = []
+        undeletedHosts = hosts.filter({ $0.name != "Unknown User" })
+        return undeletedHosts
+    }
     
     private func getActiveEvents(from hosts: [User]) -> [Event] {
         var undeletedHostsId: Set<String> = []

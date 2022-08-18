@@ -169,7 +169,7 @@ class HomeEventCell: UICollectionViewCell {
         player.isMuted = true
         
         // caching video url
-        CacheManager.shared.getFileWith(stringUrl: videoURLString) { [weak self] result in
+        CacheManager.shared.getFileWith(urlString: videoURLString) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let url):
@@ -200,48 +200,6 @@ class HomeEventCell: UICollectionViewCell {
         }
     }
     
-    func configureCell(event: Event) {
-        if let videoUrlString = event.eventVideoURL {
-            // configure video cell
-            updateCellForDisplayMode(shouldShowVideo: true)
-            setupVideoPlayerView(videoURLString: videoUrlString)
-        } else {
-            // configure image cell
-            guard let imageUrl = URL(string: event.eventImageURL) else { return }
-            updateCellForDisplayMode(shouldShowVideo: false)
-            eventImageView.kf.setImage(with: imageUrl)
-        }
-        
-        dateLabel.text = Date.dateFormatter.string(from: event.startingDate.dateValue())
-        eventNameLabel.text = event.title
-        feeLabel.text = "$\(event.fee)"
-        hostNameLabel.text = "Unkown User"
-    }
-    
-    func configureCellForLoggedInUser(event: Event, host: User) {
-        if let videoUrlString = event.eventVideoURL {
-            // configure video cell
-            updateCellForDisplayMode(shouldShowVideo: true)
-            setupVideoPlayerView(videoURLString: videoUrlString)
-        } else {
-            // configure image cell
-            guard let imageUrl = URL(string: event.eventImageURL) else { return }
-            updateCellForDisplayMode(shouldShowVideo: false)
-            eventImageView.kf.setImage(with: imageUrl)
-        }
-        
-        if let profileUrl = URL(string: host.profileImageURL) {
-            profileImageView.kf.setImage(with: profileUrl)
-        } else {
-            profileImageView.image = UIImage(systemName: "person")
-        }
-        
-        dateLabel.text = Date.dateFormatter.string(from: event.startingDate.dateValue())
-        eventNameLabel.text = event.title
-        feeLabel.text = "$\(event.fee)"
-        hostNameLabel.text = host.name
-    }
-    
     func muteSound(shouldMute: Bool) {
         let config = UIImage.SymbolConfiguration(pointSize: 25)
         if shouldMute {
@@ -251,6 +209,34 @@ class HomeEventCell: UICollectionViewCell {
             player?.isMuted = false
             muteButton.setImage(UIImage(systemName: "speaker", withConfiguration: config), for: .normal)
         }
+    }
+    
+    func bindCell(with viewModel: HomeEventCellViewModel) {
+        viewModel.shouldShowVideo.bind { [weak self] shouldShow in
+            guard let self = self else { return }
+            
+            self.updateCellForDisplayMode(shouldShowVideo: shouldShow)
+        }
+    }
+    
+    func configureCell(with viewModel: HomeEventCellViewModel) {
+        
+        if let viedoURLString = viewModel.eventVideoURLString {
+            setupVideoPlayerView(videoURLString: viedoURLString)
+        } else {
+            eventImageView.kf.setImage(with: viewModel.eventImageViewURL)
+        }
+        
+        if let profileUrl = viewModel.hostProfileURL {
+            profileImageView.kf.setImage(with: profileUrl)
+        } else {
+            profileImageView.image = UIImage(systemName: "person")
+        }
+        
+        dateLabel.text = viewModel.eventDate
+        eventNameLabel.text = viewModel.eventName
+        feeLabel.text = viewModel.eventFee
+        hostNameLabel.text = viewModel.hostName
     }
     
     func setupCellUI() {

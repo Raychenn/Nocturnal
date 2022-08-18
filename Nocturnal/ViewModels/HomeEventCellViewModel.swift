@@ -6,20 +6,19 @@
 //
 
 import Foundation
-import UIKit
 
 class HomeEventCellViewModel {
-    let event: Event
-    var host: User?
+    private let event: Event
+    private var host: User?
     
     var shouldShowVideo: ObservableObject<Bool> = ObservableObject(value: false)
         
     var eventImageViewURL: URL? { URL(string: event.eventImageURL) }
     
-    var eventVideoURL: URL? {
+    var eventVideoURLString: String? {
         if let videoURL = event.eventVideoURL {
             shouldShowVideo.value = true
-            return URL(string: videoURL)
+            return videoURL
         } else {
             shouldShowVideo.value = false
             return nil
@@ -52,6 +51,5 @@ class HomeEventCellViewModel {
     }
     
     // MARK: - Helpers
-    
-    
+
 }

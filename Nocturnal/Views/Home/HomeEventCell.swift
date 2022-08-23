@@ -142,8 +142,9 @@ class HomeEventCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        player = nil
+        
         player?.removeAllItems()
+        player = nil
     }
     
     // MARK: - Selector
@@ -166,7 +167,7 @@ class HomeEventCell: UICollectionViewCell {
             print("player nil in home cell")
             return
         }
-        player.isMuted = true
+        player.isMuted = isMuted
         
         // caching video url
         CacheManager.shared.getFileWith(urlString: videoURLString) { [weak self] result in

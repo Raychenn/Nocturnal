@@ -398,6 +398,7 @@ extension HomeController: UIScrollViewDelegate {
 extension HomeController: HomeEventCellDelegate {
     
     func didTapReportButton(cell: HomeEventCell) {
+        
         showReportAlert()
     }
 }

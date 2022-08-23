@@ -109,7 +109,6 @@ struct MessegeService {
                             group.leave()
                             switch result {
                             case .success(let user):
-//                                print("chatPartner name in api \(user.name)")
                                 let conversation = Conversation(user: user, message: message)
                                 conversations.append(conversation)
                             case .failure(let error):

@@ -140,23 +140,21 @@ extension UIViewController {
     }
     
     func presentLoadingView(shouldPresent: Bool, message: String? = nil) {
-        let loadingView = NTLoadingView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
         
         if shouldPresent {
+            let loadingView = NTLoadingView(frame: CGRect(x: 0,
+                                                          y: 0,
+                                                          width: view.bounds.width,
+                                                          height: view.bounds.height))
             loadingView.frame = view.bounds
             view.addSubview(loadingView)
             loadingView.alpha = 0
-
+            
             UIView.animate(withDuration: 0.3) {
                 loadingView.alpha = 0.7
             }
-            
+
         } else {
-            // dismiss and remove loading view
-            UIView.animate(withDuration: 0.3) {
-                loadingView.alpha = 0
-            }
-            
             view.subviews.forEach { subview in
                 if subview is NTLoadingView {
                     subview.removeFromSuperview()

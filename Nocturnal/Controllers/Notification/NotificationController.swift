@@ -206,29 +206,6 @@ class NotificationController: UIViewController, UITableViewDataSource, UITableVi
     
    // MARK: - Helpers
     
-    private func getSortedEvents(events: [Event], eventsId: [String]) -> [Event] {
-        var result: [Event] = []
-        eventsId.forEach { id in
-            events.forEach { event in
-                if id == event.id ?? "" {
-                    result.append(event)
-                }
-            }
-        }
-        return result
-    }
-    
-    private func getSortedUsers(users: [User], inputIds: [String]) -> [User] {
-        var result: [User] = []
-        
-        for (index, user) in users.enumerated() {
-            if user.id ?? "" == inputIds[index] {
-                result.append(user)
-            }
-        }
-        return result
-    }
-    
     private func setupUI() {
         navigationController?.navigationBar.isHidden = true
         tableView.dataSource = self

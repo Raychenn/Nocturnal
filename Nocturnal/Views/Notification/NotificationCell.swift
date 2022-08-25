@@ -134,13 +134,11 @@ class NotificationCell: UITableViewCell {
         let date = notification.sentTime.dateValue()
         timeLabel.text = date.displayTimeInSocialMediaStyle()
         
-        guard let profileUrl = URL(string: user.profileImageURL), let eventUrl = URL(string: event.eventImageURL) else {
-            print("no profileImageURL")
-            return
+       if let profileUrl = URL(string: user.profileImageURL), let eventUrl = URL(string: event.eventImageURL) {
+           profileImageView.kf.setImage(with: profileUrl)
+           eventImageView.kf.setImage(with: eventUrl)
         }
-        profileImageView.kf.setImage(with: profileUrl)
-        eventImageView.kf.setImage(with: eventUrl)
-        
+
         if type == .failureJoinedEventResponse || type == .successJoinedEventResponse {
             permissionButton.isHidden = true
             eventImageView.isHidden = false

@@ -70,6 +70,7 @@
 		ED4DB00A28758C5D0051F40F /* Satisfy-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ED4DB00828758C5D0051F40F /* Satisfy-Regular.ttf */; };
 		ED4DB00B28758C5D0051F40F /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = ED4DB00928758C5D0051F40F /* LICENSE.txt */; };
 		ED4DB00D28758EDA0051F40F /* djVideo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = ED4DB00C28758EDA0051F40F /* djVideo.mp4 */; };
+		ED52ACB528A8C7E700728CF7 /* ObservableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED52ACB428A8C7E700728CF7 /* ObservableObject.swift */; };
 		ED5D192A286A11750054AC56 /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5D1929286A11750054AC56 /* SettingsController.swift */; };
 		ED626A872862B09E003BB636 /* ProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED626A862862B09E003BB636 /* ProfileCell.swift */; };
 		ED626A8A2862B41C003BB636 /* JoinedEventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED626A892862B41C003BB636 /* JoinedEventCell.swift */; };
@@ -101,6 +102,7 @@
 		ED847A1C285CE5E700F33C7F /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED847A1B285CE5E700F33C7F /* User.swift */; };
 		ED8B1EF32860CC4B008A0ECB /* MessageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED8B1EF22860CC4B008A0ECB /* MessageService.swift */; };
 		ED8B1EF52860E2D8008A0ECB /* Conversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED8B1EF42860E2D8008A0ECB /* Conversation.swift */; };
+		EDA4FE4728ADDCF20001D9E1 /* NTLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA4FE4628ADDCF20001D9E1 /* NTLoadingView.swift */; };
 		EDC663EB28614FB8007FEF82 /* ConservasationsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC663EA28614FB8007FEF82 /* ConservasationsController.swift */; };
 		EDC663ED28615D8D007FEF82 /* ConversationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC663EC28615D8D007FEF82 /* ConversationCell.swift */; };
 		EDC663F028617465007FEF82 /* ExploreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC663EF28617465007FEF82 /* ExploreCell.swift */; };
@@ -215,6 +217,7 @@
 		ED4DB00828758C5D0051F40F /* Satisfy-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Satisfy-Regular.ttf"; sourceTree = "<group>"; };
 		ED4DB00928758C5D0051F40F /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		ED4DB00C28758EDA0051F40F /* djVideo.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = djVideo.mp4; sourceTree = "<group>"; };
+		ED52ACB428A8C7E700728CF7 /* ObservableObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableObject.swift; sourceTree = "<group>"; };
 		ED5D1929286A11750054AC56 /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
 		ED626A862862B09E003BB636 /* ProfileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCell.swift; sourceTree = "<group>"; };
 		ED626A892862B41C003BB636 /* JoinedEventCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinedEventCell.swift; sourceTree = "<group>"; };
@@ -247,6 +250,7 @@
 		ED847A1B285CE5E700F33C7F /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		ED8B1EF22860CC4B008A0ECB /* MessageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageService.swift; sourceTree = "<group>"; };
 		ED8B1EF42860E2D8008A0ECB /* Conversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Conversation.swift; sourceTree = "<group>"; };
+		EDA4FE4628ADDCF20001D9E1 /* NTLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTLoadingView.swift; sourceTree = "<group>"; };
 		EDC663EA28614FB8007FEF82 /* ConservasationsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConservasationsController.swift; sourceTree = "<group>"; };
 		EDC663EC28615D8D007FEF82 /* ConversationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationCell.swift; sourceTree = "<group>"; };
 		EDC663EF28617465007FEF82 /* ExploreCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreCell.swift; sourceTree = "<group>"; };
@@ -517,6 +521,7 @@
 				ED63D5112874145B00603515 /* CustomPopupView.swift */,
 				ED63D516287421AA00603515 /* PulsingLayer.swift */,
 				EDFC4F51287FE77D00440149 /* CustomBlurEffectView.swift */,
+				EDA4FE4628ADDCF20001D9E1 /* NTLoadingView.swift */,
 			);
 			path = CustomViews;
 			sourceTree = "<group>";
@@ -581,6 +586,7 @@
 			children = (
 				ED24FB8E2885B4970009CF9F /* HomeViewModel.swift */,
 				ED24FB902885B4B90009CF9F /* HomeEventCellViewModel.swift */,
+				ED52ACB428A8C7E700728CF7 /* ObservableObject.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -1041,6 +1047,7 @@
 				EDC663EB28614FB8007FEF82 /* ConservasationsController.swift in Sources */,
 				ED1560AD286CA0AA0089121D /* SettingHeader.swift in Sources */,
 				ED0A483E285873DB004661BB /* ViewController.swift in Sources */,
+				ED52ACB528A8C7E700728CF7 /* ObservableObject.swift in Sources */,
 				ED191D0F2865873E009A10CC /* String+Ext.swift in Sources */,
 				ED0B424928588845000680C2 /* UIButton+Ext.swift in Sources */,
 				ED81C3DE285DA50D004C12EA /* NotificationCell.swift in Sources */,
@@ -1103,6 +1110,7 @@
 				ED0A485528587A27004661BB /* HomeController.swift in Sources */,
 				ED626A902862DA20003BB636 /* EditProfileController.swift in Sources */,
 				ED81C3D7285D93D3004C12EA /* Firebase+Ext.swift in Sources */,
+				EDA4FE4728ADDCF20001D9E1 /* NTLoadingView.swift in Sources */,
 				ED24FB882882A7340009CF9F /* HomeProfileCell.swift in Sources */,
 				ED83392E285ADC4B00236814 /* DetailDescriptionCell.swift in Sources */,
 				ED0A485728587A7C004661BB /* ExploreController.swift in Sources */,
@@ -1307,7 +1315,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.raychenn.Nocturnal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1340,7 +1348,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.raychenn.Nocturnal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

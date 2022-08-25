@@ -66,17 +66,15 @@ class HomeController: UIViewController {
         view.alpha = 0
         return view
     }()
-
-    var currentUser: User 
-        
-    var events: [Event] = []
     
-    var evnetHosts: [User] = []
-        
+    let viewModel: HomeViewModel
+    
+    var homeEventCellViewModels: [HomeEventCellViewModel] = []
+            
     // MARK: - Life Cycle
     
-    init(currentUser: User) {
-        self.currentUser = currentUser
+    init(viewModel: HomeViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -86,13 +84,12 @@ class HomeController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
+        bindingViewModel()
         setupUI()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
         currentUserProfileImageView.layer.cornerRadius = 35/2
         setupPulsingLayer()
     }
@@ -102,12 +99,9 @@ class HomeController: UIViewController {
         
         navigationController?.navigationBar.isHidden = true
         
-        // fetch all events from firestore
-        presentLoadingView(shouldPresent: true)
-        fetchCurrentUser { [weak self] in
-            guard let self = self else {return}
-            self.fetchAllEvents()
-            self.setupProfileView()
+        viewModel.fetchCurrentUser { [weak self] in
+            guard let self = self else { return }
+            self.viewModel.fetchAllEvents()
         }
     }
     
@@ -116,82 +110,10 @@ class HomeController: UIViewController {
         cleanupLayers()
         cleanupEmptyViews()
     }
-
-    // MARK: - API
-    
-    private func fetchCurrentUser(completion: @escaping () -> Void) {
-        if Auth.auth().currentUser == nil {
-            completion()
-        } else {
-            if let userId = Auth.auth().currentUser?.uid {
-                UserService.shared.fetchUser(uid: userId) { result in
-                    switch result {
-                    case .success(let user):
-                        self.currentUser = user
-                        completion()
-                    case .failure(let error):
-                        self.presentErrorAlert(message: "\(error.localizedDescription)")
-                        self.presentLoadingView(shouldPresent: false)
-                        print("Fail to fetch user in home \(error)")
-                    }
-                }
-            }
-        }
-    }
-    
-    private func fetchAllEvents() {
-        refreshControl.beginRefreshing()
-        
-        EventService.shared.fetchAllEvents { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let events):
-                self.filterBlockedEventsIfNecessary(from: events)
-                self.fetchLoggedinHosts()
-            case .failure(let error):
-                self.presentErrorAlert(message: "\(error.localizedDescription)")
-                self.presentLoadingView(shouldPresent: false)
-                print("error fetching all events \(error)")
-            }
-        }
-    }
-        
-    private func fetchLoggedinHosts() {
-        if Auth.auth().currentUser != nil {
-            // logged in, start fetching user data
-            var hostsId: [String] = []
-            events.forEach({hostsId.append($0.hostID)})
-            
-            fetchHosts(hostsId: hostsId) { [weak self] hosts in
-                guard let self = self else { return }
-                self.filterDeletedHosts(hosts: hosts)
-                self.filterEventsFromDeletedHosts(hosts: self.evnetHosts)
-                self.presentEmptyViewIfNecessary()
-                self.endRefreshing()
-            }
-        } else {
-            // not logged in
-            self.endRefreshing()
-        }
-    }
-    
-    private func fetchHosts(hostsId: [String], completion: @escaping ([User]) -> Void) {
-        UserService.shared.fetchUsers(uids: hostsId) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let hosts):
-                completion(hosts)
-            case .failure(let error):
-                self.presentErrorAlert(message: "\(error.localizedDescription)")
-                self.presentLoadingView(shouldPresent: false)
-                print("error fetching event hosts \(error)")
-            }
-        }
-    }
     
     // MARK: - Selectors
     @objc func refreshData() {
-        self.fetchAllEvents()
+        viewModel.fetchAllEvents()
     }
     
     @objc func didTapShowEventButton() {
@@ -205,25 +127,45 @@ class HomeController: UIViewController {
     
     // MARK: - Helpers
     
-    private func filterBlockedEventsIfNecessary(from events: [Event]) {
-        if self.currentUser.blockedUsersId.count == 0 {
-            self.events = events
-        } else {
-            self.filterEventsFromBlockedUsers(events: events) { filteredEvents in
-                self.events = filteredEvents
-            }
+    private func bindingViewModel() {
+        viewModel.firestoreError.bind { [weak self] error in
+            guard let self = self else { return }
+            self.presentErrorAlert(message: "\(String(describing: error?.localizedDescription))")
+        }
+        
+        viewModel.shouldPresentLoadingView.bind { [weak self] shouldPresent in
+            guard let self = self else { return }
+            
+            self.presentLoadingView(shouldPresent: shouldPresent)
+        }
+        
+        viewModel.shouldPresentRefreshControl.bind { [weak self] shouldPresent in
+            guard let self = self else { return }
+            
+            if shouldPresent { self.refreshControl.beginRefreshing() }
+        }
+        
+        viewModel.shouldPresentEmptyView.bind { [weak self] shouldPresent in
+            guard let self = self else { return }
+            
+            self.presentEmptyView(shouldPresent: shouldPresent)
+        }
+        
+        viewModel.shouldEndRefreshing.bind { [weak self] shouldEnd in
+            guard let self = self else { return }
+            
+            if shouldEnd { self.endRefreshing() }
+        }
+        
+        viewModel.currentUser.bind { [weak self] currentUser in
+            guard let self = self else { return }
+            self.setupProfileView(currentUser: currentUser)
         }
     }
     
-    func filterEventsFromBlockedUsers(events: [Event], completion: @escaping ([Event]) -> Void) {
-        var result: [Event] = []
-        result = events.filter({ !currentUser.blockedUsersId.contains($0.hostID) })
-        completion(result)
-    }
-    
-    private func setupProfileView() {
-        self.currentUserNameLabel.text = self.currentUser.name
-        if let profileURL = URL(string: self.currentUser.profileImageURL) {
+    private func setupProfileView(currentUser: User) {
+        self.currentUserNameLabel.text = currentUser.name
+        if let profileURL = URL(string: currentUser.profileImageURL) {
             self.currentUserProfileImageView.kf.setImage(with: profileURL)
         } else {
             self.currentUserProfileImageView.image = UIImage(systemName: "person")
@@ -235,8 +177,8 @@ class HomeController: UIViewController {
         self.addEventButtonBackgroundView.layer.addSublayer(pulseLayer)
     }
     
-    private func presentEmptyViewIfNecessary() {
-        if evnetHosts.count == 0 {
+    private func presentEmptyView(shouldPresent: Bool) {
+        if shouldPresent {
             configureEmptyAnimationView()
             configureEmptyWarningLabel()
             collectionView.isHidden = true
@@ -272,24 +214,6 @@ class HomeController: UIViewController {
         refreshControl.endRefreshing()
         collectionView.reloadData()
         presentLoadingView(shouldPresent: false)
-    }
-    
-    private func filterDeletedHosts(hosts: [User]) {
-        var undeletedHosts: [User] = []
-        undeletedHosts = hosts.filter({ $0.name != "Unknown User" })
-        self.evnetHosts = undeletedHosts
-    }
-    
-    private func filterEventsFromDeletedHosts(hosts: [User]) {
-        var undeletedHostsId: Set<String> = []
-        var filteredEvents: [Event] = []
-        hosts.forEach { host in
-            if host.name != "Unknown User" {
-                undeletedHostsId.insert(host.id ?? "")
-            }
-        }
-        filteredEvents = events.filter({ undeletedHostsId.contains($0.hostID) })
-        self.events = filteredEvents
     }
     
     private func removePulsingLayer() {
@@ -389,7 +313,7 @@ extension HomeController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return section == 0 ? 1: events.count
+        return section == 0 ? 1: viewModel.events.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -398,24 +322,28 @@ extension HomeController: UICollectionViewDataSource {
             
             guard let profileCell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeProfileCell.identifier, for: indexPath) as? HomeProfileCell else { return UICollectionViewCell() }
             
-            profileCell.configureCell(user: self.currentUser)
+            profileCell.configureCell(user: viewModel.currentUser.value)
             
             return profileCell
             
         } else {
             guard let eventCell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeEventCell.identifier, for: indexPath) as? HomeEventCell else { return UICollectionViewCell() }
             
-            eventCell.delegate = self
-            let event = events[indexPath.item]
+            let event = viewModel.events[indexPath.item]
+            let eventCellViewModel: HomeEventCellViewModel
             
-            // should have 2 types of config | loggedin user vs no user
-            if Auth.auth().currentUser == nil {
-                eventCell.configureCell(event: event)
+            if viewModel.eventHosts == nil {
+                eventCellViewModel = HomeEventCellViewModel.init(event: event, host: nil)
             } else {
-                let host = evnetHosts[indexPath.item]
-                eventCell.configureCellForLoggedInUser(event: event, host: host)
+                let host = viewModel.eventHosts?[event.hostID] ?? User()
+                
+                eventCellViewModel = HomeEventCellViewModel.init(event: event, host: host)
             }
             
+            eventCell.delegate = self
+            eventCell.bindCell(with: eventCellViewModel)
+            eventCell.configureCell(with: eventCellViewModel)
+        
             return eventCell
         }
     }
@@ -430,7 +358,7 @@ extension HomeController: UICollectionViewDelegate {
             presentLoginVC()
         } else {
             if indexPath.section == 1 {
-                let selectedEvent = events[indexPath.item]
+                let selectedEvent = viewModel.events[indexPath.item]
                 let detailVC = EventDetailController(event: selectedEvent)
                 detailVC.hidesBottomBarWhenPushed = true
                 navigationController?.pushViewController(detailVC, animated: true)
@@ -470,6 +398,7 @@ extension HomeController: UIScrollViewDelegate {
 extension HomeController: HomeEventCellDelegate {
     
     func didTapReportButton(cell: HomeEventCell) {
+        
         showReportAlert()
     }
 }

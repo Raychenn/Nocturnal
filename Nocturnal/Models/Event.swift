@@ -27,6 +27,25 @@ struct Event: Codable, Equatable {
     let pendingUsersId: [String]
 }
 
+extension Event {
+    init() {
+        self.title = ""
+        self.createTime = Timestamp()
+        self.hostID = ""
+        self.description = ""
+        self.startingDate = Timestamp()
+        self.destinationLocation = GeoPoint(latitude: 0, longitude: 0)
+        self.fee = 0
+        self.style = ""
+        self.eventImageURL = ""
+        self.eventMusicURL = ""
+        self.eventVideoURL = ""
+        self.participants = []
+        self.deniedUsersId = []
+        self.pendingUsersId = []
+    }
+}
+
 struct Location: Codable {
     let lat: Double
     let long: Double

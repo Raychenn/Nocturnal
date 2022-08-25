@@ -17,9 +17,9 @@ class CacheManager {
         return documentsUrl
     }()
 
-    func getFileWith(stringUrl: String, completionHandler: @escaping (Result<URL, Error>) -> Void ) {
+    func getFileWith(urlString: String, completionHandler: @escaping (Result<URL, Error>) -> Void ) {
 
-        let file = directoryFor(stringUrl: stringUrl)
+        let file = directoryFor(stringUrl: urlString)
 
         guard !fileManager.fileExists(atPath: file.path) else {
             completionHandler(.success(file))
@@ -28,7 +28,7 @@ class CacheManager {
 
         DispatchQueue.global().async {
 
-            if let videoData = NSData(contentsOf: URL(string: stringUrl)!) {
+            if let videoData = NSData(contentsOf: URL(string: urlString)!) {
                 videoData.write(to: file, atomically: true)
                 DispatchQueue.main.async {
                     completionHandler(.success(file))

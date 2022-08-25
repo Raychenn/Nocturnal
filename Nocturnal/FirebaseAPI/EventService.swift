@@ -10,7 +10,11 @@ import FirebaseFirestore
 
 typealias FirestoreCompletion = ((Error?) -> Void)?
 
-class EventService {
+protocol EventProvider {
+    func fetchAllEvents(completion: @escaping (Result<[Event], Error>) -> Void)
+}
+
+class EventService: EventProvider {
     
     static let shared = EventService()
     
@@ -61,12 +65,12 @@ func postNewEvent(event: Event, completion: FirestoreCompletion) {
 
 func fetchEvents(fromEventIds ids: [String], completion: @escaping (Result<[Event], Error>) -> Void) {
     var events: [Event] = []
-    let semaphore = DispatchSemaphore(value: 0)
+    let group = DispatchGroup()
     
     DispatchQueue.global(qos: .userInitiated).async {
         ids.forEach { eventId in
+            group.enter()
             collection_event.document(eventId).getDocument { snapshot, error in
-                semaphore.signal()
                 guard let snapshot = snapshot, error == nil else {
                     completion(.failure(error!))
                     return
@@ -74,13 +78,13 @@ func fetchEvents(fromEventIds ids: [String], completion: @escaping (Result<[Even
                 do {
                     let event = try snapshot.data(as: Event.self)
                     events.append(event)
+                    group.leave()
                 } catch {
                     completion(.failure(error))
                 }
             }
-            semaphore.wait()
         }
-        DispatchQueue.main.async {
+        group.notify(queue: .main) {
             completion(.success(events))
         }
     }

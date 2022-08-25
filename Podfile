@@ -17,10 +17,12 @@ target 'Nocturnal' do
   pod 'IQKeyboardManagerSwift'
   pod 'Charts'
   pod 'lottie-ios'
+  pod 'GoogleUtilities', '~> 7.7.0'
 
   target 'NocturnalTests' do
         inherit! :search_paths
         pod 'FirebaseFirestore'
+        pod 'GoogleUtilities', '~> 7.7.0'
     end
 end
 

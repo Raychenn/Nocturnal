@@ -240,7 +240,6 @@ class StatsController: UIViewController, ChartViewDelegate {
     }
     
     func setupStyleCounts() {
-        
         joinedEventStyles.forEach { style in
             switch style {
             case .rock:

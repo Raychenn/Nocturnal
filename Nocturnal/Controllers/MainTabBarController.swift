@@ -81,7 +81,10 @@ class MainTabBarController: UITabBarController {
     func configureViewControllers(with user: User) {
         self.delegate = self
         
-        let home = templateNavigationViewController(unselectedImage: UIImage(systemName: "house")!, selectedImage: UIImage(systemName: "house.fill")!, rootViewController: HomeController(currentUser: user))
+        let homeViewModel = HomeViewModel(userProvider: UserService.shared, eventProvider: EventService.shared)
+        let home = templateNavigationViewController(unselectedImage: UIImage(systemName: "house")!,
+                                                    selectedImage: UIImage(systemName: "house.fill")!,
+                                                    rootViewController: HomeController(viewModel: homeViewModel))
         
         let explore = templateNavigationViewController(unselectedImage: UIImage(systemName: "magnifyingglass")!, selectedImage: UIImage(systemName: "magnifyingglass")!, rootViewController: ExploreController(user: user))
         

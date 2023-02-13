@@ -34,40 +34,38 @@ class EventService: EventProvider {
         
         collection_event.document(eventId).updateData(["deniedUsersId": FieldValue.arrayUnion([applicantId])], completion: completion)
     }
-
-/// Update accepted user id to event participant array
-func updateEventParticipants(notification: Notification, completion: FirestoreCompletion) {
-    //        print("event ID in updateEventParticipants \(notification.eventId)")
-    collection_event.document(notification.eventId).updateData(["participants": FieldValue.arrayUnion([notification.applicantId])], completion: completion)
-}
     
-/// Remove denied user id from event participant array
-func removeEventParticipants(notification: Notification, completion: FirestoreCompletion) {
-    collection_event.document(notification.eventId).getDocument { snapshot, error in
-        guard let snapshot = snapshot, error == nil else {
-            print("Fail to update event \(String(describing: error))")
-            return
+    /// Update accepted user id to event participant array
+    func updateEventParticipants(notification: Notification, completion: FirestoreCompletion) {
+        collection_event.document(notification.eventId).updateData(["participants": FieldValue.arrayUnion([notification.applicantId])], completion: completion)
+    }
+    
+    /// Remove denied user id from event participant array
+    func removeEventParticipants(notification: Notification, completion: FirestoreCompletion) {
+        collection_event.document(notification.eventId).getDocument { snapshot, error in
+            guard let snapshot = snapshot, error == nil else {
+                print("Fail to update event \(String(describing: error))")
+                return
+            }
+            
+            snapshot.reference.updateData(["participants": FieldValue.arrayRemove([notification.applicantId])], completion: completion)
         }
+    }
+    
+    func postNewEvent(event: Event, completion: FirestoreCompletion) {
+        let newEventDocument = collection_event.document()
         
-        snapshot.reference.updateData(["participants": FieldValue.arrayRemove([notification.applicantId])], completion: completion)
+        do {
+            try newEventDocument.setData(from: event, encoder: .init(), completion: completion)
+        } catch {
+            print("Fail to set new event \(error)")
+        }
     }
-}
-
-func postNewEvent(event: Event, completion: FirestoreCompletion) {
-    let newEventDocument = collection_event.document()
     
-    do {
-        try newEventDocument.setData(from: event, encoder: .init(), completion: completion)
-    } catch {
-        print("Fail to set new event \(error)")
-    }
-}
-
-func fetchEvents(fromEventIds ids: [String], completion: @escaping (Result<[Event], Error>) -> Void) {
-    var events: [Event] = []
-    let group = DispatchGroup()
-    
-    DispatchQueue.global(qos: .userInitiated).async {
+    func fetchEvents(fromEventIds ids: [String], completion: @escaping (Result<[Event], Error>) -> Void) {
+        var events: [Event] = []
+        let group = DispatchGroup()
+        
         ids.forEach { eventId in
             group.enter()
             collection_event.document(eventId).getDocument { snapshot, error in
@@ -87,29 +85,29 @@ func fetchEvents(fromEventIds ids: [String], completion: @escaping (Result<[Even
         group.notify(queue: .main) {
             completion(.success(events))
         }
+        
     }
-}
-
-func fetchAllEvents(completion: @escaping (Result<[Event], Error>) -> Void) {
-    collection_event.order(by: "createTime", descending: true).getDocuments { snapshot, error in
-        
-        guard let snapshot = snapshot, error == nil else {
-            completion(.failure(error!))
-            return
-        }
-        
-        var events: [Event] = []
-        
-        snapshot.documents.forEach { document in
-            do {
-                let event = try document.data(as: Event.self, with: .none, decoder: .init())
-                events.append(event)
-            } catch {
-                completion(.failure(error))
+    
+    func fetchAllEvents(completion: @escaping (Result<[Event], Error>) -> Void) {
+        collection_event.order(by: "createTime", descending: true).getDocuments { snapshot, error in
+            
+            guard let snapshot = snapshot, error == nil else {
+                completion(.failure(error!))
+                return
             }
+            
+            var events: [Event] = []
+            
+            snapshot.documents.forEach { document in
+                do {
+                    let event = try document.data(as: Event.self, with: .none, decoder: .init())
+                    events.append(event)
+                } catch {
+                    completion(.failure(error))
+                }
+            }
+            
+            completion(.success(events))
         }
-        
-        completion(.success(events))
     }
-  }
 }

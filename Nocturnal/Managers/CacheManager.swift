@@ -20,6 +20,7 @@ class CacheManager {
     func getFileWith(urlString: String, completionHandler: @escaping (Result<URL, Error>) -> Void ) {
 
         let file = directoryFor(stringUrl: urlString)
+        print("file path \(file.path)")
 
         guard !fileManager.fileExists(atPath: file.path) else {
             completionHandler(.success(file))

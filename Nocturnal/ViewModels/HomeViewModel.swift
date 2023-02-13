@@ -28,8 +28,8 @@ class HomeViewModel {
     
     var hostsId: [String] = []
     
-    let userProvider: UserProvider
-    let eventProvider: EventProvider
+    let userProvider: any UserProvider
+    let eventProvider: any EventProvider
     
     init(userProvider: UserProvider, eventProvider: EventProvider) {
         self.userProvider = userProvider

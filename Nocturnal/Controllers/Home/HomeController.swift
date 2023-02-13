@@ -86,6 +86,8 @@ class HomeController: UIViewController {
         super.viewDidLoad()
         bindingViewModel()
         setupUI()
+        
+        navigationItem.titleView = topImage
     }
     
     override func viewDidLayoutSubviews() {

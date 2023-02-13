@@ -1,5 +1,6 @@
 # Nocturnal
 
+
 <p align="center">
   <img width="150" height="150" src="https://github.com/Raychenn/Nocturnal/blob/main/Screenshots/Nocturnal_icon.png">
 </p>
@@ -19,7 +20,7 @@
 </p>
 
 :hear_no_evil: Features
-=======
+
 **Main features:**
 - Host events: upload your own event with highly detailed information
 - Play music: experience event music uploaded by the event host

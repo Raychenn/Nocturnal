@@ -257,7 +257,8 @@ class MediaPlayerView: UIView {
             
             let seconds = CMTimeGetSeconds(time)
             let secondsString = String(format: "%02d", Int(Int(seconds)%60))
-            self?.elapsedTimeLabel.text = "00:\(secondsString)"
+            let minString = String(format: "%02d", Int(Int(seconds/60)%60))
+            self?.elapsedTimeLabel.text = "\(minString):\(secondsString)"
             self?.updateSlider(elapsedTime: time)
         }
     }
